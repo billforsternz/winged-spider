@@ -63,32 +63,8 @@
 #include <vector>
 #include <map>
 #include <filesystem>
-//#include <Windows.h>
 #include "util.h"
 
-#if 0
-std::vector<std::string> read_directory( std::string dir )
-{
-    std::vector<std::string> names;
-    std::string search_path = dir + "/*.*";
-    WIN32_FIND_DATA fd; 
-    HANDLE hFind = ::FindFirstFile( search_path.c_str(), &fd ); 
-    if( hFind != INVALID_HANDLE_VALUE)
-    { 
-        do
-        { 
-            // read all (real) files in current folder
-            // , delete '!' read other 2 default folder . and ..
-            if( ! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
-            {
-                names.push_back(fd.cFileName);
-            }
-        } while( ::FindNextFile(hFind, &fd) ); 
-        ::FindClose(hFind); 
-    } 
-    return names;
-}
-#endif
 
 void templat( FILE *fin1, FILE *fin2, FILE *fout );
 std::string macro_substitution( const std::string &input, 
@@ -98,22 +74,15 @@ std::string macro_substitution( const std::string &input,
 int main( int argc, char *argv[] )
 {
 #ifdef _DEBUG     // input\fresh-index.txt input\template-main.txt \users\bill\documents\newzealandchess.co.nz\index.html
-    namespace fs = std::experimental::filesystem;
-    std::string path = "/Users/Bill/Documents/WingedSpider/nzcf/input";
-    for (const auto & entry : fs::directory_iterator(path))
-    {
-        std::string s( entry.path().string());
-        printf( "%s\n", s.c_str() );
-        if( fs::is_directory(entry) )
-        {
-            printf( "Is directory\n" );
-        }
-    }
-    return 0;
-
-    FILE *fin1 = fopen( "/Users/Bill/Documents/WingedSpider/nzcf/input/fresh-index.md", "rt" );
-    FILE *fin2 = fopen( "/Users/Bill/Documents/WingedSpider/nzcf/input/template-main.txt", "rt" );
-    FILE *fout = fopen( "/Users/Bill/Documents/WingedSpider/nzcf/output/index.html", "wt" );
+#if 0
+    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/WingedSpider/base/Home.md", "rt" );
+    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/WingedSpider/template-main.txt", "rt" );
+    FILE *fout = fopen( "/Users/Bill/Documents/Github/WingedSpider/output/index.html", "wt" );
+#else
+    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/WingedSpider/base/Archives/Results/Results.md", "rt" );
+    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/WingedSpider/template.txt", "rt" );
+    FILE *fout = fopen( "/Users/Bill/Documents/Github/WingedSpider/output/Archives/Results/Results.html", "wt" );
+#endif
     if( !fin1 || !fin2 || !fout )
     {
         printf( "File problem during debugging\n" );
@@ -147,7 +116,9 @@ int main( int argc, char *argv[] )
         return -1;
     }
 #endif
-    templat(fin1,fin2,fout);
+   // templat(fin1,fin2,fout);
+    void template_older( FILE *fin1, FILE *fin2, FILE *fout );
+    template_older( fin1, fin2, fout );
     fclose(fout);
     fclose(fin2);
     fclose(fin1);

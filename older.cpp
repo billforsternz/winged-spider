@@ -11,46 +11,16 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <map>
+#include "util.h"
 
 void template_older( FILE *fin1, FILE *fin2, FILE *fout );
 
-/*
-int main( int argc, char *argv[] )
-{
-    if( argc != 4 )
-    {
-        printf( "Generate html from custom template plus formatted input\nUsage: template input.txt template.txt output.html\n" );
-        return -1;
-    }
-    FILE *fin1 = fopen( argv[1], "rt" );
-    if( !fin1 )
-    {
-        printf( "File not found: %s\n", argv[1] );
-        return -1;
-    }
-    FILE *fin2 = fopen( argv[2], "rt" );
-    if( !fin2 )
-    {
-        fclose(fin1);
-        printf( "File not found: %s\n", argv[2] );
-        return -1;
-    }
-    FILE *fout = fopen( argv[3], "wt" );
-    if( !fout )
-    {
-        fclose(fin2);
-        fclose(fin1);
-        printf( "Cannot open file: %s\n", argv[3] );
-        return -1;
-    }
-    template_older(fin1,fin2,fout);
-    fclose(fout);
-    fclose(fin2);
-    fclose(fin1);
-    return 0;
-}
-  */
 void rtrim( std::string &s );
+
+static std::string macro_substitution_older( const std::string &input, 
+    const std::map<char,std::string> &macros,
+    const std::vector<std::string> &menu );
 
 struct PICTURE
 {
@@ -136,8 +106,30 @@ void template_older( FILE *fin1, FILE *fin2, FILE *fout )
     // Infer application from template file
     bool optional_single_photo_template =  triplet=="" && pair!=""  && (single.find("@F") == std::string::npos);
 
-    // Read the input file
+    // Read macros from the input file
+    std::map<char,std::string> macros;
+    std::vector<std::string> menu;
     ret = fgets( buf, sizeof(buf)-2, fin1 );
+    bool have_line=false;
+    while( ret != NULL )
+    {
+        std::string s(buf);
+        rtrim(s);
+        have_line = s.length()>0;
+        if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
+            break;
+        std::string macro = s.substr(3);
+        if( s[1] == 'M' )
+            menu.push_back(macro);
+        else
+            macros[s[1]] = macro;
+        fgets( buf, sizeof(buf)-2, fin1 );
+    }
+
+    // Read pictures from the input file
+    std::vector<std::string> whole_input_file;
+    if( ret!=NULL && !have_line )
+        ret = fgets( buf, sizeof(buf)-2, fin1 );
     state = 0;
     PICTURE picture;
     picture.filename.clear();
@@ -147,6 +139,7 @@ void template_older( FILE *fin1, FILE *fin2, FILE *fout )
     {
         std::string s(buf);
         rtrim(s);
+        whole_input_file.push_back(s);
         if( s.length() == 0 )
         {
             rtrim( picture.caption );
@@ -187,17 +180,27 @@ void template_older( FILE *fin1, FILE *fin2, FILE *fout )
         rtrim( picture.caption );
         pictures.push_back(picture);
     }
- /* for( int i=0; i<pictures.size(); i++ )
+    for( int i=0; i<pictures.size(); i++ )
     {
         printf( "Picture %d filename is [%s], alt is [%s]\n", i, pictures[i].filename.c_str(),  pictures[i].alt_text.c_str() );
         printf( "Caption is [%s]\n", pictures[i].caption.c_str() );
     }
     printf( "Header is %s", header.c_str() );
     printf( "Footer is %s", footer.c_str() );
-    printf( "Last caption is [%s]", picture.caption.c_str() ); */
+    printf( "Last caption is [%s]", picture.caption.c_str() );
 
     // Write out the the html
-    fprintf( fout, "%s", header.c_str() );
+    std::string h = macro_substitution_older( header, macros, menu );
+    fprintf( fout, "%s", h.c_str() );
+
+    // New feature - Macro @W in the header just indicates write out the whole input file between header and footer
+    auto it = macros.find('W');
+    if( it != macros.end() )
+    {
+        for( std::string line : whole_input_file )
+            fprintf( fout, "%s\n", line.c_str() );
+        pictures.clear();
+    }
 
     // Loop through the pictures
     int len = pictures.size();
@@ -322,6 +325,89 @@ void template_older( FILE *fin1, FILE *fin2, FILE *fout )
 	    }
         fprintf( fout, "%s", s.c_str() );
     }
-    fprintf( fout, "%s", footer.c_str() );
+    std::string f = macro_substitution_older( footer, macros, menu );
+    fprintf( fout, "%s", f.c_str() );
 }
 
+static std::string macro_substitution_older( const std::string &input, 
+    const std::map<char,std::string> &macros,
+    const std::vector<std::string> &menu )
+{
+    std::string out;
+    size_t len = input.length();
+    bool menu_mode = false;
+    int line_count=0;
+    std::string normal;
+    std::string highlighted; 
+    for( size_t i=0; i<len; i++ )
+    {
+        char c =  input[i];
+        if( !menu_mode )
+        {
+            if( c != '@' || i+1>=len)
+                out += c;
+            else
+            {
+                char key = input[++i];
+                if( key == 'M' )
+                {
+                    menu_mode = true;
+                    line_count = 0;
+                    normal.clear();
+                    highlighted.clear();
+                }
+                else
+                {
+                    auto it = macros.find(key);
+                    if( it != macros.end() )
+                    {
+                        out += it->second;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if( c != '\n' )
+            {
+                if( line_count == 1 )
+                    normal += c;
+                else if( line_count == 2 )
+                    highlighted += c;
+            }
+            else
+            {
+                line_count++;
+                if( line_count == 3 )
+                {
+                    menu_mode=false;
+                    for( unsigned int j=0; j<menu.size(); j++ )
+                    {
+                        std::string s = menu[j];
+                        bool highlight = s.length()>0 && s[0]=='*';
+                        std::string t = normal;
+                        if( highlight )
+                        {
+                            s = s.substr(1);
+                            t = highlighted;
+                        }
+                        size_t offset = s.find( ".html " );
+                        if( offset == std::string::npos )
+                            printf( "Menu item %s missing required .html termination of link part\n", s.c_str() );
+                        else
+                        {
+                            std::string link  = s.substr( 0, offset+5 );
+                            std::string label = s.substr( offset+6 );
+                            std::string text = t;
+                            util::replace_all( text, "@1", link );
+                            util::replace_all( text, "@2", label );
+                            out += text;
+                            out += "\n";
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return out;
+}

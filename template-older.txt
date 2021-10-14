@@ -1,4 +1,4 @@
-#Header
+@header
 <!doctype html>
 <html lang="en">
 <head>
@@ -47,7 +47,7 @@
         </div>
         <div class="content">
 
-#Single        
+@single        
 <br>
 <br>
         <h2 style="margin-top:0;margin-bottom:0.5em;font-weight:bold">@H</h2>
@@ -55,7 +55,7 @@
         @T
         </p>
         
-#Pair        
+@pair
 <br>
 <br>
 <div class="pure-g">
@@ -72,7 +72,7 @@
     </div>
 </div>
 
-#Footer
+@footer
         <p></p>
         <p></p>
         </div>

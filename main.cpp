@@ -66,9 +66,9 @@
 #include "util.h"
 
 // While we are getting this up to speed with some basic reconstruction of some existing functionality
-//  in this new context define one of these or the other (later - delete both of them as well as older.cpp)
+//  in this new context define one of these or the other
 //#define BUILD_HOME
-#define BUILD_OLDER
+#define BUILD_RESULTS
 
 void templat( FILE *fin1, FILE *fin2, FILE *fout );
 std::string macro_substitution( const std::string &input, 
@@ -83,7 +83,7 @@ int main( int argc, char *argv[] )
     FILE *fin2 = fopen( "/Users/Bill/Documents/Github/WingedSpider/template-main.txt", "rt" );
     FILE *fout = fopen( "/Users/Bill/Documents/Github/WingedSpider/output/index.html", "wt" );
 #endif
-#ifdef BUILD_OLDER
+#ifdef BUILD_RESULTS
     FILE *fin1 = fopen( "/Users/Bill/Documents/Github/WingedSpider/base/Archives/Results/Results.md", "rt" );
     FILE *fin2 = fopen( "/Users/Bill/Documents/Github/WingedSpider/template-older.txt", "rt" );
     FILE *fout = fopen( "/Users/Bill/Documents/Github/WingedSpider/output/Archives/Results/Results.html", "wt" );
@@ -121,12 +121,7 @@ int main( int argc, char *argv[] )
         return -1;
     }
 #endif
-#if 0 //def BUILD_OLDER
-    void template_older( FILE *fin1, FILE *fin2, FILE *fout );
-    template_older( fin1, fin2, fout );
-#else
     templat(fin1,fin2,fout);
-#endif
     fclose(fout);
     fclose(fin2);
     fclose(fin1);
@@ -366,14 +361,14 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
         rtrim( picture.caption );
         pictures.push_back(picture);
     }
-    for( int i=0; i<pictures.size(); i++ )
+/* for( unsigned int i=0; i<pictures.size(); i++ )
     {
         printf( "Picture %d filename is [%s], alt is [%s]\n", i, pictures[i].filename.c_str(),  pictures[i].alt_text.c_str() );
         printf( "Caption is [%s]\n", pictures[i].caption.c_str() );
     }
     printf( "Header is %s", header.c_str() );
     printf( "Footer is %s", footer.c_str() );
-    printf( "Last caption is [%s]", picture.caption.c_str() );
+    printf( "Last caption is [%s]", picture.caption.c_str() ); */
 
     // Write out the the html
     std::string h = macro_substitution( header, macros, menu );

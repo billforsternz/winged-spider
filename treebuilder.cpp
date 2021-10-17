@@ -10,7 +10,7 @@
 #include <map>
 #include <algorithm>
 namespace fs = std::experimental::filesystem;
-#include "..\util.h"
+#include "util.h"
 
 
 #ifdef _WIN64
@@ -22,6 +22,9 @@ namespace fs = std::experimental::filesystem;
 #ifndef PATH_SEPARATOR
 #define PATH_SEPARATOR '/'
 #endif
+
+#define BASE     "base"
+#define BASE_LEN 4
 
 // The plan.txt file defines the structure of the content. Each line corresponds to
 //  a page of content, or a ptr to a page of content. The plan is created automatically
@@ -35,6 +38,8 @@ struct Page
     int  plan_line_nbr=0;
     std::string path;   // the full path name, eg "path/to/file.txt"
     std::string name;   // if it's a file, this is the name of the file eg "file.txt"
+    std::string base;   // if it's a file, this is the name without the extension eg "file"
+    std::string ext;    // if it's a file, this is the name of the ext eg "txt"
     std::string dir;    // if it's a file, this is the name of the dir eg "path/to"
 
     // Features to be added later to support more user annotation for files
@@ -44,6 +49,40 @@ struct Page
     std::vector<std::string> suffix;
     std::vector<std::string> link;    // if this is actually a ptr to another page
 };
+
+void construct_page_group( std::vector<Page*> ptrs )
+{
+    if( ptrs.size() == 0 )
+        return;
+    std::vector<std::string> menu;
+    Page *p = ptrs[0];
+    size_t offset1=0, offset2;
+    while( offset1 < p->dir.length() )
+    {
+        offset2 = p->dir.find( PATH_SEPARATOR, offset1 );
+        if( offset2 == std::string::npos )
+        {
+            std::string s = p->dir.substr(offset1);
+            menu.push_back(s);
+            break;
+        }
+        else
+        {
+            std::string s = p->dir.substr(offset1,offset2-offset1);
+            menu.push_back(s);
+            offset1 = offset2+1;
+        }
+    }
+    for( Page *p: ptrs )
+    {
+        menu.push_back(p->base);
+    }
+    printf("\nMenu>");
+    for(std::string s:menu)
+    {
+        printf(" %s",s.c_str());
+    }
+}
 
 // Predicate for sorting when we are comparing the plan file and the actual directory
 //  structure
@@ -77,6 +116,14 @@ void parse( Page &p )
         p.dir  = p.path.substr(0,offset);
         p.name = p.path.substr(offset+1);
     }
+    offset = p.name.find_last_of( '.' );
+    if( offset == std::string::npos )
+        p.base = p.name;
+    else
+    {
+        p.base = p.name.substr(0,offset);
+        p.ext = p.name.substr(offset+1);
+    }
 }
 
 void read_file( const char *plan_file, std::vector<Page> &results )
@@ -95,7 +142,7 @@ void read_file( const char *plan_file, std::vector<Page> &results )
             break;
         line_nbr++;
         util::rtrim(line);
-        if( line.length() > 0 && line[0]>=' ' ) 
+        if( line.length() > 0 && line[0]>=' ' )
         {
             Page p;
             p.path = line;
@@ -128,12 +175,12 @@ void write_file( const char *plan_file, const std::vector<Page> &results )
     }
 }
 
-int main()
+void treebuilder()
 {
     std::vector<Page> results;
     const char *plan_file = "plan.txt";
     read_file( plan_file, results );
-    recurse("../base",results);
+    recurse("base",results);
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
     bool expecting_page_from_plan = true;
     bool rewrite = false;
@@ -182,8 +229,26 @@ int main()
             }
         }
     }
+    int idx=0;
+    std::vector<Page*> ptrs;
+    std::string group;
+    for( Page &p: results )
+    {
+        if(!p.from_plan_file && !p.is_dir)
+        {
+            if( p.dir == group )
+                ptrs.push_back(&p);
+            else
+            {
+                construct_page_group(ptrs);
+                group = p.dir;
+                ptrs.clear();
+                ptrs.push_back(&p);
+            }
+        }
+    }
+    construct_page_group(ptrs);
 //  write_file( plan_file, results );
-    return 0;
 }
 
 void recurse( const std::string &path, std::vector<Page> &results )
@@ -196,8 +261,8 @@ void recurse( const std::string &path, std::vector<Page> &results )
         p.level = level;
         std::string s( entry.path().string() );
         std::string t;
-        if( s.length() >= 8 )
-            t = s.substr(8);
+        if( s.length() >= (BASE_LEN+1) )
+            t = s.substr((BASE_LEN+1));
         p.path = t;
         parse(p);
         p.is_dir = is_directory(entry);

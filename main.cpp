@@ -30,7 +30,7 @@
   normal markdown syntax;
 
   eg the following lines
-  
+
   >
   ## Headline
 
@@ -40,7 +40,7 @@
   Are interpreted as a @snippet
 
   and these
-  
+
   >
   ## Headline
 
@@ -71,22 +71,24 @@
 #define BUILD_RESULTS
 
 void templat( FILE *fin1, FILE *fin2, FILE *fout );
-std::string macro_substitution( const std::string &input, 
+std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,
     const std::vector<std::string> &menu );
+void treebuilder();
 
 int main( int argc, char *argv[] )
 {
+    treebuilder();
 #ifdef _DEBUG     // input\fresh-index.txt input\template-main.txt \users\bill\documents\newzealandchess.co.nz\index.html
 #ifdef BUILD_HOME
-    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/WingedSpider/base/Home.md", "rt" );
-    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/WingedSpider/template-main.txt", "rt" );
-    FILE *fout = fopen( "/Users/Bill/Documents/Github/WingedSpider/output/index.html", "wt" );
+    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/winged-spider/base/Home.md", "rt" );
+    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-main.txt", "rt" );
+    FILE *fout = fopen( "/Users/Bill/Documents/Github/winged-spider/output/index.html", "wt" );
 #endif
 #ifdef BUILD_RESULTS
-    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/WingedSpider/base/Archives/Results/Results.md", "rt" );
-    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/WingedSpider/template-older.txt", "rt" );
-    FILE *fout = fopen( "/Users/Bill/Documents/Github/WingedSpider/output/Archives/Results/Results.html", "wt" );
+    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md", "rt" );
+    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-older.txt", "rt" );
+    FILE *fout = fopen( "/Users/Bill/Documents/Github/winged-spider/output/Archives/Results/Results.html", "wt" );
 #endif
     if( !fin1 || !fin2 || !fout )
     {
@@ -130,11 +132,11 @@ int main( int argc, char *argv[] )
 
 void rtrim( std::string &s )
 {
-	size_t final_char_offset = s.find_last_not_of(" \n\r\t");
-	if( final_char_offset == std::string::npos )
+    size_t final_char_offset = s.find_last_not_of(" \n\r\t");
+    if( final_char_offset == std::string::npos )
         s.clear();
     else
-		s.erase(final_char_offset+1);
+        s.erase(final_char_offset+1);
 }
 
 struct PICTURE
@@ -384,9 +386,9 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
     }
 
     // Loop through the pictures
-    int len = pictures.size();
+    size_t len = pictures.size();
     bool in_grid=false;
-    for( int i=0; i<len; i++ )
+    for( size_t i=0; i<len; i++ )
     {
         PICTURE *p = &pictures[i];
         PICTURE *q = NULL;
@@ -414,7 +416,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
             int grid_count = 1;
 
             // Look ahead to see if we have two or three @grid pictures in a row
-            for( int j=i+1; j<len; j++  )
+            for( size_t j=i+1; j<len; j++  )
             {
                 if( pictures[j].typ == "@grid" )
                     grid_count++;
@@ -423,12 +425,12 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
             }
             switch( grid_count )
             {
-                case 1: 
+                case 1:
                 {
                     s = in_grid? single : grid_1of1;
                     break;
                 }
-                case 2: 
+                case 2:
                 {
                     s = in_grid? pair : grid_1of2;
                     i++;
@@ -459,11 +461,11 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
         int alt_text_idx = 0;
         int caption_idx  = 0;
         int heading_idx  = 0;
-	    size_t next = 0;
-	    while( macro_substitution_required )
-	    {
-		    size_t offset = s.find('@',next);
-		    if( offset == std::string::npos )
+        size_t next = 0;
+        while( macro_substitution_required )
+        {
+            size_t offset = s.find('@',next);
+            if( offset == std::string::npos )
                 break;
             if( offset+1 >= s.length() )
                 break;
@@ -476,7 +478,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
                     printf( "Unexpected @ in template text: \n[\n%s\n]\n", q==NULL? single.c_str() : pair.c_str() );
                     do_replace = false;
                     next = offset+2;
-		            break;
+                    break;
                 }
                 case 'F':
                 {
@@ -488,7 +490,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
                         filename_idx--;
                     if( filename_idx > 2 )
                         filename_idx = 2;
-		            break;
+                    break;
                 }
                 case 'A':
                 {
@@ -500,7 +502,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
                         alt_text_idx--;
                     if( alt_text_idx > 2 )
                         alt_text_idx = 2;
-		            break;
+                    break;
                 }
                 case 'H':
                 {
@@ -512,7 +514,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
                         heading_idx--;
                     if( heading_idx > 2 )
                         heading_idx = 2;
-		            break;
+                    break;
                 }
                 case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
                 case 'C':
@@ -525,7 +527,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
                         caption_idx--;
                     if( caption_idx > 2 )
                         caption_idx = 2;
-		            break;
+                    break;
                 }
             }
             if( do_replace )
@@ -536,14 +538,14 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
                     s.substr(offset+2);
                 s = temp;
             }
-	    }
+        }
         fprintf( fout, "%s", s.c_str() );
     }
     std::string f = macro_substitution( footer, macros, menu );
     fprintf( fout, "%s", f.c_str() );
 }
 
-std::string macro_substitution( const std::string &input, 
+std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,
     const std::vector<std::string> &menu )
 {
@@ -552,7 +554,7 @@ std::string macro_substitution( const std::string &input,
     bool menu_mode = false;
     int line_count=0;
     std::string normal;
-    std::string highlighted; 
+    std::string highlighted;
     for( size_t i=0; i<len; i++ )
     {
         char c =  input[i];

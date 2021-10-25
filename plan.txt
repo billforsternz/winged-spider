@@ -1,12 +1,14 @@
 Home.md
 Calendar.md
 Results.md
-Notices.md
-Chess Clubs.html
-Ratings.md
 Resources.md
-mk.bat
-Archives\Archives.html
+Ratings.md
+Notices.md
+History\
+Interschools\
+NZ Chess Online\
+Archives\
+Chess Clubs.html
 History\Correspondence Chess.md
 History\Historical FIDE Ratings.md
 History\History.md
@@ -16,31 +18,35 @@ History\Representative Honours.md
 History\Sound Archives.md
 History\The Peter Stuart NZ Games Database.md
 History\Trophies.md
-Interschools\2017 Results.html
-Interschools\2017 Calendar not here.html
-Interschools\2018 Calendar.html
-Interschools\2018 Results.html
-Interschools\2019 Calendar.html
-Interschools\2019 Results.html
-Interschools\2020 Calendar.html
-Interschools\2020 Results.html
+Interschools\Interschools.html
 Interschools\2021 Calendar.html
 Interschools\2021 Results.html
-Interschools\interschools.html
+Interschools\2020 Calendar.html
+Interschools\2020 Results.html
+Interschools\2019 Calendar.html
+Interschools\2019 Results.html
+Interschools\2018 Calendar.html
+Interschools\2018 Results.html
+Interschools\2017 Calendar not here.html
+Interschools\2017 Results.html
 NZ Chess Online\NZ Chess Online.md
 NZ Chess Online\Online Interclub.md
 NZ Chess Online\Running Chess Clubs Online.md
-Archives\Home Page\2018.md
-Archives\Home Page\2019.md
+Archives\Archives.html
+Archives\Home Page\
+Archives\Results\
+Archives\Tournaments\
 Archives\Home Page\Home Page.html
-Archives\Results\2016.html
-Archives\Results\2017.html
-Archives\Results\2018.html
+Archives\Home Page\2019.md
+Archives\Home Page\2018.md
 Archives\Results\Results.md
-Archives\Tournaments\2016.md
-Archives\Tournaments\2017.md
-Archives\Tournaments\2018.md
-Archives\Tournaments\2019.md
-Archives\Tournaments\2020.md
-Archives\Tournaments\2021.md
+Archives\Results\2018.html
+Archives\Results\2017.html
+Archives\Results\2016.html
 Archives\Tournaments\Tournaments.md
+Archives\Tournaments\2021.md
+Archives\Tournaments\2020.md
+Archives\Tournaments\2019.md
+Archives\Tournaments\2018.md
+Archives\Tournaments\2017.md
+Archives\Tournaments\2016.md

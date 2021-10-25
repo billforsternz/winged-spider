@@ -142,18 +142,25 @@ void read_file( const char *plan_file, std::vector<Page> &results )
             break;
         line_nbr++;
         util::rtrim(line);
-        if( line.length() > 0 && line[0]>=' ' )
+        size_t len = line.length();
+        if( len > 0 && line[0]>=' ' )
         {
             Page p;
-            p.path = line;
-            p.plan_line_nbr = line_nbr;
-            p.from_plan_file = true;
             int level = 1;
             for( char c: line )
             {
                 if( c == PATH_SEPARATOR )
                     level++;
             }
+            if( line[len-1] == PATH_SEPARATOR )
+            {
+                p.is_dir = true;
+                line = line.substr(0,len-1);
+                level--;
+            }
+            p.path = line;
+            p.plan_line_nbr = line_nbr;
+            p.from_plan_file = true;
             p.level = level;
             parse(p);
             results.push_back( p );
@@ -180,6 +187,10 @@ void treebuilder()
     std::vector<Page> results;
     const char *plan_file = "plan.txt";
     read_file( plan_file, results );
+
+    // Syncing the directory structure to the plan needs some work. My simple sorting approach won't cut it;
+    // It requires a map of the lines in the plan I think. Return to this later
+    #if 0
     recurse("base",results);
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
     bool expecting_page_from_plan = true;
@@ -229,12 +240,14 @@ void treebuilder()
             }
         }
     }
+    #endif
+
     int idx=0;
     std::vector<Page*> ptrs;
     std::string group;
     for( Page &p: results )
     {
-        if(!p.from_plan_file && !p.is_dir)
+        if( p.from_plan_file )
         {
             if( p.dir == group )
                 ptrs.push_back(&p);
@@ -273,3 +286,4 @@ void recurse( const std::string &path, std::vector<Page> &results )
     }
     level--;
 }
+

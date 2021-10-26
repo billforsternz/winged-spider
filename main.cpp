@@ -58,17 +58,23 @@
 */
 
 #define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <filesystem>
+namespace fs = std::experimental::filesystem;
 #include "util.h"
+#include "page.h"
+#include "misc.h"
 
 // While we are getting this up to speed with some basic reconstruction of some existing functionality
 //  in this new context define one of these or the other
 //#define BUILD_HOME
-#define BUILD_RESULTS
+//#define BUILD_RESULTS
 
 void templat( FILE *fin1, FILE *fin2, FILE *fout );
 std::string macro_substitution( const std::string &input,
@@ -78,55 +84,31 @@ void treebuilder();
 
 int main( int argc, char *argv[] )
 {
-    treebuilder();
-#ifdef _DEBUG     // input\fresh-index.txt input\template-main.txt \users\bill\documents\newzealandchess.co.nz\index.html
 #ifdef BUILD_HOME
+    #define DEBUG_JUST_ONE_FILE
     FILE *fin1 = fopen( "/Users/Bill/Documents/Github/winged-spider/base/Home.md", "rt" );
     FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-main.txt", "rt" );
     FILE *fout = fopen( "/Users/Bill/Documents/Github/winged-spider/output/index.html", "wt" );
 #endif
 #ifdef BUILD_RESULTS
+#define DEBUG_JUST_ONE_FILE
     FILE *fin1 = fopen( "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md", "rt" );
     FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-older.txt", "rt" );
     FILE *fout = fopen( "/Users/Bill/Documents/Github/winged-spider/output/Archives/Results/Results.html", "wt" );
 #endif
+#ifdef DEBUG_JUST_ONE_FILE
     if( !fin1 || !fin2 || !fout )
     {
         printf( "File problem during debugging\n" );
         return -1;
     }
-#else
-    if( argc != 4 )
-    {
-        printf( "Generate html from custom template plus formatted input\nUsage: template input.txt template.txt output.html\n" );
-        return -1;
-    }
-    FILE *fin1 = fopen( argv[1], "rt" );
-    if( !fin1 )
-    {
-        printf( "File not found: %s\n", argv[1] );
-        return -1;
-    }
-    FILE *fin2 = fopen( argv[2], "rt" );
-    if( !fin2 )
-    {
-        fclose(fin1);
-        printf( "File not found: %s\n", argv[2] );
-        return -1;
-    }
-    FILE *fout = fopen( argv[3], "wt" );
-    if( !fout )
-    {
-        fclose(fin2);
-        fclose(fin1);
-        printf( "Cannot open file: %s\n", argv[3] );
-        return -1;
-    }
-#endif
     templat(fin1,fin2,fout);
     fclose(fout);
     fclose(fin2);
     fclose(fin1);
+#else
+    treebuilder();
+#endif
     return 0;
 }
 
@@ -148,7 +130,7 @@ struct PICTURE
     std::string caption;
 };
 
-void templat( FILE *fin1, FILE *fin2, FILE *fout )
+void templat( FILE *fin1, FILE *fin2, FILE *fout, const std::vector<std::string> &menu )
 {
     std::string header;
     std::string footer;
@@ -270,7 +252,6 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
 
     // Read macros from the input file
     std::map<char,std::string> macros;
-    std::vector<std::string> menu;
     ret = fgets( buf, sizeof(buf)-2, fin1 );
     bool have_line=false;
     while( ret != NULL )
@@ -281,10 +262,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout )
         if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
             break;
         std::string macro = s.substr(3);
-        if( s[1] == 'M' )
-            menu.push_back(macro);
-        else
-            macros[s[1]] = macro;
+        macros[s[1]] = macro;
         fgets( buf, sizeof(buf)-2, fin1 );
     }
 
@@ -638,4 +616,76 @@ std::string macro_substitution( const std::string &input,
         }
     }
     return out;
+}
+
+
+static std::set<std::string> directories;
+
+bool markdown_gen( Page *p, const std::vector<std::string> &menu )
+{
+    std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
+    std::string out_dir = (p->dir.length()==0 ? std::string(BASE_OUT) : std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->dir);
+    std::string out = out_dir + PATH_SEPARATOR + p->base + ".html";
+    auto it = directories.find(out_dir);
+    bool found = (it!=directories.end());
+    if( !found )
+    {
+        directories.insert(out_dir);
+        if (!fs::exists(out_dir))
+        {
+            fs::create_directories(out_dir);
+        }
+    }
+
+    FILE *fin1 = fopen( in.c_str(), "rt" );
+    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-main.txt", "rt" );
+    FILE *fout = fopen( out.c_str(), "wt" );
+    if( !fin1 || !fin2 || !fout )
+    {
+        printf( "File problem during debugging\n" );
+        return false;
+    }
+    templat(fin1,fin2,fout,menu);
+    fclose(fout);
+    fclose(fin2);
+    fclose(fin1);
+    return true;
+}
+
+// Just copy the file - later check to see whether we need to copy it
+bool html_gen( Page *p, const std::vector<std::string> &menu )
+{
+    std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
+    std::string out_dir = (p->dir.length()==0 ? std::string(BASE_OUT) : std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->dir);
+    std::string out = out_dir + PATH_SEPARATOR + p->base + ".html";
+    auto it = directories.find(out_dir);
+    bool found = it!=directories.end();
+    if( !found )
+    {
+        directories.insert(out_dir);
+        if (!fs::exists(out_dir))
+        {
+            fs::create_directories(out_dir);
+        }
+    }
+    std::ifstream fin( in.c_str() );
+    if( !fin )
+    {
+        printf( "Could not open file %s for reading\n", in.c_str() );
+        return false;
+    }
+    std::ofstream fout( out.c_str() );
+    if( !fout )
+    {
+        printf( "Could not open file %s for writing\n", out.c_str() );
+        return false;
+    }
+    for(;;)
+    {
+        std::string line;
+        if( !std::getline(fin,line) )
+            break;
+        util::putline(fout,line);
+    }
+    return true;
 }

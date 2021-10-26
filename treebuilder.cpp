@@ -2,85 +2,104 @@
 //
 
 #include <stdio.h>
-#include <filesystem>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <filesystem>
 namespace fs = std::experimental::filesystem;
 #include "util.h"
+#include "page.h"
+#include "misc.h"
 
+static std::map<std::string,std::string> directory_to_target;
 
-#ifdef _WIN64
-#define PATH_SEPARATOR '\\'
-#endif
-#ifdef _WIN32
-#define PATH_SEPARATOR '\\'
-#endif
-#ifndef PATH_SEPARATOR
-#define PATH_SEPARATOR '/'
-#endif
-
-#define BASE     "base"
-#define BASE_LEN 4
-
-// The plan.txt file defines the structure of the content. Each line corresponds to
-//  a page of content, or a ptr to a page of content. The plan is created automatically
-//  from the input directory structure. The plan from each run is saved as plan.txt
-//  and it can be edited, for example to reorder pages
-struct Page
+// Return true if more iterations needed to find this target
+bool construct_target( std::vector<Page*> ptrs )
 {
-    int level=0;
-    bool is_dir=false;
-    bool from_plan_file=false;
-    int  plan_line_nbr=0;
-    std::string path;   // the full path name, eg "path/to/file.txt"
-    std::string name;   // if it's a file, this is the name of the file eg "file.txt"
-    std::string base;   // if it's a file, this is the name without the extension eg "file"
-    std::string ext;    // if it's a file, this is the name of the ext eg "txt"
-    std::string dir;    // if it's a file, this is the name of the dir eg "path/to"
+    if( ptrs.size() == 0 )
+        return false;
 
-    // Features to be added later to support more user annotation for files
-    bool empty_line_prefix = false;
-    bool empty_line_suffix = false;
-    std::vector<std::string> prefix;
-    std::vector<std::string> suffix;
-    std::vector<std::string> link;    // if this is actually a ptr to another page
-};
+    // First page in each directory is menu target for that directory
+    Page *p = ptrs[0];
+
+    // Stop if the target for this directory is already established
+    auto it = directory_to_target.find(p->dir);
+    bool found = (it == directory_to_target.end());
+    if( found )
+        return false;
+
+    // Typically target is a leaf html page 
+    std::string target = p->path_target;
+    found = true;
+    if(p->is_dir) // but if it's a directory, look to forward to the
+                  //  target for that directory
+    {
+        auto it = directory_to_target.find(p->path);
+        found = (it == directory_to_target.end());
+        if( found )
+            target = it->second;
+    }
+    if( found )
+        directory_to_target[p->dir] = target;
+    return !found;
+}
 
 void construct_page_group( std::vector<Page*> ptrs )
 {
     if( ptrs.size() == 0 )
         return;
+
+    // Calculate the menu to present for each page in the group
     std::vector<std::string> menu;
+    std::string build_path;
     Page *p = ptrs[0];
     size_t offset1=0, offset2;
+    if( p->dir.length() > 0 )
+    {
+        std::string menu_txt = "/" + directory_to_target[""] + " Home" ;
+        menu.push_back( menu_txt );
+    }
     while( offset1 < p->dir.length() )
     {
         offset2 = p->dir.find( PATH_SEPARATOR, offset1 );
         if( offset2 == std::string::npos )
-        {
-            std::string s = p->dir.substr(offset1);
-            menu.push_back(s);
             break;
-        }
-        else
-        {
-            std::string s = p->dir.substr(offset1,offset2-offset1);
-            menu.push_back(s);
-            offset1 = offset2+1;
-        }
+        std::string subdir = p->dir.substr( 0, offset2 );              // eg "Archives\Tournaments"
+        std::string name   = p->dir.substr(offset1,offset2-offset1);   // eg "Tournaments
+        std::string menu_txt =  "/" + directory_to_target[subdir] + " " + name;
+        menu.push_back( menu_txt );
+        offset1 = offset2+1;
     }
     for( Page *p: ptrs )
     {
-        menu.push_back(p->base);
+        std::string menu_txt;
+        if( p->is_dir )
+            menu_txt =  "/" + directory_to_target[p->dir] + " " + p->base;
+        else
+            menu_txt = "/" + p->path_target + " " + p->base;
+        menu.push_back( menu_txt );
     }
-    printf("\nMenu>");
+    printf("\nMenu>\n");
     for(std::string s:menu)
     {
-        printf(" %s",s.c_str());
+        printf(" %s\n",s.c_str());
+    }
+
+    // Build each page in turn
+    //  (force build for now)
+    for( Page *p: ptrs )
+    {
+        if( "md" == p->ext )
+        {
+            markdown_gen( p, menu );
+        }
+        else if( "html" == p->ext )
+        {
+            html_gen( p, menu );
+        }
     }
 }
 
@@ -101,8 +120,6 @@ bool less_than_sync_plan_to_directory_structure( const Page &lhs,  const Page &r
     return false;
 }
 
-void recurse( const std::string &path, std::vector<Page> &results );
-
 void parse( Page &p )
 {
     size_t offset = p.path.find_last_of( PATH_SEPARATOR );
@@ -122,7 +139,11 @@ void parse( Page &p )
     else
     {
         p.base = p.name.substr(0,offset);
-        p.ext = p.name.substr(offset+1);
+        p.ext  = util::tolower(p.name.substr(offset+1));
+    }
+    if( !p.is_dir )
+    {
+        p.path_target = p.dir + PATH_SEPARATOR_STR + p.name + ".html";
     }
 }
 
@@ -191,7 +212,7 @@ void treebuilder()
     // Syncing the directory structure to the plan needs some work. My simple sorting approach won't cut it;
     // It requires a map of the lines in the plan I think. Return to this later
     #if 0
-    recurse("base",results);
+    recurse(BASE_IN,results);
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
     bool expecting_page_from_plan = true;
     bool rewrite = false;
@@ -242,7 +263,51 @@ void treebuilder()
     }
     #endif
 
-    int idx=0;
+    // Initial scan of each page, identifying targets for each directory
+    bool keep_going = true;
+    for( int i=0; keep_going && i<1000; i++ )
+    {
+        bool final = (i+1 >= 1000);
+        keep_going = false;   // stop once all targets constructed
+        std::vector<Page*> ptrs;
+        std::string group;
+        for( Page &p: results )
+        {
+            if( p.from_plan_file )
+            {
+                if( p.dir == group )
+                    ptrs.push_back(&p);
+                else
+                {
+                    if( construct_target(ptrs) )
+                    {
+                        keep_going = true;
+                        if( final )
+                        {
+                            printf( "Fatal: At least one unresolved directory with no target html file\n"
+                                    "Directory is %s\n", ptrs[0]->dir.c_str() );
+                            return;
+                        }
+                    }
+                    group = p.dir;
+                    ptrs.clear();
+                    ptrs.push_back(&p);
+                }
+            }
+        }
+        if( construct_target(ptrs) )
+        {
+            keep_going = true;
+            if( final )
+            {
+                printf( "Fatal: At least one unresolved directory with no target html file\n"
+                    "Directory is %s\n", ptrs[0]->dir.c_str() );
+                return;
+            }
+        }
+    }
+
+    // Second scan of each page, building pages
     std::vector<Page*> ptrs;
     std::string group;
     for( Page &p: results )
@@ -261,21 +326,22 @@ void treebuilder()
         }
     }
     construct_page_group(ptrs);
-//  write_file( plan_file, results );
+    //  write_file( plan_file, results );
 }
 
 void recurse( const std::string &path, std::vector<Page> &results )
 {
     static int level;
     level++;
+    size_t base_in_len = strlen(BASE_IN);
     for( const auto & entry : fs::directory_iterator(path) )
     {
         Page p;
         p.level = level;
         std::string s( entry.path().string() );
         std::string t;
-        if( s.length() >= (BASE_LEN+1) )
-            t = s.substr((BASE_LEN+1));
+        if( s.length() >= (base_in_len+1) )
+            t = s.substr((base_in_len+1));
         p.path = t;
         parse(p);
         p.is_dir = is_directory(entry);

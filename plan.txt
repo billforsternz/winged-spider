@@ -9,9 +9,9 @@ Interschools\
 NZ Chess Online\
 Archives\
 Chess Clubs.html
+History\History.md
 History\Correspondence Chess.md
 History\Historical FIDE Ratings.md
-History\History.md
 History\Listener Columns.md
 History\National Championship Winners.md
 History\Representative Honours.md

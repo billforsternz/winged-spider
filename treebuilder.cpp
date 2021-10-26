@@ -16,6 +16,14 @@ namespace fs = std::experimental::filesystem;
 
 static std::map<std::string,std::string> directory_to_target;
 
+// Each directory comprises a group of pages
+// If directory is selected from a parent menu, it needs to resolve
+//  to a target. The target is the first page in the directory if
+//  that page is a leaf (a html file). If instead it's a ptr to
+//  another directory, we need to go to that directory to find the
+//  target. This can repeat of course, so we iterate until all the
+//  targets are locked down
+//
 // Return true if more iterations needed to find this target
 bool construct_target( std::vector<Page*> ptrs )
 {
@@ -27,24 +35,24 @@ bool construct_target( std::vector<Page*> ptrs )
 
     // Stop if the target for this directory is already established
     auto it = directory_to_target.find(p->dir);
-    bool found = (it == directory_to_target.end());
+    bool found = (it != directory_to_target.end());
     if( found )
         return false;
 
     // Typically target is a leaf html page 
-    std::string target = p->path_target;
+    std::string target = p->target;
     found = true;
-    if(p->is_dir) // but if it's a directory, look to forward to the
-                  //  target for that directory
+    if( p->is_dir )  // but if it's a directory, look to forward to the
+                     //  target for that directory
     {
         auto it = directory_to_target.find(p->path);
-        found = (it == directory_to_target.end());
+        found = (it != directory_to_target.end());
         if( found )
             target = it->second;
     }
     if( found )
         directory_to_target[p->dir] = target;
-    return !found;
+    return !found;   // return true if more work to do
 }
 
 void construct_page_group( std::vector<Page*> ptrs )
@@ -56,20 +64,24 @@ void construct_page_group( std::vector<Page*> ptrs )
     std::vector<std::string> menu;
     std::string build_path;
     Page *p = ptrs[0];
-    size_t offset1=0, offset2;
+
+    // If not at root, start with "Home" link to start of root directory
     if( p->dir.length() > 0 )
     {
-        std::string menu_txt = "/" + directory_to_target[""] + " Home" ;
+        std::string menu_txt = directory_to_target[""] + " Home" ;
         menu.push_back( menu_txt );
     }
+
+    // Each level of subdirectory gets a menu item, eg "Archives\Tournaments
+    size_t offset1=0, offset2;
     while( offset1 < p->dir.length() )
     {
         offset2 = p->dir.find( PATH_SEPARATOR, offset1 );
         if( offset2 == std::string::npos )
             break;
-        std::string subdir = p->dir.substr( 0, offset2 );              // eg "Archives\Tournaments"
-        std::string name   = p->dir.substr(offset1,offset2-offset1);   // eg "Tournaments
-        std::string menu_txt =  "/" + directory_to_target[subdir] + " " + name;
+        std::string subdir = p->dir.substr( 0, offset2 );              // eg "Archives", then "Archives\Tournaments"
+        std::string name   = p->dir.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
+        std::string menu_txt =  directory_to_target[subdir] + " " + name;
         menu.push_back( menu_txt );
         offset1 = offset2+1;
     }
@@ -77,9 +89,9 @@ void construct_page_group( std::vector<Page*> ptrs )
     {
         std::string menu_txt;
         if( p->is_dir )
-            menu_txt =  "/" + directory_to_target[p->dir] + " " + p->base;
+            menu_txt = directory_to_target[p->path] + " " + p->base;
         else
-            menu_txt = "/" + p->path_target + " " + p->base;
+            menu_txt = p->target + " " + p->base;
         menu.push_back( menu_txt );
     }
     printf("\nMenu>\n");
@@ -143,7 +155,17 @@ void parse( Page &p )
     }
     if( !p.is_dir )
     {
-        p.path_target = p.dir + PATH_SEPARATOR_STR + p.name + ".html";
+        if( p.dir.length() == 0 )
+            p.target = PATH_SEPARATOR_STR + p.base + ".html";
+        else
+            p.target = PATH_SEPARATOR_STR + p.dir + PATH_SEPARATOR_STR + p.base + ".html";
+        #if PATH_SEPARATOR == '\\'
+        for( char &c: p.target )
+        {
+            if( c == PATH_SEPARATOR )
+                c = '/';
+        }
+        #endif
     }
 }
 

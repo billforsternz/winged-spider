@@ -22,7 +22,7 @@ struct Page
     int  plan_line_nbr=0;
     std::string path;       // the full path name, eg "path/to/file.txt"
     std::string target;     // the full unix path name to the final html file, eg "/path/to/file.html"
-    std::string name;       // if it's a file, this is the name of the file eg "file.txt"
+    std::string filename;   // if it's a file, this is the name of the file eg "file.txt"
     std::string base;       // if it's a file, this is the name without the extension eg "file"
     std::string ext;        // if it's a file, this is the name of the ext eg "txt" (lowercased)
     std::string dir;        // if it's a file, this is the name of the dir eg "path/to"

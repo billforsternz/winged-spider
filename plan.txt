@@ -18,7 +18,7 @@ History\Representative Honours.md
 History\Sound Archives.md
 History\The Peter Stuart NZ Games Database.md
 History\Trophies.md
-Interschools\Interschools.html
+Interschools\Interschools.md
 Interschools\2021 Calendar.html
 Interschools\2021 Results.html
 Interschools\2020 Calendar.html

@@ -605,19 +605,7 @@ static std::set<std::string> directories;
 bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu )
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
-    std::string out_dir = (p->dir.length()==0 ? std::string(BASE_OUT) : std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->dir);
-    std::string out = out_dir + PATH_SEPARATOR + p->base + ".html";
-    auto it = directories.find(out_dir);
-    bool found = (it!=directories.end());
-    if( !found )
-    {
-        directories.insert(out_dir);
-        if (!fs::exists(out_dir))
-        {
-            fs::create_directories(out_dir);
-        }
-    }
-
+    std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     FILE *fin1 = fopen( in.c_str(), "rt" );
     FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-main.txt", "rt" );
     FILE *fout = fopen( out.c_str(), "wt" );
@@ -637,18 +625,7 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
 bool html_gen( Page *p )
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
-    std::string out_dir = (p->dir.length()==0 ? std::string(BASE_OUT) : std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->dir);
-    std::string out = out_dir + PATH_SEPARATOR + p->base + ".html";
-    auto it = directories.find(out_dir);
-    bool found = it!=directories.end();
-    if( !found )
-    {
-        directories.insert(out_dir);
-        if (!fs::exists(out_dir))
-        {
-            fs::create_directories(out_dir);
-        }
-    }
+    std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     std::ifstream fin( in.c_str() );
     if( !fin )
     {

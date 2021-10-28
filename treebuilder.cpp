@@ -72,7 +72,7 @@ void construct_page_group( std::vector<Page*> ptrs )
         menu.push_back( menu_item );
     }
 
-    // Each level of subdirectory gets a menu item, eg "Archives\Tournaments
+    // Each level of subdirectory gets a menu item, eg "Archives\Tournaments" gets "Archives", then "Tournaments"
     size_t offset1=0, offset2;
     while( offset1 < p->dir.length() )
     {
@@ -109,6 +109,8 @@ void construct_page_group( std::vector<Page*> ptrs )
     //  (force build for now)
     for( Page *p: ptrs )
     {
+        //if( p->filename == "interschools" )
+        //    printf("Debug break\n");
         if( "md" == p->ext )
         {
             markdown_gen( p, menu );
@@ -128,8 +130,8 @@ bool less_than_sync_plan_to_directory_structure( const Page &lhs,  const Page &r
         return lhs.level < rhs.level;
     else if( lhs.dir != rhs.dir )
         return lhs.dir < rhs.dir;
-    else if( lhs.name != rhs.name )
-        return lhs.name < rhs.name;
+    else if( lhs.filename != rhs.filename )
+        return lhs.filename < rhs.filename;
     else if( lhs.from_plan_file != rhs.from_plan_file )
         return lhs.from_plan_file;
     else if( lhs.plan_line_nbr != rhs.plan_line_nbr )
@@ -143,34 +145,34 @@ void parse( Page &p )
     if( offset == std::string::npos )
     {
         p.dir  = "";
-        p.name = p.path;
+        p.filename = p.path;
     }
     else
     {
         p.dir  = p.path.substr(0,offset);
-        p.name = p.path.substr(offset+1);
+        p.filename = p.path.substr(offset+1);
     }
-    offset = p.name.find_last_of( '.' );
+    offset = p.filename.find_last_of( '.' );
     if( offset == std::string::npos )
-        p.base = p.name;
+        p.base = p.filename;
     else
     {
-        p.base = p.name.substr(0,offset);
-        p.ext  = util::tolower(p.name.substr(offset+1));
+        p.base = p.filename.substr(0,offset);
+        p.ext  = util::tolower(p.filename.substr(offset+1));
     }
     if( !p.is_dir )
     {
         if( p.dir.length() == 0 )
-            p.target = PATH_SEPARATOR_STR + p.base + ".html";
+            p.target = p.base + ".html";
         else
-            p.target = PATH_SEPARATOR_STR + p.dir + PATH_SEPARATOR_STR + p.base + ".html";
-        #if PATH_SEPARATOR == '\\'
+            p.target = p.dir + '-' + p.base + ".html";
         for( char &c: p.target )
         {
-            if( c == PATH_SEPARATOR )
-                c = '/';
+            if( isascii(c) && isupper(c) )
+                c = tolower(c);
+            else if( c==' ' || c==PATH_SEPARATOR )
+                c = '-';
         }
-        #endif
     }
 }
 

@@ -79,7 +79,7 @@ namespace fs = std::experimental::filesystem;
 void templat( FILE *fin1, FILE *fin2, FILE *fout );
 std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,
-    const std::vector<std::string> &menu );
+    const std::vector<std::pair<std::string,std::string>> &menu );
 void treebuilder();
 
 int main( int argc, char *argv[] )
@@ -130,7 +130,7 @@ struct PICTURE
     std::string caption;
 };
 
-void templat( FILE *fin1, FILE *fin2, FILE *fout, const std::vector<std::string> &menu )
+void templat( FILE *fin1, FILE *fin2, FILE *fout,  const std::vector<std::pair<std::string,std::string>> &menu )
 {
     std::string header;
     std::string footer;
@@ -525,7 +525,7 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout, const std::vector<std::string>
 
 std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,
-    const std::vector<std::string> &menu )
+    const std::vector<std::pair<std::string,std::string>> &menu )
 {
     std::string out;
     size_t len = input.length();
@@ -577,39 +577,20 @@ std::string macro_substitution( const std::string &input,
                     menu_mode=false;
                     for( unsigned int j=0; j<menu.size(); j++ )
                     {
-                        std::string s = menu[j];
-                        bool highlight = s.length()>0 && s[0]=='*';
+                        std::string link  = menu[j].first;
+                        std::string label = menu[j].second;
+                        bool highlight = link.length()>0 && link[0]=='*';
                         std::string t = normal;
                         if( highlight )
                         {
-                            s = s.substr(1);
+                            link = link.substr(1);
                             t = highlighted;
                         }
-                        size_t offset = s.find( ".html " );
-                        if( offset == std::string::npos )
-                        {
-                            offset = s.find( "/ " );
-                            if( offset != std::string::npos )
-                                offset -= 4;    // align with .html offset
-                            else
-                            {
-                                offset = s.find( ".pdf " );
-                                if( offset != std::string::npos )
-                                    offset -= 1;    // align with .html offset
-                            }
-                        }
-                        if( offset == std::string::npos )
-                            printf( "Menu item %s missing required .html (or /) termination of link part\n", s.c_str() );
-                        else
-                        {
-                            std::string link  = s.substr( 0, offset+5 );
-                            std::string label = s.substr( offset+6 );
-                            std::string text = t;
-                            util::replace_all( text, "@1", link );
-                            util::replace_all( text, "@2", label );
-                            out += text;
-                            out += "\n";
-                        }
+                        std::string text = t;
+                        util::replace_all( text, "@1", link );
+                        util::replace_all( text, "@2", label );
+                        out += text;
+                        out += "\n";
                     }
                 }
             }
@@ -621,7 +602,7 @@ std::string macro_substitution( const std::string &input,
 
 static std::set<std::string> directories;
 
-bool markdown_gen( Page *p, const std::vector<std::string> &menu )
+bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu )
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out_dir = (p->dir.length()==0 ? std::string(BASE_OUT) : std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->dir);
@@ -653,7 +634,7 @@ bool markdown_gen( Page *p, const std::vector<std::string> &menu )
 }
 
 // Just copy the file - later check to see whether we need to copy it
-bool html_gen( Page *p, const std::vector<std::string> &menu )
+bool html_gen( Page *p )
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out_dir = (p->dir.length()==0 ? std::string(BASE_OUT) : std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->dir);

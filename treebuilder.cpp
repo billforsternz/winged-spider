@@ -61,15 +61,15 @@ void construct_page_group( std::vector<Page*> ptrs )
         return;
 
     // Calculate the menu to present for each page in the group
-    std::vector<std::string> menu;
+    std::vector< std::pair<std::string,std::string> > menu;
     std::string build_path;
     Page *p = ptrs[0];
 
     // If not at root, start with "Home" link to start of root directory
     if( p->dir.length() > 0 )
     {
-        std::string menu_txt = directory_to_target[""] + " Home" ;
-        menu.push_back( menu_txt );
+        std::pair<std::string,std::string> menu_item( directory_to_target[""], "Home" );
+        menu.push_back( menu_item );
     }
 
     // Each level of subdirectory gets a menu item, eg "Archives\Tournaments
@@ -81,23 +81,28 @@ void construct_page_group( std::vector<Page*> ptrs )
             break;
         std::string subdir = p->dir.substr( 0, offset2 );              // eg "Archives", then "Archives\Tournaments"
         std::string name   = p->dir.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
-        std::string menu_txt =  directory_to_target[subdir] + " " + name;
-        menu.push_back( menu_txt );
+        std::pair<std::string,std::string> menu_item( directory_to_target[subdir], name );
+        menu.push_back( menu_item );
         offset1 = offset2+1;
     }
     for( Page *p: ptrs )
     {
         std::string menu_txt;
         if( p->is_dir )
-            menu_txt = directory_to_target[p->path] + " " + p->base;
+        {
+            std::pair<std::string,std::string> menu_item( directory_to_target[p->path], p->base );
+            menu.push_back( menu_item );
+        }
         else
-            menu_txt = p->target + " " + p->base;
-        menu.push_back( menu_txt );
+        {
+            std::pair<std::string,std::string> menu_item( p->target, p->base );
+            menu.push_back( menu_item );
+        }
     }
     printf("\nMenu>\n");
-    for(std::string s:menu)
+    for(std::pair<std::string,std::string> menu_item: menu )
     {
-        printf(" %s\n",s.c_str());
+        printf("%s %s\n", menu_item.first.c_str(), menu_item.second.c_str() );
     }
 
     // Build each page in turn
@@ -110,7 +115,7 @@ void construct_page_group( std::vector<Page*> ptrs )
         }
         else if( "html" == p->ext )
         {
-            html_gen( p, menu );
+            html_gen( p );
         }
     }
 }

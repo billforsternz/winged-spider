@@ -34,7 +34,7 @@ void read_file( const char *plan_file, std::vector<Page> &results );
 void write_file( const char *plan_file, const std::vector<Page> &results );
 void treebuilder();
 void recurse( const std::string &path, std::vector<Page> &results );
-bool markdown_gen( Page *p, const std::vector<std::string> &menu );
-bool html_gen( Page *p, const std::vector<std::string> &menu );
+bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu );
+bool html_gen( Page *p );
 
 #endif // MISC_H_INCLUDED

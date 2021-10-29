@@ -7,6 +7,7 @@
 #ifndef PAGE_H_INCLUDED
 #define PAGE_H_INCLUDED
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,9 @@ struct Page
     int level=0;
     bool is_dir=false;
     bool from_plan_file=false;
-    int  plan_line_nbr=0;
+    unsigned long plan_line_nbr = ULONG_MAX;
+    unsigned long added_to_plan_line_nbr=0;
+    bool disabled = false;
     std::string path;       // the full path name, eg "path/to/file.txt"
     std::string target;     // the full unix path name to the final html file, eg "/path/to/file.html"
     std::string filename;   // if it's a file, this is the name of the file eg "file.txt"

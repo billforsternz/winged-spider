@@ -139,6 +139,14 @@ bool less_than_sync_plan_to_directory_structure( const Page &lhs,  const Page &r
     return false;
 }
 
+// Predicate for sorting when we are restoring original plan file order
+bool less_than_restore_order( const Page &lhs,  const Page &rhs )
+{
+    if( lhs.plan_line_nbr != rhs.plan_line_nbr )
+        return lhs.plan_line_nbr < rhs.plan_line_nbr;
+    return lhs.added_to_plan_line_nbr < rhs.added_to_plan_line_nbr;
+}
+
 void parse( Page &p )
 {
     size_t offset = p.path.find_last_of( PATH_SEPARATOR );
@@ -179,7 +187,7 @@ void parse( Page &p )
 void read_file( const char *plan_file, std::vector<Page> &results )
 {
     std::ifstream fin( plan_file );
-    int line_nbr=0;
+    unsigned long line_nbr=0;
     if( !fin )
     {
         printf( "Warning: Could not read plan file, creating new plan from directory structure\n" );
@@ -228,7 +236,10 @@ void write_file( const char *plan_file, const std::vector<Page> &results )
     }
     for( Page p: results )
     {
-        util::putline( fout, p.path );
+        std::string s = p.path;
+        if( p.is_dir )
+            s += PATH_SEPARATOR_STR;
+        util::putline( fout, s );
     }
 }
 
@@ -238,17 +249,16 @@ void treebuilder()
     const char *plan_file = "plan.txt";
     read_file( plan_file, results );
 
-    // Syncing the directory structure to the plan needs some work. My simple sorting approach won't cut it;
-    // It requires a map of the lines in the plan I think. Return to this later
-    #if 0
+    // Sync the directory structure to the plan
     recurse(BASE_IN,results);
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
     bool expecting_page_from_plan = true;
     bool rewrite = false;
     Page *plan_page=NULL;
+    unsigned long sec_sort = 1;      // Used to insert new plan lines at an appropriate point
     for( Page &p: results )
     {
-        printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
+        //printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
         if( expecting_page_from_plan )
         {
             if( p.from_plan_file )
@@ -261,6 +271,11 @@ void treebuilder()
             {
                 // Multiple pages in a row from directory structure = new files we don't know about
                 printf( "Info: new file present: %s\n", p.path.c_str() );
+
+                // Add this line to plan, immediately after this point in plan
+                p.from_plan_file = true;
+                p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
+                p.added_to_plan_line_nbr = sec_sort++;
                 rewrite = true;
             }
         }
@@ -272,25 +287,79 @@ void treebuilder()
                 if( p.path == plan_page->path)
                 {
                     // As expected path
-                    printf( " (as expected)\n" );
+                    //printf( " (as expected)\n" );
                 }
                 else
                 {
                     // Unknown pages from directory structure = new files we don't know about
-                    printf( "Info: new file present %s\n", p.path.c_str() );
+                    printf( "Info: A new file not present in plan file added: %s\n", p.path.c_str() );
+
+                    // Add this line to plan, immediately after this point in plan
+                    p.from_plan_file = true;
+                    p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
+                    p.added_to_plan_line_nbr = sec_sort++;
                     rewrite = true;
                 }
             }
             else
             {
                 // Multiple pages in a row from plan file = old files have been deleted
-                printf( "Info: previous file absent: %s\n", plan_page->path.c_str() );
-                rewrite = true;
+                printf( "Info: A page in plan file unexpectedly absent, disabled: %s\n", plan_page->path.c_str() );
+                plan_page->disabled = true;
                 plan_page = &p;
             }
         }
     }
-    #endif
+
+    // Reorder with the pages from the plan file first, in their original order (possibly supplemented by
+    //  new files discovered in the sync process)
+    std::sort( results.begin(), results.end(), less_than_restore_order );
+
+    // After the sort the pages from the (possibly updated plan file) are first, from checking the directory
+    //  structure are second, remove the directory section it has served its purpose
+    auto it = results.begin();
+    for( it = results.begin(); it!=results.end(); it++ )
+    {
+        if( !it->from_plan_file )
+            break;
+    }
+    results.erase( it, results.end() );
+
+    // Rewrite the plan file. For the moment we use a temporary file name and don't overwrite the actual plan file
+    if( rewrite )
+        write_file( "temp_plan_file.txt", results );
+
+    // Temporarily revert to sync order, to identify duplicate leaf nodes, eg Results.md *and* Results.html
+    //  both generate same target
+    std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
+    Page *previous = NULL;
+    for( Page &p: results )
+    {
+        if( !p.is_dir )
+        {
+            if( p.ext != "md" && p.ext != "html")
+            {
+                p.disabled = true;
+                printf( "Info: Page %s has unsupported extension (not .md or .html), disabled\n", p.path.c_str() );
+                
+            }
+            else if( previous && p.target==previous->target )
+            {
+                if( previous->ext == p.ext || previous->ext == "md")
+                {
+                    p.disabled = true;
+                    printf( "Info: Page %s resolves to a duplicate, disabled\n", p.path.c_str() );
+                }
+                else if( p.ext == "md" )
+                {
+                    previous->disabled = true;
+                    printf( "Info: Page %s resolves to a duplicate, disabled\n", previous->path.c_str() );
+                }
+            }
+        }
+        previous = &p;
+    }
+    std::sort( results.begin(), results.end(), less_than_restore_order ); // restore to plan file order
 
     // Initial scan of each page, identifying targets for each directory
     bool keep_going = true;
@@ -302,7 +371,7 @@ void treebuilder()
         std::string group;
         for( Page &p: results )
         {
-            if( p.from_plan_file )
+            if( !p.disabled )
             {
                 if( p.dir == group )
                     ptrs.push_back(&p);
@@ -341,7 +410,7 @@ void treebuilder()
     std::string group;
     for( Page &p: results )
     {
-        if( p.from_plan_file )
+        if( !p.disabled )
         {
             if( p.dir == group )
                 ptrs.push_back(&p);
@@ -355,7 +424,6 @@ void treebuilder()
         }
     }
     construct_page_group(ptrs);
-    //  write_file( plan_file, results );
 }
 
 void recurse( const std::string &path, std::vector<Page> &results )
@@ -375,7 +443,10 @@ void recurse( const std::string &path, std::vector<Page> &results )
         parse(p);
         p.is_dir = is_directory(entry);
         if( p.is_dir )
-            recurse(s,results);
+        {
+            results.push_back( p );
+            recurse( s, results );
+        }
         else
             results.push_back( p );
     }

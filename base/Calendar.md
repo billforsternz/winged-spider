@@ -98,7 +98,6 @@ Inspired by the ongoing success of the George Trundle, this new tournament also 
 @HAsian Seniors, Damascus, SYRIA<br>November 1st-8th 2021
 For the more adventurous senior (over 50) chess player. Details <a href="downloads/Regulations 2021 Asian Seniors Chess Championships.pdf">here</a> and <a href="downloads/Registration Form Asian Seniors 2021.xlsx">here</a>.
 
-November (departure).
 @snippet
 @HNew Zealand Women’s Chess Championship 2021, Auckland<br>January 20th-23rd 2022 (postponed from October 6th–9th)
 <b>For women and girls of all ages.</b>

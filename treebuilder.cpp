@@ -231,7 +231,7 @@ void write_file( const char *plan_file, const std::vector<Page> &results )
     std::ofstream fout( plan_file );
     if( !fout )
     {
-        printf( "Error: Could not update plan file\n" );
+        printf( "Error: Could not update plan file %s\n", plan_file );
         return;
     }
     for( Page p: results )

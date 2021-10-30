@@ -76,7 +76,8 @@ namespace fs = std::experimental::filesystem;
 //#define BUILD_HOME
 //#define BUILD_RESULTS
 
-void templat( FILE *fin1, FILE *fin2, FILE *fout );
+void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+    const std::vector<std::pair<std::string,std::string>> &menu );
 std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,
     const std::vector<std::pair<std::string,std::string>> &menu );
@@ -86,26 +87,19 @@ int main( int argc, char *argv[] )
 {
 #ifdef BUILD_HOME
     #define DEBUG_JUST_ONE_FILE
-    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/winged-spider/base/Home.md", "rt" );
-    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-main.txt", "rt" );
-    FILE *fout = fopen( "/Users/Bill/Documents/Github/winged-spider/output/index.html", "wt" );
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Home.md";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/index.html";
 #endif
 #ifdef BUILD_RESULTS
 #define DEBUG_JUST_ONE_FILE
-    FILE *fin1 = fopen( "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md", "rt" );
-    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-older.txt", "rt" );
-    FILE *fout = fopen( "/Users/Bill/Documents/Github/winged-spider/output/Archives/Results/Results.html", "wt" );
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/Archives/Results/Results.html";
 #endif
 #ifdef DEBUG_JUST_ONE_FILE
-    if( !fin1 || !fin2 || !fout )
-    {
-        printf( "File problem during debugging\n" );
-        return -1;
-    }
-    templat(fin1,fin2,fout);
-    fclose(fout);
-    fclose(fin2);
-    fclose(fin1);
+    const std::vector<std::pair<std::string,std::string>> menu;
+    templat(fin1,fin2,fout,menu);
 #else
     treebuilder();
 #endif
@@ -130,8 +124,30 @@ struct PICTURE
     std::string caption;
 };
 
-void templat( FILE *fin1, FILE *fin2, FILE *fout,  const std::vector<std::pair<std::string,std::string>> &menu )
+void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+    const std::vector<std::pair<std::string,std::string>> &menu )
 {
+    std::ifstream fin1( md_file );
+    if( !fin1 )
+    {
+        printf( "Error: Could not open input file %s\n", md_file.c_str() );
+        return;
+    }
+
+    std::ifstream fin2( template_file );
+    if( !fin2 )
+    {
+        printf( "Error: Could not open template file %s\n", template_file.c_str() );
+        return;
+    }
+
+    std::ofstream fout( html_out_file );
+    if( !fout )
+    {
+        printf( "Error: Could not create output file %s\n", html_out_file.c_str() );
+        return;
+    }
+
     std::string header;
     std::string footer;
     std::string single;
@@ -144,15 +160,15 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout,  const std::vector<std::pair<s
     std::string snippet;
     std::string panel;
     std::vector<PICTURE> pictures;
-    char buf[10000];
 
     // Read the template file
-    const char *ret = fgets( buf, sizeof(buf)-2, fin2 );
     bool in_section = false;
     enum { s_header, s_footer, s_single, s_pair, s_triple, s_2of2, s_1of2, s_1of1, s_snippet, s_solo, s_panel } section;
-    while( ret != NULL )
+    for(;;)
     {
-        std::string s(buf);
+        std::string s;
+        if( !std::getline(fin2,s) )
+            break;
         rtrim(s);
         if( !in_section )
         {
@@ -247,38 +263,37 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout,  const std::vector<std::pair<s
                 }
             }
         }
-        ret = fgets( buf, sizeof(buf)-2, fin2 );
     }
 
     // Read macros from the input file
     std::map<char,std::string> macros;
-    ret = fgets( buf, sizeof(buf)-2, fin1 );
     bool have_line=false;
-    while( ret != NULL )
+    for(;;)
     {
-        std::string s(buf);
+        std::string s;
+        if( !std::getline(fin1,s) )
+            break;
         rtrim(s);
         have_line = s.length()>0;
         if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
             break;
         std::string macro = s.substr(3);
         macros[s[1]] = macro;
-        fgets( buf, sizeof(buf)-2, fin1 );
     }
 
     // Read pictures from the input file
     std::vector<std::string> whole_input_file;
-    if( ret!=NULL && !have_line )
-        ret = fgets( buf, sizeof(buf)-2, fin1 );
     int state = 0;
     PICTURE picture;
     picture.typ.clear();
     picture.filename.clear();
     picture.alt_text.clear();
     picture.caption.clear();
-    while( ret != NULL )
+    for(;;)
     {
-        std::string s(buf);
+        std::string s;
+        if( !std::getline(fin1,s) )
+            break;
         rtrim(s);
         whole_input_file.push_back(s);
         if( s.length() == 0 )
@@ -334,7 +349,6 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout,  const std::vector<std::pair<s
                     break;
             }
         }
-        ret = fgets( buf, sizeof(buf)-2, fin1 );
     }
     if( state == 2 )
     {
@@ -352,14 +366,14 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout,  const std::vector<std::pair<s
 
     // Write out the the html
     std::string h = macro_substitution( header, macros, menu );
-    fprintf( fout, "%s", h.c_str() );
+    util::putline(fout,h);
 
     // New feature - Macro @W in the header just indicates write out the whole input file between header and footer
     auto it = macros.find('W');
     if( it != macros.end() )
     {
         for( std::string line : whole_input_file )
-            fprintf( fout, "%s\n", line.c_str() );
+            util::putline(fout,line);
         pictures.clear();
     }
 
@@ -517,10 +531,10 @@ void templat( FILE *fin1, FILE *fin2, FILE *fout,  const std::vector<std::pair<s
                 s = temp;
             }
         }
-        fprintf( fout, "%s", s.c_str() );
+        util::putline(fout,s);
     }
     std::string f = macro_substitution( footer, macros, menu );
-    fprintf( fout, "%s", f.c_str() );
+    util::putline(fout,f);
 }
 
 std::string macro_substitution( const std::string &input,
@@ -606,18 +620,7 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    FILE *fin1 = fopen( in.c_str(), "rt" );
-    FILE *fin2 = fopen( "/Users/Bill/Documents/Github/winged-spider/template-main.txt", "rt" );
-    FILE *fout = fopen( out.c_str(), "wt" );
-    if( !fin1 || !fin2 || !fout )
-    {
-        printf( "File problem during debugging\n" );
-        return false;
-    }
-    templat(fin1,fin2,fout,menu);
-    fclose(fout);
-    fclose(fin2);
-    fclose(fin1);
+    templat(in,"/Users/Bill/Documents/Github/winged-spider/template-main.txt",out,menu);
     return true;
 }
 

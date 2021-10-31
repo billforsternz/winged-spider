@@ -103,14 +103,16 @@ void construct_page_group( std::vector<Page*> ptrs )
     for(std::pair<std::string,std::string> menu_item: menu )
     {
         printf("%s %s\n", menu_item.first.c_str(), menu_item.second.c_str() );
+        //if( menu_item.second == "Tournaments" )
+        //    printf("Debug break 1\n");
     }
 
     // Build each page in turn
     //  (force build for now)
     for( Page *p: ptrs )
     {
-        //if( p->filename == "interschools" )
-        //    printf("Debug break\n");
+        //if( p->path == "Archives\\Archives.md" )
+        //    printf("Debug break 2\n");
         if( "md" == p->ext )
         {
             markdown_gen( p, menu );

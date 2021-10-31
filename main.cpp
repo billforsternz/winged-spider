@@ -75,6 +75,7 @@ namespace fs = std::experimental::filesystem;
 //  in this new context define one of these or the other
 //#define BUILD_HOME
 //#define BUILD_RESULTS
+//#define BUILD_TOURNAMENT
 
 void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
     const std::vector<std::pair<std::string,std::string>> &menu );
@@ -95,10 +96,26 @@ int main( int argc, char *argv[] )
 #define DEBUG_JUST_ONE_FILE
     std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md";
     std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/Archives/Results/Results.html";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-results-results.html";
+#endif
+#ifdef BUILD_TOURNAMENT
+#define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Tournaments/2020.md";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-tournaments-2020.html";
 #endif
 #ifdef DEBUG_JUST_ONE_FILE
-    const std::vector<std::pair<std::string,std::string>> menu;
+    std::vector<std::pair<std::string,std::string>> menu;
+    std::pair<std::string,std::string> menu_item1("Home","index.html");
+    std::pair<std::string,std::string> menu_item2("Archives","archives-archives.html");
+    std::pair<std::string,std::string> menu_item3("Tournaments","archives-tournaments.html");
+    std::pair<std::string,std::string> menu_item4("2021","archives-tournaments-2021.html");
+    std::pair<std::string,std::string> menu_item5("2022","archives-tournaments-2021.html");
+    menu.push_back(menu_item1);
+    menu.push_back(menu_item2);
+    menu.push_back(menu_item3);
+    menu.push_back(menu_item4);
+    menu.push_back(menu_item5);
     templat(fin1,fin2,fout,menu);
 #else
     treebuilder();
@@ -267,21 +284,25 @@ void templat( const std::string &md_file, const std::string &template_file, cons
 
     // Read macros from the input file
     std::map<char,std::string> macros;
-    bool have_line=false;
+    std::string first_non_macro_line;
+    bool first_non_macro_line_flag=false;
     for(;;)
     {
         std::string s;
         if( !std::getline(fin1,s) )
             break;
         rtrim(s);
-        have_line = s.length()>0;
         if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
+        {
+            first_non_macro_line = s;
+            first_non_macro_line_flag = true;
             break;
+        }
         std::string macro = s.substr(3);
         macros[s[1]] = macro;
     }
 
-    // Read pictures from the input file
+    // Read paragraphs and pictures from the input file
     std::vector<std::string> whole_input_file;
     int state = 0;
     PICTURE picture;
@@ -292,14 +313,20 @@ void templat( const std::string &md_file, const std::string &template_file, cons
     for(;;)
     {
         std::string s;
-        if( !std::getline(fin1,s) )
+        if( first_non_macro_line_flag )
+        {
+            s = first_non_macro_line;
+            first_non_macro_line_flag = false;
+        }
+        else if( !std::getline(fin1,s) )
             break;
         rtrim(s);
         whole_input_file.push_back(s);
         if( s.length() == 0 )
         {
             rtrim( picture.caption );
-            pictures.push_back(picture);
+            if( picture.typ != "" )
+                pictures.push_back(picture);
             state = 0;
             picture.typ.clear();
             picture.filename.clear();
@@ -315,30 +342,41 @@ void templat( const std::string &md_file, const std::string &template_file, cons
                     if( s == "@grid" )
                     {
                         picture.typ = s;    // stay in this state
+                        state++;            // next is expect .jpg
                     }
                     else if( s == "@panel" || s=="@snippet" || s=="@naked" )
                     {
                         picture.typ = s;
-                        state+=2;           // next is heading/caption
+                        state+=3;           // next is heading
                     }
                     else if( s == "NULL" )
                     {
                         picture.typ = "@snippet";
-                        state++;            // next is ALT
+                        state+=2;            // next is ALT
+                    }
+                    else if( util::suffix(s,".jpg" ) )
+                    {
+                        picture.typ = "@solo";  // solo is default, unspoken
+                        picture.filename = s;
+                        state+=2;            // next is ALT
                     }
                     else
                     {
-                        if( picture.typ == "" )     // solo is default, unspoken
-                            picture.typ = "@solo";
-                        picture.filename = s;
-                        state++;            // next is ALT
+                        picture.typ = "@para";  // Not a picture at all, a paragraph of MD text
+                        picture.caption += s;
+                        picture.caption += '\n';
+                        state = 4;
                     }
                     break;
                 case 1:
+                    picture.filename = s;
+                    state++;            // next is ALT
+                    break;
+                case 2:
                     picture.alt_text = s;
                     state++;
                     break;
-                case 2:
+                case 3:
                     if( s.substr(0,2) == "@H" )
                         picture.heading = s.substr(2);
                     else
@@ -347,10 +385,14 @@ void templat( const std::string &md_file, const std::string &template_file, cons
                         picture.caption += '\n';
                     }
                     break;
+                case 4:
+                    picture.caption += s;
+                    picture.caption += '\n';
+                    break;
             }
         }
     }
-    if( state == 2 )
+    if( state >= 3 )
     {
         rtrim( picture.caption );
         pictures.push_back(picture);
@@ -387,7 +429,27 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         PICTURE *r = NULL;
         std::string s = solo;
         bool macro_substitution_required = true;
-        if( p->typ == "@naked" )
+        if( p->typ == "@para" )
+        {
+            in_grid = false;
+            macro_substitution_required = false;
+            size_t idx=0;
+            while( idx<p->caption.length() && p->caption[idx]=='#' )
+                idx++;
+            if( idx>0 && idx<10 && idx<p->caption.length() )
+            {
+                s = util::sprintf( "<h%c>\n", '0'+idx );
+                s += p->caption.substr(idx);
+                s += util::sprintf( "</h%c>\n", '0'+idx );
+            }
+            else
+            {
+                s = "<p>\n";
+                s += p->caption;
+                s += "</p>\n";
+            }
+        }
+        else if( p->typ == "@naked" )
         {
             in_grid = false;
             macro_substitution_required = false;

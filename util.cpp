@@ -23,14 +23,14 @@ void putline(std::ostream &out,const std::string &line)
 
 std::string sprintf( const char *fmt, ... )
 {
-    size_t size = strlen(fmt) * 3;   // guess at size
+    int size = static_cast<int>(strlen(fmt)) * 3;   // guess at size
     std::string str;
     va_list ap;
     for(;;)
     {
         str.resize(size);
         va_start(ap, fmt);
-        size_t n = vsnprintf((char *)str.data(), size, fmt, ap);
+        int n = vsnprintf((char *)str.data(), size, fmt, ap);
         va_end(ap);
         if( n>-1 && n<size )    // are we done yet?
         {

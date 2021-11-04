@@ -57,7 +57,6 @@
 
 */
 
-#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
@@ -70,22 +69,26 @@ namespace fs = std::experimental::filesystem;
 #include "util.h"
 #include "page.h"
 #include "misc.h"
+#include "src-tarrasch/GamesCache.h"
+
 
 // While we are getting this up to speed with some basic reconstruction of some existing functionality
 //  in this new context define one of these or the other
 //#define BUILD_HOME
 //#define BUILD_RESULTS
 //#define BUILD_TOURNAMENT
+#define BUILD_PGN
 
-void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
-    const std::vector<std::pair<std::string,std::string>> &menu );
-std::string macro_substitution( const std::string &input,
-    const std::map<char,std::string> &macros,
-    const std::vector<std::pair<std::string,std::string>> &menu );
 void treebuilder();
 
 int main( int argc, char *argv[] )
 {
+#ifdef BUILD_PGN
+    #define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/History/Trusts Best Games.pgn";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-pgn.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/history-trusts-best-games.html";
+#endif
 #ifdef BUILD_HOME
     #define DEBUG_JUST_ONE_FILE
     std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Home.md";
@@ -116,7 +119,13 @@ int main( int argc, char *argv[] )
     menu.push_back(menu_item3);
     menu.push_back(menu_item4);
     menu.push_back(menu_item5);
+    #ifdef BUILD_PGN
+    GamesCache gc;
+    gc.Load(fin1);
+    gc.Publish(fin2,fout,menu);
+    #else
     templat(fin1,fin2,fout,menu);
+    #endif
 #else
     treebuilder();
 #endif
@@ -683,6 +692,16 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     templat(in,"/Users/Bill/Documents/Github/winged-spider/template-main.txt",out,menu);
+    return true;
+}
+
+bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu )
+{
+    std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
+    std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
+    GamesCache gc;
+    gc.Load(in);
+    gc.Publish("/Users/Bill/Documents/Github/winged-spider/template-pgn.txt",out,menu);
     return true;
 }
 

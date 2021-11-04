@@ -8,6 +8,7 @@
 #define MISC_H_INCLUDED
 
 #include <string>
+#include <map>
 #include <vector>
 #include "Page.h"
 
@@ -35,6 +36,13 @@ void write_file( const char *plan_file, const std::vector<Page> &results );
 void treebuilder();
 void recurse( const std::string &path, std::vector<Page> &results );
 bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu );
+bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu );
 bool html_gen( Page *p );
+void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+              const std::vector<std::pair<std::string,std::string>> &menu );
+std::string macro_substitution( const std::string &input,
+    const std::map<char,std::string> &macros,
+    const std::vector<std::pair<std::string,std::string>> &menu );
+
 
 #endif // MISC_H_INCLUDED

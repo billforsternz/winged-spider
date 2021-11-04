@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -120,7 +120,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -152,12 +152,43 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src-tarrasch\BinDb.cpp" />
+    <ClCompile Include="src-tarrasch\CompactGame.cpp" />
+    <ClCompile Include="src-tarrasch\CompressMoves.cpp" />
+    <ClCompile Include="src-tarrasch\Eco.cpp" />
+    <ClCompile Include="src-tarrasch\GameDocument.cpp" />
+    <ClCompile Include="src-tarrasch\GamesCache.cpp" />
+    <ClCompile Include="src-tarrasch\GameView.cpp" />
+    <ClCompile Include="src-tarrasch\Lang.cpp" />
+    <ClCompile Include="src-tarrasch\MoveTree.cpp" />
+    <ClCompile Include="src-tarrasch\PackedGame.cpp" />
+    <ClCompile Include="src-tarrasch\PgnFiles.cpp" />
+    <ClCompile Include="src-tarrasch\PgnRead.cpp" />
+    <ClCompile Include="src-tarrasch\thc.cpp" />
     <ClCompile Include="treebuilder.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="misc.h" />
     <ClInclude Include="page.h" />
+    <ClInclude Include="src-tarrasch\BinaryConversions.h" />
+    <ClInclude Include="src-tarrasch\BinDb.h" />
+    <ClInclude Include="src-tarrasch\CompactGame.h" />
+    <ClInclude Include="src-tarrasch\CompressMoves.h" />
+    <ClInclude Include="src-tarrasch\Eco.h" />
+    <ClInclude Include="src-tarrasch\GameDocument.h" />
+    <ClInclude Include="src-tarrasch\GameLifecycle.h" />
+    <ClInclude Include="src-tarrasch\GamesCache.h" />
+    <ClInclude Include="src-tarrasch\GameView.h" />
+    <ClInclude Include="src-tarrasch\Lang.h" />
+    <ClInclude Include="src-tarrasch\ListableGame.h" />
+    <ClInclude Include="src-tarrasch\ListableGamePgn.h" />
+    <ClInclude Include="src-tarrasch\MoveTree.h" />
+    <ClInclude Include="src-tarrasch\NavigationKey.h" />
+    <ClInclude Include="src-tarrasch\PgnFiles.h" />
+    <ClInclude Include="src-tarrasch\PgnRead.h" />
+    <ClInclude Include="src-tarrasch\Roster.h" />
+    <ClInclude Include="src-tarrasch\thc.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

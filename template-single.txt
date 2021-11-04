@@ -1,0 +1,57 @@
+#Header
+<TABLE WIDTH="90%"> 
+ <TBODY> 
+
+#Single    
+    <TR> 
+      <TD VALIGN="BOTTOM" ALIGN="CENTER"><IMG SRC="@F" ALT="@A" BORDER="0" WIDTH="150"></TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+    </TR> 
+    <TR> 
+      <TD VALIGN="TOP" ALIGN="CENTER">@C</TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+    </TR>
+
+#Pair    
+    <TR> 
+      <TD VALIGN="BOTTOM" ALIGN="CENTER"><IMG SRC="@F" ALT="@A" BORDER="0" WIDTH="150"></TD> 
+      <TD>&nbsp;</TD> 
+      <TD VALIGN="BOTTOM" ALIGN="CENTER"><IMG SRC="@F" ALT="@A" BORDER="0" WIDTH="150"></TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+    </TR> 
+    <TR> 
+      <TD VALIGN="TOP" ALIGN="CENTER">@C</TD> 
+      <TD>&nbsp;</TD> 
+      <TD VALIGN="TOP" ALIGN="CENTER">@C</TD> 
+      <TD>&nbsp;</TD> 
+      <TD>&nbsp;</TD> 
+    </TR>
+
+#Triplet    
+    <TR> 
+      <TD VALIGN="BOTTOM" ALIGN="CENTER"><IMG SRC="@F" ALT="@A" BORDER="0" WIDTH="150"></TD> 
+      <TD>&nbsp;</TD> 
+      <TD VALIGN="BOTTOM" ALIGN="CENTER"><IMG SRC="@F" ALT="@A" BORDER="0" WIDTH="150"></TD> 
+      <TD>&nbsp;</TD> 
+      <TD VALIGN="BOTTOM" ALIGN="CENTER"><IMG SRC="@F" ALT="@A" BORDER="0" WIDTH="150"></TD> 
+    </TR> 
+    <TR> 
+      <TD VALIGN="TOP" ALIGN="CENTER">@C</TD> 
+      <TD>&nbsp;</TD> 
+      <TD VALIGN="TOP" ALIGN="CENTER">@C</TD> 
+      <TD>&nbsp;</TD> 
+      <TD VALIGN="TOP" ALIGN="CENTER">@C</TD> 
+    </TR>
+
+#Footer
+    </TBODY> 
+</TABLE>
+
+

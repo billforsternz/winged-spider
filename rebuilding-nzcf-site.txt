@@ -1,0 +1,75 @@
+Starting out again on an attempt to get on top of NZCF site generation issues
+
+Some thoughts:
+Find all the disparate parts that come together to create the whole site first
+So - make a site map see peer file sitemap.txt
+Have a look at the different build*.bat files in poole/nzcf-archives, there are clues there
+The name nzcf-archives is significant - I think it is all about the Archives section of the menu
+Remember we want to take the PGN -> MD processor from Tarrasch and put it in WingedSpider
+There are multiple Keong tournaments where we haven't got a crosstable
+Remember that time when a google search yielded a result in the Vega/2017/ or similar directory?
+While poole/nzcf-archives is where we build the site, poole/nzcf is where we build Listener and NZ Chess bulletin playthroughs
+
+Some questions:
+I think the name nzcf-archives comes from the Archives section of the menu, and poole is needed
+to do some basic (very basic) markdown processing. Details please?
+Did we make a start in github/WingedSpider already?
+  A: That looks like an attempt to pick up photos.exe
+
+Some files and directories of interest
+C:\Users\Bill\Documents\Github\photos
+C:\Users\Bill\Documents\ChessDatabase\nz-2020\crosstables.txt
+C:\Users\Bill\Documents\ChessDatabase\nz-database\work-2021-latest\crosstables
+C:\Users\Bill\Documents\Github\crosstables
+C:\Users\Bill\Documents\HistoryProject\
+    crosstables-old.odt
+    crosstables.odt
+    crosstables.pdf
+C:\Users\Bill\Documents\HistoryProject\nz-chess-crosstables\crosstables.txt
+
+
+Inlined below is the file C:\Users\Bill\Documents\poole\nzcf-archive\input\roadmap.txt another attempt
+
+How does this website come together?
+
+Combination of hand edited HTML plus poole\nzcf (interactive magazine) plus pool\nzcf-archives (start of content management system)
+
+Home 1
+Calendar 1
+Results 1
+Resources 1
+Grand Prix 1A
+Olympiad 2020 1
+Interschools 1
+Chess Clubs 2
+History 1
+Archives 5
+Magazines 4
+Bulletins 4
+Trophies 1
+Facebook Page 3
+Contact Us 2
+More 1
+
+1) In directory pool\nzcf-archives, uses new simple CMS currently frozen in \users\bill\documents\github\photos\release\photos.exe, builds
+an HTML file from a .md like .txt file plus a template file input\template-main.txt. File build2.bat builds all 10 pages, eg;
+\users\bill\documents\github\photos\release\photos.exe input\fresh-index.txt input\template-main.txt \users\bill\documents\newzealandchess.co.nz\index.html
+
+1A) Same as 1) except use input\template-grandprix.txt
+
+2) Old NZCF style html page
+
+3) External URL
+
+4) Handcrafted, and served as model for 1) I believe
+
+5) Kind of like 4) perhaps ? Maybe try to make this more like 1)
+
+Some more notes about 5)
+File build-dot-bat-renamed-to-avoid-accidentally-doing-it.bat remains as documentation on how all this was stitched together.
+One important technique is the @W macro in the content management system. It means 'write out whole file'. Basically we often
+use poole to convert .md or at least text that's sufficiently close to .md to .html, then use the CMS to add the header and
+menu to that html, using the @W feature. This is how we do both Archives - Results Poison Pawn years (2001-2008) and
+Archives - Tournaments.
+
+

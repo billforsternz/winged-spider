@@ -1,0 +1,86 @@
+Sitemap
+
+Key:
+build.bat           ;Documents\poole\nzcf-archives
+build-trophies.bat  ;Documents\poole\nzcf-archives
+input               ;Documents\poole\nzcf-archives\input
+photos.exe          ;Documents\github\photos\release\photos.exe
+template-main.txt   ;input
+build-crosstables-then-poole=then-add-menuhdrs-then-template.bat    ;Documents\poole\nzcf-archives
+
+build.bat, photos.exe, template-main.txt =>
+    index.html                              input\fresh-index.txt                   
+    notices.html                            input\fresh-notices.txt                 
+    archives-homepage-2019.html             input\archives-homepage-2019.txt        
+    archives-homepage-2018.html             input\archives-homepage-2018.txt        
+ *1 nz-chess-online.html                    input\nz-chess-online.txt               
+ *1 online-interclub.html                   input\online-interclub.txt              
+ *1 running-chess-clubs-online.html         input\running-chess-clubs-online.txt    
+    calendar.html                           input\fresh-calendar.txt                
+    history.html                            input\fresh-history.txt                 
+    resources.html                          input\fresh-resources.txt               
+    ratings.html                            input\fresh-ratings.txt                 
+    ratings-rapid.html                      input\fresh-ratings-rapid.txt           
+    ratings-fide-standard.html              input\fresh-ratings-fide-standard.txt   
+    ratings-fide-rapid.html                 input\fresh-ratings-fide-rapid.txt      
+    ratings-alpha.html                      input\fresh-ratings-alpha.txt           
+    results.html                            input\fresh-results.txt                 
+    olympiad2020.html                       input\olympiad2020.txt                  
+    more.html                               input\more.txt                          
+    interschools.html                       input\interschools.txt                  
+    known-handles.html                      input\known-handles.txt                 
+    unknown-handles.html                    input\unknown-handles.txt               
+    history-nz-champs.html                  input\history-nz-champs.txt              
+    history-games-database.html             input\history-games-database.txt         
+    history-correspondence.html             input\history-correspondence.txt         
+    history-sound.html                      input\history-sound.txt                  
+    history-nzl-ratings-1970-2000.html      input\history-nzl-ratings-1970-2000.txt  
+    history-representative-honours.html     input\history-representative-honours.txt 
+ *2 grandprix.html                          input\fresh-grandprix.txt               
+REM history-listener.html                   input\history-listener.txt
+
+build-trophies.bat, photos.exe, template-main.txt =>
+    trophies.html                           input\trophies.txt                      
+    trophies-silver-rook.html               input\trophies-silver-rook.txt          
+    trophies-major-open.html                input\trophies-major-open.txt           
+    trophies-premier-reserve.html           input\trophies-premier-reserve.txt      
+    trophies-north-island.html              input\trophies-north-island.txt         
+    trophies-south-island.html              input\trophies-south-island.txt         
+    trophies-brooker-memorial.html          input\trophies-brooker-memorial.txt     
+    trophies-rapid.html                     input\trophies-rapid.txt                
+    trophies-womens.html                    input\trophies-womens.txt               
+
+build-crosstables-then-poole=then-add-menuhdrs-then-template.bat =>
+ *3 archives-results.html                   misc inputs including input\template.txt not template-main.txt ...
+    archives-results-2008.html
+    archives-results-2007.html
+    archives-results-2006.html
+    archives-results-2005.html
+    archives-results-2004.html
+    archives-results-2003.html
+    archives-results-2002.html
+    archives-results-2001.html
+    archives-tournaments.html
+    archives-tournaments-2021.html
+    archives-tournaments-2020.html
+    archives-tournaments-2019.html
+    archives-tournaments-2018.html
+    archives-tournaments-2017.html
+    archives-tournaments-2016.html
+    archives-tournaments-2015.html
+    archives-tournaments-2014.html
+    archives-tournaments-2013.html
+    archives-tournaments-2008.html
+    archives-tournaments-2007.html
+    archives-tournaments-2006.html
+
+*1 = fixed up with ssed
+*2 = template-grandprix.txt instead of template-main.txt
+REM = manually edited
+*3 = Notes:
+    As the title suggests, this is an elaborate and messy procedure to rebuild some of archives/results and archives/tournaments
+    We have reproduced this nicely, and extended it to archives/tournaments-2021 which was manually edited previously (clearly)
+    File test1.bat established a baseline and test2.bat checks against it
+    For the moment it is necessary to use bills-cms-proto.exe instead of Documents\github\photos\release\photos.exe, that might
+    be a good thing to work on next.
+  

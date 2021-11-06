@@ -2136,47 +2136,13 @@ void GameDocument::ToFileTxtGameDetails( std::string &str )
 
 void GameDocument::ToFileTxtGameBody( std::string &str )
 {
-    std::string str1;
-    gv.ToString( str1 );
-    str1 += "\n";
-    str1 += "\n";
-    #ifndef _WINDOWS
-    str = str1;
-    #else
-    std::string str2;
-    int len = str1.length();
-    for( int i=0; i<len; i++ )
-    {
-        if( str1[i] == '\n' )
-            str2 += "\r\n";  // Windows filesystem in binary mode, so '\n' -> '\r','\n'
-        else
-            str2 += str1[i];
-    }
-    str = str2;
-    #endif
+    gv.ToString( str );
 }
 
 
 void GameDocument::ToPublishTxtGameBody( std::string &str, int &diagram_base, int &mv_base, int &neg_base, int publish_options )
 {
-    std::string str1;
-    gv.ToPublishString( str1, diagram_base, mv_base, neg_base, publish_options );
-    str1 += "\n";
-    str1 += "\n";
-    #ifndef _WINDOWS
-    str = str1;
-    #else
-    std::string str2;
-    int len = str1.length();
-    for( int i=0; i<len; i++ )
-    {
-        if( str1[i] == '\n' )
-            str2 += "\r\n";  // Windows filesystem in binary mode, so '\n' -> '\r','\n'
-        else
-            str2 += str1[i];
-    }
-    str = str2;
-    #endif
+    gv.ToPublishString( str, diagram_base, mv_base, neg_base, publish_options );
 }
 
 

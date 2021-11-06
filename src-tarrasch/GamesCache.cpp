@@ -340,8 +340,14 @@ void ReadGameFromPgn( int pgn_handle, long fposn, GameDocument &new_doc )
             case 'P':
             case 'p':
             {
-				gd.prefix_txt += std::string(buf);
-				//gd.prefix_txt += '\n';
+
+                // Rough \r\n -> \n transformation at end of line
+                std::string line(buf);
+                size_t offset = line.find_last_of('\r');
+                size_t len    = line.length();
+                if( offset!=std::string::npos && offset==len-2 && line[offset+1]=='\n' )
+                    line = line.substr(0,offset) + "\n";
+				gd.prefix_txt += line;
                 break;
             }
             case 'M':
@@ -883,6 +889,10 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
         
 		// Write prefix
 		std::string s = gd.prefix_txt;
+        size_t offset = s.find_last_of('\n');
+        size_t len    = s.length();
+        if( offset!=std::string::npos && offset==len-1 && s[offset-1]=='\n' )
+            s = s.substr(0,len-1);  // crude transformation, end of prefix "\n\n" -> "\n"
 		if (heading)
 		{
 			skip_intro = true;
@@ -936,9 +946,11 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 		int len2 = s.length();
 		if (len2 > 0)
 		{
-			if( i != 0 )    // blank line needed before all but first prefix
-				util::putline(fout,"");
-			util::putline(fout, s.c_str());
+			//if( i != 0 )    // blank line needed before all but first prefix
+			//	util::putline(fout,"");
+		    util::putline(fout,"<p>");
+			fout.write(s.c_str(),s.length());
+		    util::putline(fout,"</p>");
 		}
 		if (!skip_game)
 		{
@@ -948,39 +960,35 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 				// Write header
 				//gd->ToFileTxtGameDetails( s );
 
-				s = "<h3>";
+				s = "<h2>";
 				s += white;
 				s += " - ";
 				s += black;
+				s += "</h2>";
+                std::string t;
 				if (gd.r.event.find('?') == std::string::npos)
 				{
-					s += " - ";
-					s += gd.r.event;
+					t = gd.r.event;
 				}
 				std::string year = gd.r.date.substr(0, 4);
 				if (year.find('?') == std::string::npos)
 				{
-					s += " ";
-					s += year;
+					t += " ";
+					t += year;
 				}
-				s += "</h3>";
+                if( t.length() > 0 )
+                {
+				    s += '\n';
+				    s += "<h3>";
+				    s += t;
+				    s += "</h3>";
+                }
 				util::putline(fout, s);
 			}
 
 			// Write Game body
 			gd.ToPublishTxtGameBody(s, diagram_base, mv_base, neg_base, publish_options);
-			util::putline(fout, s);
-		}
-
-		if( i+1 == gds_nbr )
-			util::putline(fout, "<br/>");
-		else
-			util::putline(fout, "");
-		if( i+1 == gds_nbr )
-		{
-			util::putline(fout, "</div>\n"
-				                "</body>\n"
-				                "</html>");
+            util::putline(fout,s);
 		}
 	}
     std::string f = macro_substitution( footer, macros, menu );

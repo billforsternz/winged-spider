@@ -109,20 +109,26 @@ int main( int argc, char *argv[] )
 #endif
 #ifdef DEBUG_JUST_ONE_FILE
     std::vector<std::pair<std::string,std::string>> menu;
-    std::pair<std::string,std::string> menu_item1("Home","index.html");
-    std::pair<std::string,std::string> menu_item2("Archives","archives-archives.html");
-    std::pair<std::string,std::string> menu_item3("Tournaments","archives-tournaments.html");
-    std::pair<std::string,std::string> menu_item4("2021","archives-tournaments-2021.html");
-    std::pair<std::string,std::string> menu_item5("2022","archives-tournaments-2021.html");
+    std::pair<std::string,std::string> menu_item1("index.html","Home");
+    std::pair<std::string,std::string> menu_item2("archives-archives.html","Archives");
+    std::pair<std::string,std::string> menu_item3("archives-tournaments.html","Tournaments");
+    std::pair<std::string,std::string> menu_item4("archives-tournaments-2021.html","2021");
+    std::pair<std::string,std::string> menu_item5("archives-tournaments-2021.html","2022");
     menu.push_back(menu_item1);
     menu.push_back(menu_item2);
     menu.push_back(menu_item3);
     menu.push_back(menu_item4);
     menu.push_back(menu_item5);
     #ifdef BUILD_PGN
+    std::pair<std::string,std::string> menu_item6("history-trusts-best-games.html","Trusts Best Games");
+    menu.push_back(menu_item6);
+    std::map<char,std::string> macros;
+    macros['T'] = "Trusts Best Games";
+    macros['S'] = "Bulletins";
+    macros['Z'] = "July 2021";
     GamesCache gc;
     gc.Load(fin1);
-    gc.Publish(fin2,fout,menu);
+    gc.Publish(fin2,fout,macros,menu,menu.size()-1);
     #else
     templat(fin1,fin2,fout,menu);
     #endif
@@ -151,7 +157,7 @@ struct PICTURE
 };
 
 void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
-    const std::vector<std::pair<std::string,std::string>> &menu )
+    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
     std::ifstream fin1( md_file );
     if( !fin1 )
@@ -416,7 +422,7 @@ void templat( const std::string &md_file, const std::string &template_file, cons
     printf( "Last caption is [%s]", picture.caption.c_str() ); */
 
     // Write out the the html
-    std::string h = macro_substitution( header, macros, menu );
+    std::string h = macro_substitution( header, macros, menu, menu_idx );
     util::putline(fout,h);
 
     // New feature - Macro @W in the header just indicates write out the whole input file between header and footer
@@ -604,13 +610,13 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         }
         util::putline(fout,s);
     }
-    std::string f = macro_substitution( footer, macros, menu );
+    std::string f = macro_substitution( footer, macros, menu, menu_idx );
     util::putline(fout,f);
 }
 
 std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,
-    const std::vector<std::pair<std::string,std::string>> &menu )
+    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
     std::string out;
     size_t len = input.length();
@@ -664,13 +670,9 @@ std::string macro_substitution( const std::string &input,
                     {
                         std::string link  = menu[j].first;
                         std::string label = menu[j].second;
-                        bool highlight = link.length()>0 && link[0]=='*';
                         std::string t = normal;
-                        if( highlight )
-                        {
-                            link = link.substr(1);
+                        if( j == menu_idx )
                             t = highlighted;
-                        }
                         std::string text = t;
                         util::replace_all( text, "@1", link );
                         util::replace_all( text, "@2", label );
@@ -687,21 +689,22 @@ std::string macro_substitution( const std::string &input,
 
 static std::set<std::string> directories;
 
-bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu )
+bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    templat(in,"/Users/Bill/Documents/Github/winged-spider/template-main.txt",out,menu);
+    templat(in,"/Users/Bill/Documents/Github/winged-spider/template-main.txt",out,menu,menu_idx);
     return true;
 }
 
-bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu )
+bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     GamesCache gc;
+    std::map<char,std::string> macros;
     gc.Load(in);
-    gc.Publish("/Users/Bill/Documents/Github/winged-spider/template-pgn.txt",out,menu);
+    gc.Publish("/Users/Bill/Documents/Github/winged-spider/template-pgn.txt",out,macros,menu,menu_idx);
     return true;
 }
 

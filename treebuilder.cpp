@@ -85,6 +85,7 @@ void construct_page_group( std::vector<Page*> ptrs )
         menu.push_back( menu_item );
         offset1 = offset2+1;
     }
+    int menu_idx = menu.size();
     for( Page *p: ptrs )
     {
         std::string menu_txt;
@@ -115,12 +116,17 @@ void construct_page_group( std::vector<Page*> ptrs )
         //    printf("Debug break 2\n");
         if( "md" == p->ext )
         {
-            markdown_gen( p, menu );
+            markdown_gen( p, menu, menu_idx );
+        }
+        else if( "pgn" == p->ext )
+        {
+            pgn_to_html( p, menu, menu_idx );
         }
         else if( "html" == p->ext )
         {
             html_gen( p );
         }
+        menu_idx++;
     }
 }
 

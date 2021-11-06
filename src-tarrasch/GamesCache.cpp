@@ -771,7 +771,8 @@ void GamesCache::Eco(  GamesCache *gc_clipboard )
 #endif
 
 void GamesCache::Publish( const std::string &template_file, const std::string &html_out_file,
-                          const std::vector<std::pair<std::string,std::string>> &menu )
+                          std::map<char,std::string> &macros,
+                          const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
     std::ifstream fin( template_file );
     if( !fin )
@@ -841,8 +842,7 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
     }
 
     // Write out the the html
-    std::map<char,std::string> macros;
-    std::string h = macro_substitution( header, macros, menu );
+    std::string h = macro_substitution( header, macros, menu, menu_idx );
     util::putline(fout,h);
 
     int gds_nbr = gds.size();
@@ -946,10 +946,8 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 		int len2 = s.length();
 		if (len2 > 0)
 		{
-			//if( i != 0 )    // blank line needed before all but first prefix
-			//	util::putline(fout,"");
 		    util::putline(fout,"<p>");
-			fout.write(s.c_str(),s.length());
+		    util::puts(fout,s);
 		    util::putline(fout,"</p>");
 		}
 		if (!skip_game)
@@ -991,6 +989,6 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
             util::putline(fout,s);
 		}
 	}
-    std::string f = macro_substitution( footer, macros, menu );
+    std::string f = macro_substitution( footer, macros, menu, menu_idx );
     util::putline(fout,f);
 }

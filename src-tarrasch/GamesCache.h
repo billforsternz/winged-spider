@@ -6,6 +6,10 @@
  ****************************************************************************/
 #ifndef GAMES_CACHE_H
 #define GAMES_CACHE_H
+
+#include <string>
+#include <vector>
+#include <map>
 #include "GameDocument.h"
 
 class GamesCache
@@ -29,7 +33,8 @@ public:
     void FileSaveAllAsAFile( std::string &filename );
     void FileSaveInner( FILE *pgn_out );
     void Publish( const std::string &template_file, const std::string &html_out_file,
-                  const std::vector<std::pair<std::string,std::string>> &menu );
+                    std::map<char,std::string> &macros,
+                    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
     void Eco( GamesCache *gc_clipboard );
     bool IsLoaded();
 	bool TestGameInCache( const GameDocument &gd );

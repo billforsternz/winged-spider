@@ -14,6 +14,7 @@
 namespace util
 {
 void putline(std::ostream &out,const std::string &line);
+void puts(std::ostream &out,const std::string &line);
 std::string sprintf( const char *fmt, ... );
 bool prefix( const std::string &s, const std::string prefix );
 bool suffix( const std::string &s, const std::string suffix );

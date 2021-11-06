@@ -21,6 +21,11 @@ void putline(std::ostream &out,const std::string &line)
     out.write( "\n", 1 );
 }
 
+void puts(std::ostream &out,const std::string &line)
+{
+    out.write( line.c_str(), line.length() );
+}
+
 std::string sprintf( const char *fmt, ... )
 {
     int size = static_cast<int>(strlen(fmt)) * 3;   // guess at size

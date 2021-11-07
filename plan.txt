@@ -15,6 +15,7 @@ History\Historical FIDE Ratings.md
 History\Listener Columns.md
 History\National Championship Winners.md
 History\Representative Honours.md
+History\Trusts Best Games.pgn
 History\Sound Archives.md
 History\The Peter Stuart NZ Games Database.md
 History\Trophies.md

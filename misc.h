@@ -39,6 +39,7 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
 bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
 bool html_gen( Page *p );
 void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+              std::map<char,std::string> &macros,
               const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
 std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,

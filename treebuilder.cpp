@@ -1,4 +1,4 @@
-// treebuilder.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// Directory traversal to build and maintain a 'plan' or sitemap - the core idea of Winged Spider
 //
 
 #include <stdio.h>
@@ -189,6 +189,39 @@ void parse( Page &p )
             else if( c==' ' || c==PATH_SEPARATOR )
                 c = '-';
         }
+
+        // Split up the path
+        size_t offset1=0, offset2;
+        std::vector<std::string> folders;
+        while( offset1 < p.path.length() )
+        {
+            offset2 = p.path.find( PATH_SEPARATOR, offset1 );
+            if( offset2 == std::string::npos )
+                break;
+            std::string name = p.path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
+            folders.push_back( name );
+            offset1 = offset2+1;
+        }
+
+        // Auto generate tile, category, summary
+        p.title = p.base;
+        p.category = p.base;
+        p.summary = "";
+        size_t len = folders.size();
+        if( len > 1 )
+        {
+            p.category = folders[len-1];
+            if( p.base == folders[len-1] )
+                p.summary  = folders[len-2] + " - " + folders[len-1];
+            else
+                p.summary  = folders[len-2] + " - " + folders[len-1] + " - " + p.base;
+        }
+        else if( len > 0 )
+        {
+            p.category = folders[len-1];
+            if( p.base != folders[len-1] )
+                p.summary  = folders[len-1] + " - " + p.base;
+        }
     }
 }
 
@@ -345,10 +378,10 @@ void treebuilder()
     {
         if( !p.is_dir )
         {
-            if( p.ext != "md" && p.ext != "html")
+            if( p.ext != "md" && p.ext != "html" && p.ext != "pgn")
             {
                 p.disabled = true;
-                printf( "Info: Page %s has unsupported extension (not .md or .html), disabled\n", p.path.c_str() );
+                printf( "Info: Page %s has unsupported extension (not .md or .pgn or .html), disabled\n", p.path.c_str() );
                 
             }
             else if( previous && p.target==previous->target )

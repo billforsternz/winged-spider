@@ -30,6 +30,12 @@ struct Page
     std::string ext;        // if it's a file, this is the name of the ext eg "txt" (lowercased)
     std::string dir;        // if it's a file, this is the name of the dir eg "path/to"
 
+    // Auto generated summary text
+                            // Eg Archives/Tournaments/2021.md
+    std::string title;      // Eg "Tournaments 2021"
+    std::string category;   // Eg "Archives"
+    std::string summary;    // Eg "Archives - Tournaments - 2021"
+
     // Features to be added later to support more user annotation for files
     bool empty_line_prefix = false;
     bool empty_line_suffix = false;

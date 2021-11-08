@@ -871,16 +871,12 @@ static std::string removeExtraLineFeeds( const std::string &in )
     return str;
 }
 
-
-
 void GameView::ToPublishString( std::string &str, int &diagram_base, int &mv_base, int &neg_base, int publish_options, int begin, int end )
 {
-    #define DIAGRAM_SPACING 8
+    #define DIAGRAM_SPACING 20
     str = "";
     //int col = 0;
     int indent = 0;
-    int diagram_count = DIAGRAM_SPACING;
-    int diagram_idx = -1;
     thc::ChessPosition tmp;
     thc::ChessPosition diagram_cp=start_position;
     bool needs_fen = (begin==0 && tmp!=start_position);
@@ -891,6 +887,41 @@ void GameView::ToPublishString( std::string &str, int &diagram_base, int &mv_bas
     bool first_diagram = true;
     bool after_diagram = false;
 	bool no_extra_whitespace_please = false;
+
+    // Check for any diagrams, if not auto generate one
+    bool at_least_one_diagram_tag = false;
+    int move_count = 0;
+    int auto_diag_first_diag_count = 0;
+    for( int i=begin; i<end; i++ )
+    {
+        GameViewElement &gve = expansion[i];
+        if( gve.type == PRE_COMMENT || gve.type == COMMENT )
+        {
+            if( move_count>2 && !auto_diag_first_diag_count )
+                auto_diag_first_diag_count = move_count-1;    // Auto diagram before first comment
+            std::string frag = (gve.type == PRE_COMMENT ? gve.node->game_move.pre_comment
+                                            : gve.node->game_move.comment);
+            size_t found = frag.find("#Diagram");
+            if( found != std::string::npos )
+                at_least_one_diagram_tag = true;
+            else
+            {
+                found = frag.find("Diagram #");
+                if( found != std::string::npos )
+                    at_least_one_diagram_tag = true;
+            }
+        }
+        if( gve.type == MOVE )
+            move_count++;
+    }
+
+    // If there are no diagrams, one will be automatically created for first comment, if there is one
+    int diagram_count = auto_diag_first_diag_count;
+    if( diagram_count == 0 )
+        diagram_count = (move_count<DIAGRAM_SPACING ? (move_count>0?move_count-1:0) : DIAGRAM_SPACING);
+    int diagram_idx = -1;
+
+    // Loop through expansion
     for( int i=begin; i<end; i++ )
     {
         if( need_open )
@@ -1200,11 +1231,19 @@ void GameView::ToPublishString( std::string &str, int &diagram_base, int &mv_bas
                     frag += "' rel='";
                     frag += buf_diag_nbr;
                     frag += " ";
-                    //#define AUTODIAG
-                    #ifdef AUTODIAG
                     if( diagram_count>0 && !(publish_options&SKIP_TO_FIRST_DIAGRAM) )
-                        diagram_count--;    // Comment this out to kill autodiag
-                    #endif
+                    {
+                        // Countdown to an auto diagram
+                        #ifdef AUTO_REGULAR_SPACED_DIAGS
+                        diagram_count--;
+                        #else
+
+                        // If no diagram tags, and waiting for first diagam, countdown to an auto diagram
+                        bool create_auto_diagram = (!at_least_one_diagram_tag && first_diagram);
+                        if( create_auto_diagram )  
+                            diagram_count--;
+                        #endif
+                    }
                     //if( 0 == strcmp(nmove.c_str(),"Rxf7") )
                     //    frag += " ";
                     if( diagram_count==0 && indent==0 && ShouldDiagGoHere(i,end,indent) )

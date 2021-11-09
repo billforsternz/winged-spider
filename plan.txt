@@ -1,14 +1,19 @@
 Home.md
 Calendar.md
 Results.md
+Notices.md
 Resources.md
 Ratings.md
-Notices.md
-History\
-Interschools\
 NZ Chess Online\
-Archives\
+Interschools\
 Chess Clubs.html
+History\
+Archives\
+Bulletins\
+Trophies\
+Facebook Page -> https://www.facebook.com/NewZealandChessFederation/
+Contact Us.html
+More\
 History\History.md
 History\Correspondence Chess.md
 History\Historical FIDE Ratings.md
@@ -30,14 +35,31 @@ Interschools\2018 Calendar.html
 Interschools\2018 Results.html
 Interschools\2017 Calendar not here.html
 Interschools\2017 Results.html
+More\More.md
+More\Junior Badges.html
+More\Links.html
+More\Correspondence.html
+More\Cheap Chess Equipment -> https://newzealandchess.co.nz/NZCFdocs/equipmentforschools.pdf
+More\Grand Prix.html
+Trophies\Trophies.md
+Trophies\Championship.md
+Trophies\Premier Reserve.md
+Trophies\Major Open.md
+Trophies\North Island.md
+Trophies\South Island.md
+Trophies\School Pupils.md
+Trophies\NZ Rapid.md
+Trophies\Women's Championship.md
 NZ Chess Online\NZ Chess Online.md
 NZ Chess Online\Online Interclub.md
 NZ Chess Online\Running Chess Clubs Online.md
 Archives\Archives.html
+Archives\Archives.md
 Archives\Home Page\
 Archives\Results\
 Archives\Tournaments\
 Archives\Home Page\Home Page.html
+Archives\Home Page\Home Page.md
 Archives\Home Page\2019.md
 Archives\Home Page\2018.md
 Archives\Results\Results.md
@@ -45,6 +67,18 @@ Archives\Results\2018.html
 Archives\Results\2017.html
 Archives\Results\2016.html
 Archives\Tournaments\Tournaments.md
+Bulletins\New Zealand Chess Bulletin.md
+Bulletins\July 2021\
+Bulletins\October 2020\
+Bulletins\July 2021\July 2021.md
+Bulletins\July 2021\The Australian Attack.pgn
+Bulletins\July 2021\Trusts Best Games.pgn
+Bulletins\October 2020\October 2020.md
+Bulletins\October 2020\Magic in the Basement.pgn
+Bulletins\October 2020\Shades of the Past.pgn
+Bulletins\October 2020\Some Asian Online Nations Women's Highlights.pgn
+Bulletins\October 2020\Some Online Nations Open Highlights.pgn
+Bulletins\October 2020\Some South Island Championship Highlights.pgn
 Archives\Tournaments\2021.md
 Archives\Tournaments\2020.md
 Archives\Tournaments\2019.md

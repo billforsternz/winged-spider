@@ -946,9 +946,49 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 		int len2 = s.length();
 		if (len2 > 0)
 		{
-		    util::putline(fout,"<p>");
-		    util::puts(fout,s);
-		    util::putline(fout,"</p>");
+            size_t offset=0;
+            bool last = false;
+            while(!last)
+            {
+                last = true;
+
+                // find beginning of a paragraph
+                size_t offset1 = s.find_first_not_of("\n\r\t ", offset );
+                if( offset1 == std::string::npos )
+                {
+                    offset1 = 0;
+                    break;  // nothing at all to write
+                }
+
+                // find potential end of a paragraph
+                size_t offset2 = s.find_first_of("\n", offset1 );
+                while( offset2 != std::string::npos )
+                {
+                    size_t offset3 = s.find_first_of("\n", offset2+1 );
+                    size_t offset4 = s.find_first_not_of("\n\r\t ", offset2+1);
+                    if( offset3 == std::string::npos )
+                        break;  // definitely final para - ends without newline
+                    if( offset4 == std::string::npos )
+                        break;  // definitely final para - nothing beyond newline
+                    if( offset3 < offset4 )
+                    {
+                        // At least 2 \n chars in whitespace, so it's a para
+                        last = false;       // only thus do we continue for another para
+                        offset = offset2+1; // start looking for another para here
+                        break;
+                    }
+                    offset2 = s.find_first_of("\n", offset4 ); // keep looking for 2 \n chars
+                }
+                std::string para = last ? s.substr(offset1) : s.substr(offset1,offset2-offset1);
+                int hn = 0;
+                while( para.length()>hn && para[hn]=='#' )
+                    hn++;
+                std::string pre = hn>0 ? util::sprintf("<h%c>",'0'+hn) : "<p>";
+                std::string post = hn>0 ? util::sprintf("</h%c>",'0'+hn) : "</p>";
+		        util::putline(fout,pre);
+		        util::puts(fout,para.substr(hn));
+		        util::putline(fout,post);
+            }
 		}
 		if (!skip_game)
 		{

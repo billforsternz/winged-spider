@@ -94,10 +94,18 @@ void construct_page_group( std::vector<Page*> ptrs )
             std::pair<std::string,std::string> menu_item( directory_to_target[p->path], p->base );
             menu.push_back( menu_item );
         }
-        else
+        else if( p->is_link )
         {
-            std::pair<std::string,std::string> menu_item( p->target, p->base );
+            std::pair<std::string,std::string> menu_item( p->link, p->base );
             menu.push_back( menu_item );
+        }
+        else if( p->is_file )
+        {
+            if( p->ext=="md" || p->ext=="pgn" || p->ext=="html" )
+            {
+                std::pair<std::string,std::string> menu_item( p->target, p->base );
+                menu.push_back( menu_item );
+            }
         }
     }
     printf("\nMenu>\n");
@@ -112,6 +120,9 @@ void construct_page_group( std::vector<Page*> ptrs )
     //  (force build for now)
     for( Page *p: ptrs )
     {
+        if( !p->is_file )
+            continue;
+
         //if( p->path == "Archives\\Archives.md" )
         //    printf("Debug break 2\n");
         if( "md" == p->ext )
@@ -176,7 +187,7 @@ void parse( Page &p )
         p.base = p.filename.substr(0,offset);
         p.ext  = util::tolower(p.filename.substr(offset+1));
     }
-    if( !p.is_dir )
+    if( p.is_file )
     {
         if( p.dir.length() == 0 )
             p.target = p.base + ".html";
@@ -245,18 +256,31 @@ void read_file( const char *plan_file, std::vector<Page> &results )
         if( len > 0 && line[0]>=' ' )
         {
             Page p;
+            size_t offset = line.find("->");
+            if( offset != std::string::npos )
+            {
+                p.link = line.substr(offset+2);
+                line = line.substr(0,offset);
+                util::rtrim(line);
+                util::ltrim(p.link);
+                util::rtrim(p.link);
+                p.is_link = (p.link.length()>1);
+                len = line.length();
+            }
             int level = 1;
             for( char c: line )
             {
                 if( c == PATH_SEPARATOR )
                     level++;
             }
-            if( line[len-1] == PATH_SEPARATOR )
+            if( line[len-1] == PATH_SEPARATOR && !p.is_link)
             {
                 p.is_dir = true;
                 line = line.substr(0,len-1);
                 level--;
             }
+            if( !p.is_dir && !p.is_link)
+                p.is_file = true;
             p.path = line;
             p.plan_line_nbr = line_nbr;
             p.from_plan_file = true;
@@ -280,6 +304,11 @@ void write_file( const char *plan_file, const std::vector<Page> &results )
         std::string s = p.path;
         if( p.is_dir )
             s += PATH_SEPARATOR_STR;
+        else if( p.is_link )
+        {
+            s += " -> ";
+            s += p.link;
+        }
         util::putline( fout, s );
     }
 }
@@ -310,14 +339,17 @@ void treebuilder()
             }
             else
             {
-                // Multiple pages in a row from directory structure = new files we don't know about
-                printf( "Info: new file present: %s\n", p.path.c_str() );
+                if( p.ext=="md" || p.ext=="pgn" || p.ext=="html" )
+                {
+                    // Multiple pages in a row from directory structure = new files we don't know about
+                    printf( "Info: new file present: %s\n", p.path.c_str() );
 
-                // Add this line to plan, immediately after this point in plan
-                p.from_plan_file = true;
-                p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
-                p.added_to_plan_line_nbr = sec_sort++;
-                rewrite = true;
+                    // Add this line to plan, immediately after this point in plan
+                    p.from_plan_file = true;
+                    p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
+                    p.added_to_plan_line_nbr = sec_sort++;
+                    rewrite = true;
+                }
             }
         }
         else
@@ -345,8 +377,11 @@ void treebuilder()
             else
             {
                 // Multiple pages in a row from plan file = old files have been deleted
-                printf( "Info: A page in plan file unexpectedly absent, disabled: %s\n", plan_page->path.c_str() );
-                plan_page->disabled = true;
+                if( plan_page->is_file )
+                {
+                    printf( "Info: A page in plan file unexpectedly absent, disabled: %s\n", plan_page->path.c_str() );
+                    plan_page->disabled = true;
+                }
                 plan_page = &p;
             }
         }
@@ -376,7 +411,7 @@ void treebuilder()
     Page *previous = NULL;
     for( Page &p: results )
     {
-        if( !p.is_dir )
+        if( p.is_file )
         {
             if( p.ext != "md" && p.ext != "html" && p.ext != "pgn")
             {

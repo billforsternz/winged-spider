@@ -18,17 +18,26 @@
 struct Page
 {
     int level=0;
-    bool is_dir=false;
-    bool from_plan_file=false;
-    unsigned long plan_line_nbr = ULONG_MAX;
-    unsigned long added_to_plan_line_nbr=0;
-    bool disabled = false;
+
+    // One and only one of the following three
+    bool is_file = false; 
+    bool is_dir  = false;
+    bool is_link = false;
+
+    // Main characteristics
     std::string path;       // the full path name, eg "path/to/file.txt"
-    std::string target;     // the full unix path name to the final html file, eg "/path/to/file.html"
+    std::string target;     // the full unix path name to the final html file, eg "path-to-file.html"
     std::string filename;   // if it's a file, this is the name of the file eg "file.txt"
     std::string base;       // if it's a file, this is the name without the extension eg "file"
     std::string ext;        // if it's a file, this is the name of the ext eg "txt" (lowercased)
     std::string dir;        // if it's a file, this is the name of the dir eg "path/to"
+    std::string link;       // if is_link is true
+
+    // Misc
+    bool from_plan_file=false;
+    unsigned long plan_line_nbr = ULONG_MAX;
+    unsigned long added_to_plan_line_nbr=0;
+    bool disabled = false;
 
     // Auto generated summary text
                             // Eg Archives/Tournaments/2021.md
@@ -41,7 +50,6 @@ struct Page
     bool empty_line_suffix = false;
     std::vector<std::string> prefix;
     std::vector<std::string> suffix;
-    std::vector<std::string> link;    // if this is actually a ptr to another page
 };
 
 

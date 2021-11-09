@@ -77,7 +77,7 @@ namespace fs = std::experimental::filesystem;
 //#define BUILD_HOME
 //#define BUILD_RESULTS
 //#define BUILD_TOURNAMENT
-#define BUILD_PGN
+//#define BUILD_PGN
 
 void treebuilder();
 

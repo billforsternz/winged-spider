@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "..\misc.h"
 #include "..\util.h"
+#include "..\md4c-html.h"
 #include "thc.h"
 #include "PgnFiles.h"
 #include "Lang.h"
@@ -770,6 +771,14 @@ void GamesCache::Eco(  GamesCache *gc_clipboard )
 }
 #endif
 
+
+static void md_callback2( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string )
+{
+    std::string *ps = (std::string *)addr_std_string;
+    std::string s(txt,len);
+    *ps += s;
+}
+
 void GamesCache::Publish( const std::string &template_file, const std::string &html_out_file,
                           std::map<char,std::string> &macros,
                           const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
@@ -943,6 +952,16 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 				}
 			}
 		}
+#if 1
+        std::string out;
+        md_html( s.c_str(), s.length(),
+            md_callback2,
+            &out,                           // userdata
+            MD_FLAG_PERMISSIVEATXHEADERS,   // parser_flags, (allow "#Heading" as well as "# Heading")
+            0                               // unsigned renderer_flags
+        );
+		util::puts(fout,out);
+#else
 		int len2 = s.length();
 		if (len2 > 0)
 		{
@@ -990,6 +1009,7 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 		        util::putline(fout,post);
             }
 		}
+#endif
 		if (!skip_game)
 		{
 

@@ -151,7 +151,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="entity.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="md4c-html.c" />
+    <ClCompile Include="md4c.c" />
     <ClCompile Include="src-tarrasch\BinDb.cpp" />
     <ClCompile Include="src-tarrasch\CompactGame.cpp" />
     <ClCompile Include="src-tarrasch\CompressMoves.cpp" />
@@ -169,6 +172,9 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="entity.h" />
+    <ClInclude Include="md4c-html.h" />
+    <ClInclude Include="md4c.h" />
     <ClInclude Include="misc.h" />
     <ClInclude Include="page.h" />
     <ClInclude Include="src-tarrasch\BinaryConversions.h" />

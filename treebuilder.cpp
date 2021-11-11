@@ -313,6 +313,10 @@ void write_file( const char *plan_file, const std::vector<Page> &results )
     }
 }
 
+
+// New pages not currently smoothly added, until this bug fixed do't do it
+#define BUG_NEEDS_TO_BE_FIXED   // hmm acutally we need it defined or worse happens
+
 void treebuilder()
 {
     std::vector<Page> results;
@@ -345,10 +349,13 @@ void treebuilder()
                     printf( "Info: new file present: %s\n", p.path.c_str() );
 
                     // Add this line to plan, immediately after this point in plan
-                    p.from_plan_file = true;
                     p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
                     p.added_to_plan_line_nbr = sec_sort++;
+
+                    #ifdef BUG_NEEDS_TO_BE_FIXED
+                    p.from_plan_file = true;
                     rewrite = true;
+                    #endif
                 }
             }
         }
@@ -371,7 +378,11 @@ void treebuilder()
                     p.from_plan_file = true;
                     p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
                     p.added_to_plan_line_nbr = sec_sort++;
+
+                    #ifdef BUG_NEEDS_TO_BE_FIXED
+                    p.from_plan_file = true;
                     rewrite = true;
+                    #endif
                 }
             }
             else

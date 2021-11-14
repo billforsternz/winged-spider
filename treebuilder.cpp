@@ -14,45 +14,63 @@ namespace fs = std::experimental::filesystem;
 #include "page.h"
 #include "misc.h"
 
-static std::map<std::string,std::string> directory_to_target;
+static std::map<std::string,Page *> directory_to_target;
 
 // Each directory comprises a group of pages
 // If directory is selected from a parent menu, it needs to resolve
 //  to a target. The target is the first page in the directory if
-//  that page is a leaf (a html file). If instead it's a ptr to
-//  another directory, we need to go to that directory to find the
-//  target. This can repeat of course, so we iterate until all the
-//  targets are locked down
+//  that page is a leaf (a html file).
 //
-// Return true if more iterations needed to find this target
-bool construct_target( std::vector<Page*> ptrs )
+void construct_dir_targets1( std::vector<Page*> ptrs )
 {
-    if( ptrs.size() == 0 )
-        return false;
-
-    // First page in each directory is menu target for that directory
-    Page *p = ptrs[0];
-
-    // Stop if the target for this directory is already established
-    auto it = directory_to_target.find(p->dir);
-    bool found = (it != directory_to_target.end());
-    if( found )
-        return false;
-
-    // Typically target is a leaf html page 
-    std::string target = p->target;
-    found = true;
-    if( p->is_dir )  // but if it's a directory, look to forward to the
-                     //  target for that directory
+    bool not_found = true;
+    for( Page *p: ptrs )
     {
-        auto it = directory_to_target.find(p->path);
-        found = (it != directory_to_target.end());
-        if( found )
-            target = it->second;
+        if( p->is_file )
+        {
+            not_found = false;
+            directory_to_target[p->dir] = p;
+         /* std::string s = p->path;
+            size_t offset = 0;
+            while( offset != std::string::npos )
+            {
+                std::string dir = s.substr(0,offset);   // start with dir = ""
+                auto it = directory_to_target.find(dir);
+                bool found = (it != directory_to_target.end());
+                if( !found || p->level < it->second->level )
+                    directory_to_target[dir] = p;
+                offset = s.find(PATH_SEPARATOR,offset+1);
+            } */
+            break;
+        }
     }
-    if( found )
-        directory_to_target[p->dir] = target;
-    return !found;   // return true if more work to do
+    if( not_found )
+    {
+        for( Page *p: ptrs )
+        {
+            directory_to_target[p->dir] = p;
+            p->make_file_for_dir = true;
+            break;
+        }
+    }
+}
+
+void construct_dir_targets2( std::vector<Page> &results )
+{
+    return;
+    for( Page &page: results )
+    {
+        if( page.is_dir )
+        {
+            auto it = directory_to_target.find(page.path);
+            bool found = (it != directory_to_target.end());
+            if( !found )
+            {
+                directory_to_target[page.path] = &page;
+                page.make_file_for_dir = true;
+            }
+        }
+    }
 }
 
 void construct_page_group( std::vector<Page*> ptrs )
@@ -68,7 +86,7 @@ void construct_page_group( std::vector<Page*> ptrs )
     // If not at root, start with "Home" link to start of root directory
     if( p->dir.length() > 0 )
     {
-        std::pair<std::string,std::string> menu_item( directory_to_target[""], "Home" );
+        std::pair<std::string,std::string> menu_item( directory_to_target[""]->target, "Home" );
         menu.push_back( menu_item );
     }
 
@@ -78,10 +96,17 @@ void construct_page_group( std::vector<Page*> ptrs )
     {
         offset2 = p->dir.find( PATH_SEPARATOR, offset1 );
         if( offset2 == std::string::npos )
+        {
+            if( offset1 == 0 )
+            {
+                std::pair<std::string,std::string> menu_item( directory_to_target[p->dir]->target, p->dir );
+                menu.push_back( menu_item );
+            }
             break;
+        }
         std::string subdir = p->dir.substr( 0, offset2 );              // eg "Archives", then "Archives\Tournaments"
         std::string name   = p->dir.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
-        std::pair<std::string,std::string> menu_item( directory_to_target[subdir], name );
+        std::pair<std::string,std::string> menu_item( directory_to_target[subdir]->target, name );
         menu.push_back( menu_item );
         offset1 = offset2+1;
     }
@@ -91,7 +116,7 @@ void construct_page_group( std::vector<Page*> ptrs )
         std::string menu_txt;
         if( p->is_dir )
         {
-            std::pair<std::string,std::string> menu_item( directory_to_target[p->path], p->base );
+            std::pair<std::string,std::string> menu_item( directory_to_target[p->path]->target, p->base );
             menu.push_back( menu_item );
         }
         else if( p->is_link )
@@ -120,12 +145,16 @@ void construct_page_group( std::vector<Page*> ptrs )
     //  (force build for now)
     for( Page *p: ptrs )
     {
-        if( !p->is_file )
+        if( !p->is_file && !p->make_file_for_dir )
             continue;
+        if( p->make_file_for_dir )
+        {
+            markdown_gen( p, menu, menu_idx-1 );
+        }
 
         //if( p->path == "Archives\\Archives.md" )
         //    printf("Debug break 2\n");
-        if( "md" == p->ext )
+        else if( "md" == p->ext )
         {
             markdown_gen( p, menu, menu_idx );
         }
@@ -187,52 +216,49 @@ void parse( Page &p )
         p.base = p.filename.substr(0,offset);
         p.ext  = util::tolower(p.filename.substr(offset+1));
     }
-    if( p.is_file )
+    if( p.dir.length() == 0 )
+        p.target = p.base + ".html";
+    else
+        p.target = p.dir + '-' + p.base + ".html";
+    for( char &c: p.target )
     {
-        if( p.dir.length() == 0 )
-            p.target = p.base + ".html";
+        if( isascii(c) && isupper(c) )
+            c = tolower(c);
+        else if( c==' ' || c==PATH_SEPARATOR )
+            c = '-';
+    }
+
+    // Split up the path
+    size_t offset1=0, offset2;
+    std::vector<std::string> folders;
+    while( offset1 < p.path.length() )
+    {
+        offset2 = p.path.find( PATH_SEPARATOR, offset1 );
+        if( offset2 == std::string::npos )
+            break;
+        std::string name = p.path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
+        folders.push_back( name );
+        offset1 = offset2+1;
+    }
+
+    // Auto generate tile, category, summary
+    p.title = p.base;
+    p.category = p.base;
+    p.summary = "";
+    size_t len = folders.size();
+    if( len > 1 )
+    {
+        p.category = folders[len-1];
+        if( p.base == folders[len-1] )
+            p.summary  = folders[len-2] + " - " + folders[len-1];
         else
-            p.target = p.dir + '-' + p.base + ".html";
-        for( char &c: p.target )
-        {
-            if( isascii(c) && isupper(c) )
-                c = tolower(c);
-            else if( c==' ' || c==PATH_SEPARATOR )
-                c = '-';
-        }
-
-        // Split up the path
-        size_t offset1=0, offset2;
-        std::vector<std::string> folders;
-        while( offset1 < p.path.length() )
-        {
-            offset2 = p.path.find( PATH_SEPARATOR, offset1 );
-            if( offset2 == std::string::npos )
-                break;
-            std::string name = p.path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
-            folders.push_back( name );
-            offset1 = offset2+1;
-        }
-
-        // Auto generate tile, category, summary
-        p.title = p.base;
-        p.category = p.base;
-        p.summary = "";
-        size_t len = folders.size();
-        if( len > 1 )
-        {
-            p.category = folders[len-1];
-            if( p.base == folders[len-1] )
-                p.summary  = folders[len-2] + " - " + folders[len-1];
-            else
-                p.summary  = folders[len-2] + " - " + folders[len-1] + " - " + p.base;
-        }
-        else if( len > 0 )
-        {
-            p.category = folders[len-1];
-            if( p.base != folders[len-1] )
-                p.summary  = folders[len-1] + " - " + p.base;
-        }
+            p.summary  = folders[len-2] + " - " + folders[len-1] + " - " + p.base;
+    }
+    else if( len > 0 )
+    {
+        p.category = folders[len-1];
+        if( p.base != folders[len-1] )
+            p.summary  = folders[len-1] + " - " + p.base;
     }
 }
 
@@ -313,6 +339,40 @@ void write_file( const char *plan_file, const std::vector<Page> &results )
     }
 }
 
+// Returns bool more
+static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart )
+{
+    static size_t idx;
+    if( restart )
+        idx = 0;
+    ptrs.clear();
+    bool first = true;
+    std::string group;
+    while( idx < results.size() )
+    {
+        Page &p = results[idx++];
+        if( !p.disabled )
+        {
+            if( first )
+            {
+                ptrs.push_back(&p);
+                group = p.dir;
+                first = false;
+            }
+            else
+            {
+                if( p.dir == group )
+                    ptrs.push_back(&p);
+                else
+                {
+                    idx--;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 // New pages not currently smoothly added, until this bug fixed do't do it
 #define BUG_NEEDS_TO_BE_FIXED   // hmm acutally we need it defined or worse happens
@@ -330,6 +390,10 @@ void treebuilder()
     bool rewrite = false;
     Page *plan_page=NULL;
     unsigned long sec_sort = 1;      // Used to insert new plan lines at an appropriate point
+
+    printf( "### Sync stage 1\n" );
+    for( Page &p: results )
+        printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
     for( Page &p: results )
     {
         //printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
@@ -343,10 +407,10 @@ void treebuilder()
             }
             else
             {
-                if( p.ext=="md" || p.ext=="pgn" || p.ext=="html" )
+                if( p.is_dir || p.ext=="md" || p.ext=="pgn" || p.ext=="html" )
                 {
                     // Multiple pages in a row from directory structure = new files we don't know about
-                    printf( "Info: new file present: %s\n", p.path.c_str() );
+                    printf( "Info: new file or directory present: %s\n", p.path.c_str() );
 
                     // Add this line to plan, immediately after this point in plan
                     p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
@@ -412,6 +476,10 @@ void treebuilder()
     }
     results.erase( it, results.end() );
 
+    printf( "### Sync after removing Dir entries\n" );
+    for( Page &p: results )
+        printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
+
     // Rewrite the plan file. For the moment we use a temporary file name and don't overwrite the actual plan file
     if( rewrite )
         write_file( "temp_plan_file.txt", results );
@@ -449,68 +517,34 @@ void treebuilder()
     std::sort( results.begin(), results.end(), less_than_restore_order ); // restore to plan file order
 
     // Initial scan of each page, identifying targets for each directory
-    bool keep_going = true;
-    for( int i=0; keep_going && i<1000; i++ )
+    bool first = true;
+    for( bool more=true; more;)
     {
-        bool final = (i+1 >= 1000);
-        keep_going = false;   // stop once all targets constructed
         std::vector<Page*> ptrs;
-        std::string group;
-        for( Page &p: results )
+        more = get_next_page_group( results, ptrs, first );
+        first = false;
+        //-------------
+        printf( "Debug: ------ Page group begin\n" );
+        for( const Page *p: ptrs )
         {
-            if( !p.disabled )
-            {
-                if( p.dir == group )
-                    ptrs.push_back(&p);
-                else
-                {
-                    if( construct_target(ptrs) )
-                    {
-                        keep_going = true;
-                        if( final )
-                        {
-                            printf( "Fatal: At least one unresolved directory with no target html file\n"
-                                    "Directory is %s\n", ptrs[0]->dir.c_str() );
-                            return;
-                        }
-                    }
-                    group = p.dir;
-                    ptrs.clear();
-                    ptrs.push_back(&p);
-                }
-            }
+            std::string status = p->is_file ? "is_file" : (p->is_link ? "is_link" : (p->is_dir?"is_dir":"is_??") );
+            printf( "status:%s dir:\"%s\" path:\"%s\"\n", status.c_str(), p->dir.c_str(), p->path.c_str() );
         }
-        if( construct_target(ptrs) )
-        {
-            keep_going = true;
-            if( final )
-            {
-                printf( "Fatal: At least one unresolved directory with no target html file\n"
-                    "Directory is %s\n", ptrs[0]->dir.c_str() );
-                return;
-            }
-        }
+        printf( "Debug: ------ Page group end\n" );
+        //-------------
+        construct_dir_targets1(ptrs);
     }
+    construct_dir_targets2(results);
 
-    // Second scan of each page, building pages
-    std::vector<Page*> ptrs;
-    std::string group;
-    for( Page &p: results )
+    // Second scan of each page, building menus
+    first = true;
+    for( bool more=true; more;)
     {
-        if( !p.disabled )
-        {
-            if( p.dir == group )
-                ptrs.push_back(&p);
-            else
-            {
-                construct_page_group(ptrs);
-                group = p.dir;
-                ptrs.clear();
-                ptrs.push_back(&p);
-            }
-        }
+        std::vector<Page*> ptrs;
+        more = get_next_page_group( results, ptrs, first );
+        first = false;
+        construct_page_group(ptrs);
     }
-    construct_page_group(ptrs);
 }
 
 void recurse( const std::string &path, std::vector<Page> &results )
@@ -527,8 +561,8 @@ void recurse( const std::string &path, std::vector<Page> &results )
         if( s.length() >= (base_in_len+1) )
             t = s.substr((base_in_len+1));
         p.path = t;
-        parse(p);
         p.is_dir = is_directory(entry);
+        parse(p);
         if( p.is_dir )
         {
             results.push_back( p );

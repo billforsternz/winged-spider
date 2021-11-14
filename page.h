@@ -38,6 +38,7 @@ struct Page
     unsigned long plan_line_nbr = ULONG_MAX;
     unsigned long added_to_plan_line_nbr=0;
     bool disabled = false;
+    bool make_file_for_dir = false;
 
     // Auto generated summary text
                             // Eg Archives/Tournaments/2021.md

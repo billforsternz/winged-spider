@@ -1,88 +1,12 @@
 Home.md
 Calendar.md
-Results.md
-Notices.md
-Resources.md
-Ratings.md
-NZ Chess Online\
-Interschools\
 Chess Clubs.html
-History\
-Archives\
-Bulletins\
-Trophies\
-Facebook Page -> https://www.facebook.com/NewZealandChessFederation/
 Contact Us.html
-More\
-History\History.md
-History\Correspondence Chess.md
-History\Historical FIDE Ratings.md
-History\Listener Columns.md
-History\National Championship Winners.md
-History\Representative Honours.md
-History\Trusts Best Games.pgn
-History\Sound Archives.md
-History\The Peter Stuart NZ Games Database.md
-History\Trophies.md
-Interschools\Interschools.md
-Interschools\2021 Calendar.html
-Interschools\2021 Results.html
-Interschools\2020 Calendar.html
-Interschools\2020 Results.html
-Interschools\2019 Calendar.html
-Interschools\2019 Results.html
-Interschools\2018 Calendar.html
-Interschools\2018 Results.html
-Interschools\2017 Calendar not here.html
-Interschools\2017 Results.html
-More\More.md
-More\Junior Badges.html
-More\Links.html
-More\Correspondence.html
-More\Cheap Chess Equipment -> https://newzealandchess.co.nz/NZCFdocs/equipmentforschools.pdf
-More\Grand Prix.html
-Trophies\Trophies.md
-Trophies\Championship.md
-Trophies\Premier Reserve.md
-Trophies\Major Open.md
-Trophies\North Island.md
-Trophies\South Island.md
-Trophies\School Pupils.md
-Trophies\NZ Rapid.md
-Trophies\Women's Championship.md
-NZ Chess Online\NZ Chess Online.md
-NZ Chess Online\Online Interclub.md
-NZ Chess Online\Running Chess Clubs Online.md
-Archives\Archives.md
-Archives\Home Page\
-Archives\Results\
-Archives\Tournaments\
-Archives\Home Page\Home Page.md
-Archives\Home Page\2019.md
-Archives\Home Page\2018.md
-Archives\Results\Results.md
-Archives\Results\2018.html
-Archives\Results\2017.html
-Archives\Results\2016.html
-Archives\Tournaments\Tournaments.md
-Bulletins\Bulletins.md
-Bulletins\July 2021\
-Bulletins\October 2020\
-Bulletins\August 2020\
-Bulletins\June 2020\
-Bulletins\June 2019\
-Bulletins\March 2019\
-Bulletins\February 2019\
-Bulletins\July 2021\July 2021.md
-Bulletins\July 2021\The Australian Attack.pgn
-Bulletins\July 2021\Trusts Best Games.pgn
-Bulletins\October 2020\October 2020.md
-Bulletins\October 2020\South Island Championship.pgn
-Bulletins\October 2020\Asian Online Nations Open.pgn
-Bulletins\October 2020\Asian Online Nations Womens.pgn
-Bulletins\October 2020\Magic in the Basement.pgn
-Bulletins\October 2020\Shades of the Past.pgn
-Bulletins\October 2020\Commemorating 140 Years.md
+Notices.md
+Ratings.md
+Bulletins\
+Resources.md
+Results.md
 Bulletins\August 2020\August 2020.md
 Bulletins\August 2020\Round 1.pgn
 Bulletins\August 2020\Round 2.pgn
@@ -93,36 +17,7 @@ Bulletins\August 2020\Round 6.pgn
 Bulletins\August 2020\Round 7.pgn
 Bulletins\August 2020\Round 8.pgn
 Bulletins\August 2020\Round 9.pgn
-Bulletins\June 2020\June 2020.md
-Bulletins\June 2020\GMs in Round 1.pgn
-Bulletins\June 2020\Big Attacks.pgn
-Bulletins\June 2020\Hard Fought Draws.pgn
-Bulletins\June 2020\Interclub Tactics.pgn
-Bulletins\June 2020\Interesting Openings.pgn
-Bulletins\June 2020\Messy Mayhem.pgn
-Bulletins\June 2020\Positional Domination.pgn
-Bulletins\June 2020\Premature Resignations.pgn
-Bulletins\June 2020\Turning the Tables.pgn
-Bulletins\June 2020\Brett Mullan.pgn
-Bulletins\June 2020\Graham Pitts.pgn
-Bulletins\June 2020\NZ Chess Gazette.md
-Bulletins\June 2019\June 2019.md
-Bulletins\June 2019\Amateur Senior World Champs.pgn
-Bulletins\June 2019\B-N5 exclam.pgn
-Bulletins\June 2019\Chess in Invercargill.md
-Bulletins\June 2019\Host City Asia Report.md
-Bulletins\June 2019\North Island Champs.pgn
-Bulletins\June 2019\Upper Hutt Rapid.pgn
-Bulletins\March 2019\March 2019.md
-Bulletins\March 2019\Oceania Zonal 2019 Report from Guam.pgn
-Bulletins\March 2019\Deja Vu a Surprising Kiwi Connection.pgn
 Bulletins\February 2019\February 2019.md
 Bulletins\February 2019\George Trundle.pgn
 Bulletins\February 2019\Guam.pgn
 Bulletins\February 2019\NZ Open.pgn
-Archives\Tournaments\2021.md
-Archives\Tournaments\2020.md
-Archives\Tournaments\2019.md
-Archives\Tournaments\2018.md
-Archives\Tournaments\2017.md
-Archives\Tournaments\2016.md

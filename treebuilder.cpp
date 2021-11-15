@@ -129,7 +129,10 @@ void construct_page_group( std::vector<Page*> ptrs )
             if( p->ext=="md" || p->ext=="pgn" || p->ext=="html" )
             {
                 std::pair<std::string,std::string> menu_item( p->target, p->base );
-                menu.push_back( menu_item );
+                if( menu.size() > 0 && menu_item == menu[menu.size()-1] )
+                    menu_idx--;   // yuck
+                else
+                    menu.push_back( menu_item );
             }
         }
     }
@@ -149,7 +152,7 @@ void construct_page_group( std::vector<Page*> ptrs )
             continue;
         if( p->make_file_for_dir )
         {
-            markdown_gen( p, menu, menu_idx-1 );
+            markdown_gen( p, menu, menu_idx-1 );        // TODO fix the too tricky logic that makes the -1 necessary
         }
 
         //if( p->path == "Archives\\Archives.md" )
@@ -562,6 +565,7 @@ void recurse( const std::string &path, std::vector<Page> &results )
             t = s.substr((base_in_len+1));
         p.path = t;
         p.is_dir = is_directory(entry);
+        p.is_file = !p.is_dir;
         parse(p);
         if( p.is_dir )
         {

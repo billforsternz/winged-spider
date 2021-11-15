@@ -4,6 +4,7 @@ Chess Clubs.html
 Contact Us.html
 Notices.md
 Ratings.md
+Magazines\
 Bulletins\
 Resources.md
 Results.md
@@ -21,3 +22,10 @@ Bulletins\February 2019\February 2019.md
 Bulletins\February 2019\George Trundle.pgn
 Bulletins\February 2019\Guam.pgn
 Bulletins\February 2019\NZ Open.pgn
+Magazines\Magazines.md
+Magazines\2010s.md
+Magazines\2000s.md
+Magazines\1990s.md
+Magazines\1980s.md
+Magazines\1970s.md
+Magazines\older.md

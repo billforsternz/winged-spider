@@ -174,12 +174,13 @@ void templat( const std::string &md_file, const std::string &template_file, cons
     std::map<char,std::string> &macros,
     const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
-    bool have_input_file = true;
-    std::ifstream fin1( md_file );
-    if( !fin1 )
+    bool have_input_file = false;
+    std::ifstream fin1;
+    if( md_file != "" )
     {
-        have_input_file = false;
-        if( md_file != "DUMMY" )
+        have_input_file = true;
+        fin1.open( md_file );
+        if( !fin1.is_open() )
         {
             printf( "Error: Could not open input file %s\n", md_file.c_str() );
             return;
@@ -741,9 +742,7 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     if( p->make_file_for_dir )
-    {
-        in = "DUMMY";
-    }
+        in = "";
     std::map<char,std::string> macros;
     macros['S'] = p->category;
     macros['Z'] = p->summary;

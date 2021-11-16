@@ -19,66 +19,43 @@ static std::map<std::string,Page *> directory_to_target;
 // Each directory comprises a group of pages
 // If directory is selected from a parent menu, it needs to resolve
 //  to a target. The target is the first page in the directory if
-//  that page is a leaf (a html file).
-//
-void construct_dir_targets1( std::vector<Page*> ptrs )
+//  that page is a leaf (a html file). If the directory is has no
+//  files, it is an empty intermediate directory. A simple .html
+//  file is constructed to represent the directory in the menu
+//  system, using the make_file_for_dir flag.
+void construct_dir_target( std::vector<Page*> ptrs )
 {
-    bool not_found = true;
+    // Look for a file the parent directory can point to 
     for( Page *p: ptrs )
     {
-        if( p->is_file )
+        if( p->is_file && !p->disabled )
         {
-            not_found = false;
             directory_to_target[p->dir] = p;
-         /* std::string s = p->path;
-            size_t offset = 0;
-            while( offset != std::string::npos )
-            {
-                std::string dir = s.substr(0,offset);   // start with dir = ""
-                auto it = directory_to_target.find(dir);
-                bool found = (it != directory_to_target.end());
-                if( !found || p->level < it->second->level )
-                    directory_to_target[dir] = p;
-                offset = s.find(PATH_SEPARATOR,offset+1);
-            } */
-            break;
+            return;
         }
     }
-    if( not_found )
+
+    // If nothing better found create a file, empty but with a menu, to represent
+    //  the parent directory in the menu hierarchy
+    for( Page *p: ptrs )
     {
-        for( Page *p: ptrs )
-        {
-            directory_to_target[p->dir] = p;
-            p->make_file_for_dir = true;
-            break;
-        }
+        directory_to_target[p->dir] = p;
+        p->make_file_for_dir = true;
+        return;
     }
 }
 
-void construct_dir_targets2( std::vector<Page> &results )
-{
-    return;
-    for( Page &page: results )
-    {
-        if( page.is_dir )
-        {
-            auto it = directory_to_target.find(page.path);
-            bool found = (it != directory_to_target.end());
-            if( !found )
-            {
-                directory_to_target[page.path] = &page;
-                page.make_file_for_dir = true;
-            }
-        }
-    }
-}
 
+// Construct all the pages in a directory. Build the whole menu for that directory
+// first, because each page will have the same menu (but a different idx into the
+// menu to be highlighted)
 void construct_page_group( std::vector<Page*> ptrs )
 {
     if( ptrs.size() == 0 )
         return;
 
-    // Calculate the menu to present for each page in the group
+    // Calculate the menu to present for each page in the group,
+    //  Start with each element of the split path
     std::vector< std::pair<std::string,std::string> > menu;
     std::string build_path;
     Page *p = ptrs[0];
@@ -110,31 +87,40 @@ void construct_page_group( std::vector<Page*> ptrs )
         menu.push_back( menu_item );
         offset1 = offset2+1;
     }
+
+    // After all elements of the split path, add the pages in the directory
     int menu_idx = menu.size();
+    Page *make_file_for_dir = 0;
+    bool first = true;
     for( Page *p: ptrs )
     {
-        std::string menu_txt;
+        bool skip = false;
+        std::pair<std::string,std::string> menu_item;
         if( p->is_dir )
         {
-            std::pair<std::string,std::string> menu_item( directory_to_target[p->path]->target, p->base );
-            menu.push_back( menu_item );
+            menu_item = std::pair<std::string,std::string> ( directory_to_target[p->path]->target, p->base );
+            if( p->make_file_for_dir )
+                make_file_for_dir = p;
         }
         else if( p->is_link )
-        {
-            std::pair<std::string,std::string> menu_item( p->link, p->base );
-            menu.push_back( menu_item );
-        }
+            menu_item = std::pair<std::string,std::string> ( p->link, p->base );
         else if( p->is_file )
         {
             if( p->ext=="md" || p->ext=="pgn" || p->ext=="html" )
-            {
-                std::pair<std::string,std::string> menu_item( p->target, p->base );
-                if( menu.size() > 0 && menu_item == menu[menu.size()-1] )
-                    menu_idx--;   // yuck
-                else
-                    menu.push_back( menu_item );
-            }
+                menu_item = std::pair<std::string,std::string>( p->target, p->base );
+            else
+                skip = true;
         }
+        if( !skip )
+        {
+            if( first && menu_idx>0 && menu[menu_idx-1] == menu_item )
+            {
+                menu.pop_back();
+                menu_idx--;
+            }
+            menu.push_back(menu_item);
+        }
+        first = false;
     }
     printf("\nMenu>\n");
     for(std::pair<std::string,std::string> menu_item: menu )
@@ -144,19 +130,17 @@ void construct_page_group( std::vector<Page*> ptrs )
         //    printf("Debug break 1\n");
     }
 
+    // If we are making an html file for an empty directory, do it now with
+    //  index set to the last element of the split path
+    if( make_file_for_dir )
+        markdown_gen( make_file_for_dir, menu, menu_idx-1 );
+
     // Build each page in turn
     //  (force build for now)
     for( Page *p: ptrs )
     {
-        if( !p->is_file && !p->make_file_for_dir )
-            continue;
-        if( p->make_file_for_dir )
-        {
-            markdown_gen( p, menu, menu_idx-1 );        // TODO fix the too tricky logic that makes the -1 necessary
-        }
-
-        //if( p->path == "Archives\\Archives.md" )
-        //    printf("Debug break 2\n");
+        if( !p->is_file || p->disabled )
+            ;
         else if( "md" == p->ext )
         {
             markdown_gen( p, menu, menu_idx );
@@ -219,10 +203,15 @@ void parse( Page &p )
         p.base = p.filename.substr(0,offset);
         p.ext  = util::tolower(p.filename.substr(offset+1));
     }
-    if( p.dir.length() == 0 )
-        p.target = p.base + ".html";
+    if( p.is_dir )
+        p.target = p.dir + ".html";
     else
-        p.target = p.dir + '-' + p.base + ".html";
+    {
+        if( p.dir.length() == 0 )
+            p.target = p.base + ".html";
+        else
+            p.target = p.dir + '-' + p.base + ".html";
+    }
     for( char &c: p.target )
     {
         if( isascii(c) && isupper(c) )
@@ -535,9 +524,8 @@ void treebuilder()
         }
         printf( "Debug: ------ Page group end\n" );
         //-------------
-        construct_dir_targets1(ptrs);
+        construct_dir_target(ptrs);
     }
-    construct_dir_targets2(results);
 
     // Second scan of each page, building menus
     first = true;

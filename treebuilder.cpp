@@ -54,6 +54,10 @@ void construct_page_group( std::vector<Page*> ptrs )
     if( ptrs.size() == 0 )
         return;
 
+    static int debug_count;
+    //if( ++debug_count == 5 )
+    //    printf( "Debug First interactive menu\n" );
+
     // Calculate the menu to present for each page in the group,
     //  Start with each element of the split path
     std::vector< std::pair<std::string,std::string> > menu;
@@ -74,9 +78,11 @@ void construct_page_group( std::vector<Page*> ptrs )
         offset2 = p->dir.find( PATH_SEPARATOR, offset1 );
         if( offset2 == std::string::npos )
         {
-            if( offset1 == 0 )
+            if( p->is_dir )  // final element of directory is not terminated by PATH_SEPARATOR
             {
-                std::pair<std::string,std::string> menu_item( directory_to_target[p->dir]->target, p->dir );
+                std::string subdir = p->dir;                    // eg "Archives\Tournaments"
+                std::string name   = p->dir.substr(offset1);    // eg "Tournaments"
+                std::pair<std::string,std::string> menu_item( directory_to_target[subdir]->target, name );
                 menu.push_back( menu_item );
             }
             break;

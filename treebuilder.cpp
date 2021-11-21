@@ -56,7 +56,7 @@ void construct_page_group( std::vector<Page*> ptrs )
 
     static int debug_count;
     //if( ++debug_count == 5 )
-    //    printf( "Debug First interactive menu\n" );
+    //    printf( "Debug Curator's Notes\n" );
 
     // Calculate the menu to present for each page in the group,
     //  Start with each element of the split path
@@ -73,22 +73,22 @@ void construct_page_group( std::vector<Page*> ptrs )
 
     // Each level of subdirectory gets a menu item, eg "Archives\Tournaments" gets "Archives", then "Tournaments"
     size_t offset1=0, offset2;
-    while( offset1 < p->dir.length() )
+    while( offset1 < p->path.length() )
     {
-        offset2 = p->dir.find( PATH_SEPARATOR, offset1 );
+        offset2 = p->path.find( PATH_SEPARATOR, offset1 );
         if( offset2 == std::string::npos )
         {
             if( p->is_dir )  // final element of directory is not terminated by PATH_SEPARATOR
             {
-                std::string subdir = p->dir;                    // eg "Archives\Tournaments"
-                std::string name   = p->dir.substr(offset1);    // eg "Tournaments"
+                std::string subdir = p->path;                    // eg "Archives\Tournaments"
+                std::string name   = p->path.substr(offset1);    // eg "Tournaments"
                 std::pair<std::string,std::string> menu_item( directory_to_target[subdir]->target, name );
                 menu.push_back( menu_item );
             }
             break;
         }
-        std::string subdir = p->dir.substr( 0, offset2 );              // eg "Archives", then "Archives\Tournaments"
-        std::string name   = p->dir.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
+        std::string subdir = p->path.substr( 0, offset2 );              // eg "Archives", then "Archives\Tournaments"
+        std::string name   = p->path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
         std::pair<std::string,std::string> menu_item( directory_to_target[subdir]->target, name );
         menu.push_back( menu_item );
         offset1 = offset2+1;

@@ -8,6 +8,8 @@ Magazines\
 Bulletins\
 Resources.md
 Results.md
+Bulletins\August 2020\
+Bulletins\February 2019\
 Bulletins\August 2020\August 2020.md
 Bulletins\August 2020\Round 1.pgn
 Bulletins\August 2020\Round 2.pgn
@@ -28,4 +30,62 @@ Magazines\2000s.md
 Magazines\1990s.md
 Magazines\1980s.md
 Magazines\1970s.md
-Magazines\older.md
+Magazines\Chess News.md
+Magazines\NZ Chessplayer.md
+Magazines\NZ Chess Gazette.md
+Magazines\Other Publications.md
+Magazines\Interactive\
+Magazines\Curator's Notes\
+Magazines\Curator's Notes\NZ Chess News.md
+Magazines\Curator's Notes\NZ Chess, early issues.md
+Magazines\Curator's Notes\NZ Chessplayer.md
+Magazines\Interactive\October 2018\
+Magazines\Interactive\July 2018\
+Magazines\Interactive\December 2000\
+Magazines\Interactive\December 1979\
+Magazines\Interactive\June 1995\
+Magazines\Interactive\A White Pawn in Europe\
+Magazines\Interactive\Spring 1947\
+Magazines\Interactive\A White Pawn in Europe\A White Pawn in Europe.md
+Magazines\Interactive\A White Pawn in Europe\Part 1.pgn
+Magazines\Interactive\A White Pawn in Europe\Part 2.pgn
+Magazines\Interactive\December 1979\40 40 Strategy.pgn
+Magazines\Interactive\December 1979\Auckland Labour Weekender.pgn
+Magazines\Interactive\December 1979\December 1979.md
+Magazines\Interactive\December 1979\Interzonals.pgn
+Magazines\Interactive\December 1979\More Overseas News.pgn
+Magazines\Interactive\December 1979\North Shore Club Champs.pgn
+Magazines\Interactive\December 1979\Tawa Labour Weekender.pgn
+Magazines\Interactive\December 1979\World Correspondence Semi Finals.pgn
+Magazines\Interactive\December 1979\World Juniors.pgn
+Magazines\Interactive\December 2000\December 2000.md
+Magazines\Interactive\December 2000\Solomon-Hopewell, annotated by Nigel Hopewell.pgn
+Magazines\Interactive\July 2018\July 2018.md
+Magazines\Interactive\July 2018\George Trundle Masters.pgn
+Magazines\Interactive\July 2018\Making Up The Numbers.pgn
+Magazines\Interactive\July 2018\Odds and Ends from the rest of the Magazine.pgn
+Magazines\Interactive\July 2018\Trusts Open Games.pgn
+Magazines\Interactive\June 1995\June 1995.md
+Magazines\Interactive\June 1995\Anthony Ker Annotates a North Island Champs Game.pgn
+Magazines\Interactive\October 2018\October 2018.md
+Magazines\Interactive\October 2018\Batumi Olympiad Games, Women's Team.pgn
+Magazines\Interactive\October 2018\Ben Hague analyses his win over GM Sebenik.pgn
+Magazines\Interactive\October 2018\French Defence, the Schlechter Variation.pgn
+Magazines\Interactive\October 2018\Introduction to The Berlin Defence.pgn
+Magazines\Interactive\October 2018\Other Batumi Olympiad Games, Open Team.pgn
+Magazines\Interactive\October 2018\Readers' Showcase.pgn
+Magazines\Interactive\October 2018\The Blackmar-Diemer Gambit.pgn
+Magazines\Interactive\October 2018\Tournament Roundup.pgn
+Magazines\Interactive\Spring 1947\Spring 1947.md
+Magazines\Interactive\Spring 1947\Amazing Attacking Game.pgn
+Magazines\Interactive\Spring 1947\Auckland Club Championship.pgn
+Magazines\Interactive\Spring 1947\Correspondence Chess.pgn
+Magazines\Interactive\Spring 1947\European Zonal.pgn
+Magazines\Interactive\Spring 1947\From One Mug to Another by Woodshifter.pgn
+Magazines\Interactive\Spring 1947\Missed the Bus.pgn
+Magazines\Interactive\Spring 1947\Moscow Championship.pgn
+Magazines\Interactive\Spring 1947\Remuera Club Championship.pgn
+Magazines\Interactive\Spring 1947\Reshevsky Brilliancy.pgn
+Magazines\Interactive\Spring 1947\Two Games by Bob Wade.pgn
+Magazines\Interactive\Spring 1947\USSR Championship.pgn
+Magazines\Interactive\Spring 1947\Wade in Iceland.pgn

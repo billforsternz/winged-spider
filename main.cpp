@@ -754,12 +754,18 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
 {
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
+    std::string pgn_asset =  std::string("assets") + std::string(PATH_SEPARATOR_STR) + p->target;
+    size_t offset = pgn_asset.find_last_of('.');
+    if( offset != std::string::npos )
+        pgn_asset = pgn_asset.substr(0,offset) + ".pgn";
+    std::string pgn_asset_full = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + pgn_asset;
     GamesCache gc;
     std::map<char,std::string> macros;
     macros['T'] = p->title;
     macros['S'] = p->category;
     macros['Z'] = p->summary;
-    gc.Load(in);
+    macros['G'] = pgn_asset;
+    gc.Load(in,pgn_asset_full);
     gc.Publish("/Users/Bill/Documents/Github/winged-spider/template-pgn.txt",out,macros,menu,menu_idx);
     return true;
 }

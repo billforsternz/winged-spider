@@ -21,26 +21,35 @@
 #include "Eco.h"
 #include "GamesCache.h"
 
+#ifdef _WINDOWS
+#define EOL "\r\n"
+#else
+#define EOL "\n"
+#endif
+
 using namespace std;
 
 PgnFiles gbl_pgn_files;
 #define nbrof(x) (sizeof(x)/sizeof((x)[0]))
 bool PgnStateMachine( FILE *pgn_file, int &typ, char *buf, int buflen );
 
-bool GamesCache::Load(std::string &filename )
+bool GamesCache::Load(std::string &filename, std::string &asset_filename )
 {
     file_irrevocably_modified = false;
     loaded = false;
     pgn_filename = "";
     FILE *pgn_file = gbl_pgn_files.OpenRead( filename, pgn_handle );
+    FILE *asset_file = fopen( asset_filename.c_str(), "wb" );
     if( pgn_file )
     {
-        loaded = Load(pgn_file);
+        loaded = Load(pgn_file,asset_file);
         if( loaded )
             pgn_filename = filename;
         gbl_pgn_files.Close();
         //gbl_pgn_files.Forget();
     }
+    if( asset_file )
+        fclose(asset_file);
     return loaded;
 }
 
@@ -199,7 +208,7 @@ bool PgnStateMachine( FILE *pgn_file, int &typ, char *buf, int buflen )
     return done;
 }
 
-bool GamesCache::Load( FILE *pgn_file )
+bool GamesCache::Load( FILE *pgn_file, FILE *asset_file )
 {
     printf( "GamesCache::Load() begin\n" );
     gds.clear();
@@ -213,10 +222,33 @@ bool GamesCache::Load( FILE *pgn_file )
     std::string title("Scanning .pgn file for games");
     std::string desc("Reading .pgn file");
     bool abortable=false;
+    std::string sgame;
+    bool validated_game = false;
     bool done = PgnStateMachine( NULL, typ,  buf, sizeof(buf) );
     while( !done )
     {
         done = PgnStateMachine( pgn_file, typ, buf, sizeof(buf) );
+        if( typ == 'T' )
+            sgame = std::string(buf);
+        else if( typ=='t')
+            sgame += std::string(buf);
+        else if( typ=='M' )
+        {
+            sgame += EOL;
+            sgame += std::string(buf);
+            if( buf[0] != '*' )
+                validated_game = true;
+        }
+        else if( typ=='m' )
+            sgame += std::string(buf);
+        else if( typ=='G' )
+        {
+            sgame += EOL;
+            if( validated_game )
+                fputs( sgame.c_str(), asset_file );
+            sgame.clear();
+            validated_game = false;
+        }
         if( typ == 'G' )
         {
             ListableGamePgn pgn_document(pgn_handle,fposn);
@@ -614,11 +646,6 @@ void GamesCache::FileSaveInner( FILE *pgn_out )
                                            //  in that case we are only changing the gd_temp *temporary* document
             std::string s = ptr->prefix_txt;
             int len = s.length();
-            #ifdef _WINDOWS
-            #define EOL "\r\n"
-            #else
-            #define EOL "\n"
-            #endif
             if( len > 0 )
             {
                 if( i != 0 )    // blank line needed before all but first prefix
@@ -1031,8 +1058,11 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 				std::string year = gd.r.date.substr(0, 4);
 				if (year.find('?') == std::string::npos)
 				{
-					t += " ";
-					t += year;
+                    if( t.find(year) == std::string::npos ) // in case event includes year!
+                    {
+					    t += " ";
+					    t += year;
+                    }
 				}
                 if( t.length() > 0 )
                 {

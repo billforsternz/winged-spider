@@ -23,9 +23,9 @@ public:
     GamesCache() { state=PREFIX; loaded=false;
                     file_irrevocably_modified=false; pgn_handle=0; }
     void Debug( const char *intro_message );
-    bool Load( std::string &filename );
-    bool Reload() { return Load(pgn_filename); }
-    bool Load( FILE *pgn_file );
+    bool Load( std::string &filename,  std::string &asset_filename );
+    //bool Reload() { return Load(pgn_filename); }
+    bool Load( FILE *pgn_file, FILE *asset_file );
     void FileCreate( std::string &filename );
     void FileSave( GamesCache *gc_clipboard );
     void FileSaveAs( std::string &filename, GamesCache *gc_clipboard );

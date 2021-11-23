@@ -25,20 +25,18 @@ Bulletins\February 2019\George Trundle.pgn
 Bulletins\February 2019\Guam.pgn
 Bulletins\February 2019\NZ Open.pgn
 Magazines\Magazines.md
-Magazines\2010s.md
-Magazines\2000s.md
-Magazines\1990s.md
-Magazines\1980s.md
-Magazines\1970s.md
-Magazines\Chess News.md
+Magazines\NZ Chess 2010s.md
+Magazines\NZ Chess 2000s.md
+Magazines\NZ Chess 1990s.md
+Magazines\NZ Chess 1980s.md
+Magazines\NZ Chess 1970s.md
+Magazines\NZ Chess News.md
 Magazines\NZ Chessplayer.md
 Magazines\NZ Chess Gazette.md
-Magazines\Other Publications.md
+Magazines\Monographs and More.md
 Magazines\Interactive\
 Magazines\Curator's Notes\
-Magazines\Curator's Notes\NZ Chess News.md
-Magazines\Curator's Notes\NZ Chess, early issues.md
-Magazines\Curator's Notes\NZ Chessplayer.md
+Magazines\Interactive\Interactive.md
 Magazines\Interactive\October 2018\
 Magazines\Interactive\July 2018\
 Magazines\Interactive\December 2000\
@@ -49,24 +47,24 @@ Magazines\Interactive\Spring 1947\
 Magazines\Interactive\A White Pawn in Europe\A White Pawn in Europe.md
 Magazines\Interactive\A White Pawn in Europe\Part 1.pgn
 Magazines\Interactive\A White Pawn in Europe\Part 2.pgn
-Magazines\Interactive\December 1979\40 40 Strategy.pgn
-Magazines\Interactive\December 1979\Auckland Labour Weekender.pgn
 Magazines\Interactive\December 1979\December 1979.md
 Magazines\Interactive\December 1979\Interzonals.pgn
-Magazines\Interactive\December 1979\More Overseas News.pgn
-Magazines\Interactive\December 1979\North Shore Club Champs.pgn
+Magazines\Interactive\December 1979\Auckland Labour Weekender.pgn
 Magazines\Interactive\December 1979\Tawa Labour Weekender.pgn
-Magazines\Interactive\December 1979\World Correspondence Semi Finals.pgn
+Magazines\Interactive\December 1979\North Shore Club Champs.pgn
 Magazines\Interactive\December 1979\World Juniors.pgn
+Magazines\Interactive\December 1979\World Correspondence Semi Finals.pgn
+Magazines\Interactive\December 1979\40 40 Strategy.pgn
+Magazines\Interactive\December 1979\More Overseas News.pgn
 Magazines\Interactive\December 2000\December 2000.md
 Magazines\Interactive\December 2000\Solomon-Hopewell, annotated by Nigel Hopewell.pgn
 Magazines\Interactive\July 2018\July 2018.md
 Magazines\Interactive\July 2018\George Trundle Masters.pgn
+Magazines\Interactive\July 2018\Trusts Open Games.pgn
 Magazines\Interactive\July 2018\Making Up The Numbers.pgn
 Magazines\Interactive\July 2018\Odds and Ends from the rest of the Magazine.pgn
-Magazines\Interactive\July 2018\Trusts Open Games.pgn
 Magazines\Interactive\June 1995\June 1995.md
-Magazines\Interactive\June 1995\Anthony Ker Annotates a North Island Champs Game.pgn
+Magazines\Interactive\June 1995\1995 North Island Championship.pgn
 Magazines\Interactive\October 2018\October 2018.md
 Magazines\Interactive\October 2018\Batumi Olympiad Games, Women's Team.pgn
 Magazines\Interactive\October 2018\Ben Hague analyses his win over GM Sebenik.pgn
@@ -89,3 +87,8 @@ Magazines\Interactive\Spring 1947\Reshevsky Brilliancy.pgn
 Magazines\Interactive\Spring 1947\Two Games by Bob Wade.pgn
 Magazines\Interactive\Spring 1947\USSR Championship.pgn
 Magazines\Interactive\Spring 1947\Wade in Iceland.pgn
+Magazines\Curator's Notes\Curator's Notes.md
+Magazines\Curator's Notes\NZ Chess News.md
+Magazines\Curator's Notes\NZ Chess, early issues.md
+Magazines\Curator's Notes\NZ Chessplayer.md
+Magazines\Curator's Notes\NZ Chess Gazette.md

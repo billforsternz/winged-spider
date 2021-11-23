@@ -67,7 +67,7 @@ void construct_page_group( std::vector<Page*> ptrs )
     // If not at root, start with "Home" link to start of root directory
     if( p->dir.length() > 0 )
     {
-        std::pair<std::string,std::string> menu_item( directory_to_target[""]->target, "Home" );
+        std::pair<std::string,std::string> menu_item( "index.html", "Home" );
         menu.push_back( menu_item );
     }
 
@@ -220,9 +220,9 @@ void parse( Page &p )
     }
     for( char &c: p.target )
     {
-        if( isascii(c) && isupper(c) )
+        if( isascii(c) && isalnum(c) )
             c = tolower(c);
-        else if( c==' ' || c==PATH_SEPARATOR )
+        else if( c != '.' )
             c = '-';
     }
 

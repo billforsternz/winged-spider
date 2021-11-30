@@ -25,7 +25,7 @@
 #define PATH_SEPARATOR_STR "/"
 #endif
 
-#define BASE_IN  "test"
+#define BASE_IN  "base"
 #define BASE_OUT "output"
 
 void construct_page_group( std::vector<Page*> ptrs );

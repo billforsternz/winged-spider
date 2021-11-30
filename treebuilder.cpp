@@ -82,15 +82,27 @@ void construct_page_group( std::vector<Page*> ptrs )
             {
                 std::string subdir = p->path;                    // eg "Archives\Tournaments"
                 std::string name   = p->path.substr(offset1);    // eg "Tournaments"
-                std::pair<std::string,std::string> menu_item( directory_to_target[subdir]->target, name );
-                menu.push_back( menu_item );
+                auto q = directory_to_target.find(subdir);
+                if( q == directory_to_target.end() )
+                    printf( "Warning: %s target not found\n", subdir.c_str() );
+                else
+                {
+                    std::pair<std::string,std::string> menu_item( q->second->target, name );
+                    menu.push_back( menu_item );
+                }
             }
             break;
         }
         std::string subdir = p->path.substr( 0, offset2 );              // eg "Archives", then "Archives\Tournaments"
         std::string name   = p->path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
-        std::pair<std::string,std::string> menu_item( directory_to_target[subdir]->target, name );
-        menu.push_back( menu_item );
+        auto q = directory_to_target.find(subdir);
+        if( q == directory_to_target.end() )
+            printf( "Warning: %s target not found\n", subdir.c_str() );
+        else
+        {
+            std::pair<std::string,std::string> menu_item( q->second->target, name );
+            menu.push_back( menu_item );
+        }
         offset1 = offset2+1;
     }
 
@@ -104,9 +116,18 @@ void construct_page_group( std::vector<Page*> ptrs )
         std::pair<std::string,std::string> menu_item;
         if( p->is_dir )
         {
-            menu_item = std::pair<std::string,std::string> ( directory_to_target[p->path]->target, p->base );
-            if( p->make_file_for_dir )
-                make_file_for_dir = p;
+            auto q = directory_to_target.find(p->path);
+            if( q == directory_to_target.end() )
+            {
+                skip = true;
+                printf( "Warning: %s target not found\n", p->path.c_str() );
+            }
+            else
+            {
+                menu_item = std::pair<std::string,std::string> ( q->second->target, p->base );
+                if( p->make_file_for_dir )
+                    make_file_for_dir = p;
+            }
         }
         else if( p->is_link )
             menu_item = std::pair<std::string,std::string> ( p->link, p->base );
@@ -225,6 +246,8 @@ void parse( Page &p )
         else if( c != '.' )
             c = '-';
     }
+    if( p.target == "home.html" )
+        p.target = "index.html";
 
     // Split up the path
     size_t offset1=0, offset2;
@@ -530,6 +553,7 @@ void treebuilder()
         }
         printf( "Debug: ------ Page group end\n" );
         //-------------
+        printf( "Debug: construct_dir_target()\n" );
         construct_dir_target(ptrs);
     }
 
@@ -540,6 +564,7 @@ void treebuilder()
         std::vector<Page*> ptrs;
         more = get_next_page_group( results, ptrs, first );
         first = false;
+        printf( "Debug: construct_page_group()\n" );
         construct_page_group(ptrs);
     }
 }

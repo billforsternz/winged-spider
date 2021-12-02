@@ -74,6 +74,24 @@ build-crosstables-then-poole=then-add-menuhdrs-then-template.bat =>
     archives-tournaments-2007.html
     archives-tournaments-2006.html
 
+build-archives-homepage.bat =>
+*4  archives.html
+    archives-homepage.html
+    archives-homepage-2019.html
+    archives-homepage-2018.html
+    archives-homepage-2017.html
+    archives-homepage-2016.html
+    archives-homepage-2015.html
+    archives-homepage-2014.html
+    archives-homepage-2013.html
+    archives-homepage-2012.html
+    archives-homepage-2011.html
+    archives-homepage-2010.html
+    archives-homepage-2009.html
+    archives-homepage-2008.html
+    archives-homepage-2007.html
+    
+
 *1 = fixed up with ssed
 *2 = template-grandprix.txt instead of template-main.txt
 REM = manually edited
@@ -83,4 +101,11 @@ REM = manually edited
     File test1.bat established a baseline and test2.bat checks against it
     For the moment it is necessary to use bills-cms-proto.exe instead of Documents\github\photos\release\photos.exe, that might
     be a good thing to work on next.
-  
+    Note that the program "crosstables.exe" converts crosstables into *.md files for poole. For Winged Spider at the moment, we
+    are using the *.md files and ignoring the text files that crosstables.exe uses to create those *.md files. Crosstables.exe uses
+    some weird custom markup of our own, eg @P -> <pre> (I think). As a one time thing, maybe we just ignore it. Our Winged Spider
+    markdown processor does just as good a job as poole here.
+*4  This is a recent retrofitted thing, the actual homepage archives were in directory Documents\Experiments\NZCF-website-wayback-machine\gather-results\
+    and were turned into HTML there and only changed with crude manual patching to add 2019. In fact some pages, notably 2015 were a bit munted and I've
+    now patched them *again*. Note that the @solo paras use the old styling with the header text above the para text on the right.
+

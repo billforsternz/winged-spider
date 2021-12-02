@@ -21,7 +21,92 @@
 
 @panel
 @HCovid-19
-NZCF policy is that official over the board events, including local chess club play, should be suspended during NZ Government Covid Alert level 2 or higher.
+NZCF policy is now modified, see the President's Newsletter for November 5th below. No NZCF official tournaments will be conducted (nor should Open tournaments be conducted) until the Covid-19 Protection Framework
+(‘traffic light system’) is formally in place and the legal definitions of ‘Red’, ‘Orange’ and ‘Green’ are available.
+
+@snippet
+@HPresident’s Newsletter<br>5th November 2021
+<b>1. Update on Chess under Covid Restrictions</b>
+</p><p>
+NZCF Council met by Zoom last Sunday 31st October. There has been extensive and ongoing
+email discussion including input from external sources. After thorough discussion, the following
+decision was agreed by majority:
+</p><p>
+<ul>
+<li>
+NZCF Council advises Clubs that each Club, as an independent entity, must decide for
+themselves, and bear responsibility for their decision, if over-the-board Club play is safe for
+their members at current Government defined ‘Level 2’. Such Club games will be eligible for
+NZCF and FIDE rating. Obviously, all Government mandates must be followed regarding
+registration, sanitation, social distancing, mask wearing etc.
+</li>
+</ul>
+</p><p>
+Of those Councillors that did not support this decision, two have requested their names be public
+<br>Ross Jackson and Stan Yee.
+<br>NZCF Council is not collectively qualified to judge safety risk of Covid infection during Club play.
+We do however urge a strongly precautionary approach and made the following decision
+unanimously:
+</p><p>
+<ul>
+<li>
+NZCF Council recommends to Clubs that all persons present on Club premises wear masks, be
+fully vaccinated and do not consume food and drink.
+</li>
+</ul>
+</p><p>
+<b>Note that there is no change to Council advice that no NZCF official tournaments will be
+conducted (nor should Open tournaments be conducted) until the Covid-19 Protection
+Framework (‘traffic light system’) is formally in place and the legal definitions of ‘Red’,
+‘Orange’ and ‘Green’ are available.</b>
+</p><p>
+The Government is due to make an announcement on implementation of Covid-19 Protection
+Framework on 29 th November. Council will meet 30 th November and will advise chess community
+how this system affects official tournaments, Congress in particular.
+</p><p>
+<b>2. FIDE Grant for Junior Coaching, Trainer Development, Arbiter Training</b>
+</p><p>
+Paul Spiller and I attended by Zoom a meeting of FIDE’s Planning &amp; Development Commission
+(PDC). Following encouragement from the Chair, we put together a proposal for online
+development activities in December which we are delighted to advise was approved for funding.
+Hilton Bennett is our delegated Organiser and will announce details soon.
+</p><p>
+<b>3. Asian Chess Federation Online Tournaments and Trainers Seminar</b>
+</p><p>
+There has been a remarkable number of online tournaments this year, mostly for Juniors, organised
+by Asian Chess Federation. These have been well attended by our Juniors in various age groups
+despite the quite high entry fees. Since my last newsletter in August, our Juniors have performed
+creditably in Eastern Asia Youth Chess Championship (host Thailand Chess Association) and Asian
+Youth Championship (host All India Chess Federation). Daqi Mao scored a notable 7/9 in the Asian
+Youth sharing 5 th place in field of 250. The Asian Amateur Championship (host: Oman Chess
+Committee) will be played this month.
+These tournaments create a lot of work for the Secretary of NZCF and for me, but I particularly want
+to thank Timothy Ha who has indefatigably convened, supervised and problem-solved all these
+events. Thanks Timothy!
+Evguenia Charomova (and I as guest) participated in a FIDE Trainers Online Seminar. This was a set
+of Zoom lectures over three nights lasting past midnight! We hope to get the recorded lectures
+available for use by NZCF.
+</p><p>
+<b>4. NZ Seniors and Veterans Online Championship</b>
+</p><p>
+In view of Covid restrictions the formal over-the-board Championship is replaced with our first NZCF
+online event. Although played at standard time control there is an element of fun in this tournament
+played on a trust basis and open to international players. Thanks to Paul Spiller (Organiser), Bruce
+Pollard (Arbiter) and Timothy Ha (Convenor) who made this happen!
+</p><p>
+<b>Nigel Metge</b>
+
+@snippet
+@HPresident’s Newsletter - COVID Update<br>5th October 2021
+NZCF Council met by Zoom last Sunday 3rd October. We discussed the latest Covid update and the implications for over-the-board (OTB) play.
+It is obviously distressing to all of us that tournaments are being cancelled or postponed.
+We cannot predict if, and when we will reach ‘Level 1’.
+</p><p>
+For the moment NZCF advice is unchanged – there will be no official NZCF tournaments and no games NZCF or FIDE rated at Level 2 or above.
+But we are watching closely Government updates and what other associations of ‘mind sports’ like bridge are doing.
+There is another Council meeting 31st Oct and I will provide a further update immediately after that.
+</p><p>
+<b>Nigel Metge</b>
 
 @snippet
 @HNational Interschool Finals postponed until December

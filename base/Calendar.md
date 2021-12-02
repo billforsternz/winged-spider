@@ -44,63 +44,20 @@ only official NZCF Interschools qualifying events generate qualifiers for the
 New Zealand Interschools National Finals.
 
 @snippet
-@HNZ Senior Championship, Auckland<br>November 26th-28th 2021 (was September 17th-19th)
-<b>Postponed until November 26th-28th</b> due to Covid outbreak. All details apart from the dates are unchanged, all dates are shifted into line, eg cutoff date is November 25th.
-<br>Venue: Howick Information Centre, 91 Picton Street, Howick.
-<br>Format:  6 round Swiss, over 3 days.
-<br>Eligibility: Players must be born before 1972.
-<br>Time control: 90 mins plus 30 sec per move.
-<br>NZCF and FIDE rated where possible.
-<br>Intl Arbiter: Bruce Pollard.
-<br>Hosted by the Howick-Pakuranga chess club, contact Paul Spiller email: <a href="mailto:PaulSSpiller@outlook.com">PaulSSpiller@outlook.com</a>.
-<br>Entry form available <a href="downloads/Seniors Tournament 2021.pdf">here</a>.
-<br>Follow on Vega <a href="tournaments/bp/2021/wwwNZSeniors2021/">here</a>.
-
-@snippet
-@HKapiti Junior Chess Championship<br>Postponed from original date of September 18th, new date TBA
-Venue: Salvation Army (Rear Hall), 41 Bluegum Road, Paraparaumu Beach
-<br>Eligibility: Open to school pupils only
-<br>Entry fee: $20
-<br>Format: One six round 15+5 Swiss tournament, prizes allocated in multiple playing divisions
-<br>For more details including how to enter refer to the <a href="downloads/Poster - Kapiti Jnr Chess Champs.pdf">Tournament flyer</a>.
-
-@snippet
-@HNorth Island Rapid Championship, Wellington<br><strike>September 25th 2021</strike>
-<b>(This event has been cancelled due to Covid-19)</b>
-<br>Venue: Wellington Bridge Club, 17 Tinakori Road, Thorndon
-<br>Single 6 Round 25+5 Rapid Tournament (FIDE and NZCF rapid rated), with Junior and Grading Prizes.
-<br>Organised by Wellington Chess Club, contact Bill Forster, Email: <a href="mailto:billforsternz@gmail.com">billforsternz@gmail.com</a>.
-<br>Entry form available <a href="downloads/2021NorthIslandRapidChampionship.pdf">here</a>.
-<br>Follow on Vega <a href="tournaments/misc/2021/wwwNorthIslandRapid2021/">here</a>.
-
-@snippet
-@HNew Zealand Interschools Finals<br>December 18th-19th 2021 (was October 2nd-3rd, see announcements on <a href="notices.html">Notices page</a>)
-<b>Postponed until December 18th-19th</b> due to Covid outbreak.
+@HNew Zealand Interschools Finals<br>December 18th-19th 2021
+<b>Sorry, this tournament has had to be cancelled - see the <a href="index.html">home page</a> announcement</b><strike>
 <br>Venue: Alexandra Park, 239 Greenlane West Rd Epsom, Auckland 1023.
 <br>This is the official New Zealand Chess Federation Interschools Finals, for which teams can qualify from NZCF Regional competitions throughout the country.
 <br>Contact: Bruce Pollard, National Interschool Finals Organiser, <a href="mailto:bruce.pollard@ymail.com">bruce.pollard@ymail.com</a> phone 0274358674.
 <br>Teams that have qualified should confirm they are participating using this <a href="downloads/NZ INTERSCHOOL CHESS FINALS.pdf">Entry Form</a>.
+</strike>
 
 @snippet
-@HPeter Stuart Masters, Auckland<br>October 2nd-10th 2021
-<b>This event has been cancelled due to Covid-19. Players who entered this tournament or the Peter Stuart Memorial scheduled for August 28th-29th
-(also cancelled), please</b> email your bank details to Helen Milligan <a href="mailto:heligan@heliganchess.nz">heligan@heliganchess.nz</a> to obtain a refund.
-<b>Peter Stuart Memorial</b> players <b>only</b> have the option of transferring their entry to the 2022 event on Matariki weekend 24-26 June, thereby avoiding an
-entry fee increase. 
-<br>Venue: Auckland Chess Centre, 17 Cromwell Street, Mt Eden, Auckland.
-<br>Format: Nine round robin, 90mins+30 secs with an extra 30mins at move 40, FIDE and NZCF rated.
-Inspired by the ongoing success of the George Trundle, this new tournament also comprises four individual nine round, ten player, classical round robin tournaments with the same ideal one round per day, starting at 2pm, schedule.
-<br>The four tournaments are known as the Masters, Qualifiers, Reserves and Talents. The entry fee is $100, only 40 players can be accommodated, get your entry in early.
-<br>More details on the tournament <a href="https://newzealandchess.nz/peter-stuart-masters-2021/">website</a>.
-<br>Organised by North Shore Chess Club.
-
-@snippet
-@HAsian Seniors, Damascus, SYRIA<br>November 1st-8th 2021
-For the more adventurous senior (over 50) chess player. Details <a href="downloads/Regulations 2021 Asian Seniors Chess Championships.pdf">here</a> and <a href="downloads/Registration Form Asian Seniors 2021.xlsx">here</a>.
-
-@snippet
-@HNew Zealand Women’s Chess Championship 2021, Auckland<br>January 20th-23rd 2022 (postponed from October 6th–9th)
-<b>For women and girls of all ages.</b>
+@HNew Zealand Women’s Chess Championship 2021, Auckland<br><i>Early 2022 date to be decided</i>
+<b>This event has been postponed.</b>
+<br><i>Originally scheduled for October 6th-9th 2021, then postponed until January 20th-23rd 2022, now postponed again due to Covid uncertainties,
+organiser Viv Smith is still intent on running this tournament, as early in 2022 as possible</i>.
+<br>For women and girls of all ages.
 <br>Organised by Waitakere Chess Club.
 <br>Venue: Green Bay High School Library, 161 Godley Rd, Green Bay.
 <br>Two divisions – an Open and a Reserve Championship for females rated under 1300 (who can still choose to play in the Open).
@@ -128,45 +85,11 @@ Venue: Canterbury Chess Club, 9/27 Tyne Street, Addington, Christchurch.
 <br>Entry form available <a href="downloads/2021 South Island Championships - new dates due to Covid.pdf">here</a>.
 
 @snippet
-@HCounties Rapid 2021, Pukekohe<br>October 16th 2021, postponed to October 15th 2022
-<b>The inaugural Couties Rapid will be held next year instead</b>
-<br>Organised by the Counties Chess Club.
-<br>Venue: Pukekohe War Memorial Town Hall in the Main Hall 14-16 Massey Avenue Pukekohe.
-<br>Format: Three separate 6 round Swiss tournaments, time control 25+5, NZCF & FIDE rated where possible.
-<br>Full details and entry via the <a href="https://newzealandchess.nz/1st-counties-rapid-2021/">Event website</a>.
- 
-@snippet
 @HSouth Island Rapid Championship, Christchurch<br>December 12th 2021 (postponed from October 17th)
 Venue: Canterbury Chess Club, 9/27 Tyne Street, Addington, Christchurch.
 <br>Format: 6 round Swiss, time control 25+5, NZCF & FIDE-rated where possible.
 <br>Organised by Canterbury Chess Club, contact Craig Hall, Email: <a href="mailto:canterbury@chess.org.nz">canterbury@chess.org.nz</a>.
 <br>Entry form available <a href="downloads/2021 South Island Rapid Championships - new date due to Covid.pdf">here</a>.
-
-@snippet
-@HSummit Junior Rapid, Auckland<br>October 17th 2021
-Venue: 99B Gillies Ave, Epsom, Auckland.
-<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
-<br>Format: Six-round Swiss, 15mins+5 secs.
-<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
-<br>Follow on Vega: <a href="tournaments/misc/2021/Summit Junior Rapid/wwwOctober 17 Open">Open</a>,
-<a href="tournaments/misc/2021/Summit Junior Rapid/wwwOctober 17 U1000">U1000</a>.
-<br>Entry form available <a href="downloads/Summit Junior Rapid 2021.pdf">here</a>.
-
-@snippet
-@HMerv Morrison Memorial 2021, Auckland<br>October 23rd-25th 2021
-Venue: Auckland Chess Centre, 17 Cromwell Street, Mt Eden, Auckland.
-<br>Format: 6 round Swiss tournament, time control 90+30, NZCF & FIDE rated where possible.
-<br>Only first 50 fully paid player entries accepted due to space constraints.
-<br>Full details and entry via <a href="https://newzealandchess.nz/merv-morrison-memorial-2021/">Event website</a>.
-
-@snippet
-@HChess Power SuperChamps, Auckland<br>November 7th 2021
-Organised by Chess Power in association with the Waitakere Chess Club 
-<br>Venue: Eden Rugby Football Club, Gribblehurst Park, 225 Sandringham Road, Kingsland, Auckland
-<br>Eligibility: Restricted to players 18 and under.
-<br>Three 6-round swiss tournaments (grades A to C), NZCF & FIDE rapid rated where possible
-<br>Format: 6 round swiss, 25 minutes + 5 secs.
-<br>Details and Entry form <a href="https://www.chesspower.co.nz/event/365816">here</a>.
 
 @snippet
 @HOceania Senior Chess Championship, Noosa, AUSTRALIA<br><strike>November 14th-20th 2021</strike>
@@ -179,41 +102,40 @@ Organised by Chess Power in association with the Waitakere Chess Club
 <a href="downloads/OSCC chess entry form flyer.docx">(docx)</a>.
 
 @snippet
-@HSummit Rapid Championships, Auckland<br>November 21st 2021
-Organised by Summit Chess Club
-<br>Venue: Alexandra Park, Greenlane
-<br>Three separate (A,B, Junior grades), six round Swiss rapid 25+5 tournaments, NZCF and FIDE rated where possible.
-<br>Follow on Vega: <a href="tournaments/misc/2021/Summit Rapid Championships/wwwOpen">Open</a>,
-<a href="tournaments/misc/2021/Summit Rapid Championships/wwwU1800">U1800</a>,
-<a href="tournaments/misc/2021/Summit Rapid Championships/wwwJunior">Junior</a>.
-<br>Details and Entry form <a href="downloads/Summit Rapid Tournaments 2021 Flyer.pdf">here</a>.
-
-@snippet
 @HNZ Senior Championship, Auckland<br>November 26th-28th 2021 (was September 17th-19th)
 See the pre-Covid listing for September 17th-19th. All details apart from the date are unchanged.
 
 @snippet
 @H35th Papatoetoe Rapid, Auckland<br>December 4th 2021
-Organised by Papatoetoe Chess Club
+<b>Sadly this event has also been CANCELLED due to the uncertainty for planning around the Covid restrictions</b>
+<strike>
+<br>Organised by Papatoetoe Chess Club
 <br>Venue: Papatoetoe Hunters Corner Bowling Club, 247 Great South Road, Papatoetoe
 <br>Three separate (A,B,C), six round Swiss rapid 25+5 tournaments, NZCF and FIDE rated where possible.
 <br>Entry Form <a href="downloads/2021 papatoetoe rapid entry form.pdf">here</a>.
+</strike>
 
 @snippet
 @H6th Papatoetoe Junior Rapid, Auckland<br>December 5th 2021
-Organised by Papatoetoe Chess Club
+<b>Sadly this event has also been CANCELLED due to the uncertainty for planning around the Covid restrictions</b>
+<strike>
+<br>Organised by Papatoetoe Chess Club
 <br>Venue: Papatoetoe Hunters Corner Bowling Club, 247 Great South Road, Papatoetoe
 <br>For players under the age of 20 on January 1st 2021
 <br>A six round Swiss rapid 25+5 tournament, NZCF and FIDE rated where possible.
 <br>Entry Form <a href="downloads/2021 papatoetoe junior rapid entry form.pdf">here</a>.
+</strike>
 
 @snippet
 @HOtago Summer Rapid Open, Dunedin<br>December 5th 2021
-Venue: Otago Chess Club, 7 Maitland Street, Dunedin.
+<strike>
+<b>Cancelled due to Covid</b>
+<br>Venue: Otago Chess Club, 7 Maitland Street, Dunedin.
 <br>Format: 5 Round Swiss, rapid time control 25+5, NZCF rated.
 <br>Tournament <a href="https://otagochess.org/tournaments.html#openrapids">website</a>.
 <br>Contact: Quentin Johnson, 021 156 6789, email <a href="mailto:otagochess@gmail.com">otagochess@gmail.com</a>.
 <br>Download entry form <a href="https://otagochess.org/OCCSummerRapidentryform.pdf">here</a>.
+</strike>
 
 @snippet
 @HSummit Junior Rapid, Auckland<br>December 12th 2021
@@ -228,6 +150,18 @@ Venue: 99B Gillies Ave, Epsom, Auckland.
 @snippet
 @HNew Zealand Interschools Finals<br>December 18th-19th 2021
 See the pre-Covid listing for October 2nd-3rd for details.
+
+@snippet
+@HAuckland Christmas Friendship Tournament, Auckland<br>December 21st 2021
+Venue: New Lynn Community Centre, 45 Totara Avenue, New Lynn
+<br>Competing for the 'Puchen Wang Cup'.
+<br>Format: Seven round Swiss, 15min+5 secs. FIDE and NZCF rated where possible.
+<br>Scoring System: 3 points for a win, 1 point for a draw.
+<br>Organised by the Howick-Pakuranga Chess Club in association with Victor and Amy Wang.
+<br>Full details on the <a href="downloads/Puchen Tournament.pdf">Entry Form</a>
+<br>Entry Fee: $40 per player. Club Account for payment – BNZ 02 0168 0091321 01 Please state Name &amp; Friendship
+in payment details and confirm payment by email to Howick-Pakuranga Chess Club
+treasurer Ludi Zhang at <a href="mailto:ludizhang@gmail.com">ludizhang@gmail.com</a>.
 
 @snippet
 @H129th NZ Chess Congress, Christchurch<br>January 2nd-12th 2022
@@ -281,6 +215,15 @@ Organised by Hawke’s Bay Chess Inc.
 <br>Download the entry form <a href="downloads/2022HawkesBayRapidEntryForm.pdf">here</a>.
 
 @snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>13th February 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
+
+@snippet
 @H17th Bay of Plenty Rapid, Tauranga<br>26th February 2022
 Venue: Bay of Pleny Masonic Centre, 33 Hairini Street, Hairini, Tauranga.
 <br>Format: Three 6 round Swiss tournaments (A, B and C grades), time control 25+5, NZCF & FIDE rapid rated where possible.
@@ -289,11 +232,38 @@ Venue: Bay of Pleny Masonic Centre, 33 Hairini Street, Hairini, Tauranga.
 <br>Or download entry form <a href="downloads/boprapid2022.pdf">here</a>.
 
 @snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>6th March 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
+
+@snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>10th April 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
+
+@snippet
 @HAuckland ANZAC Weekender, Auckland<br>April 23rd-25th 2022
 Venue: Auckland Chess Centre, 17 Cromwell Street, Mt Eden, Auckland.
 <br>Format: 6 round Swiss tournament, time control 90+30, NZCF & FIDE rated where possible.
 <br>Entries do not open until October 2021
 <br>More details on the <a href="https://newzealandchess.nz/auckland-anzac-weekender-2022/">Event website</a>.
+
+@snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>15th May 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
 
 @snippet
 @HAuckland May Weekender, Auckland<br>May 21st-22nd 2022
@@ -304,11 +274,47 @@ Venue: Auckland Chess Centre, 17 Cromwell Street, Mt Eden, Auckland.
 <br>More details on the <a href="https://newzealandchess.nz/auckland-may-weekender-2022/">Event website</a>.
 
 @snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>12th June 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
+
+@snippet
 @HPeter Stuart Memorial, Auckland<br>June 24th-26th 2022
 One of New Zealand's most prestigious weekenders has found a long weekend to call home.
 <br>Further details in due course.
 <br>To be Organised by <a href="https://northshorechess.org.nz">North Shore Chess Club</a>.
 <br>Contact: Helen Milligan email <a href="mailto:heligan@heliganchess.nz">heligan@heliganchess.nz</a>.
+
+@snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>3rd July 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
+
+@snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>14th August 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
+
+@snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>18th September 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
 
 @snippet
 @HCounties Rapid 2022, Pukekohe<br>October 15th 2022
@@ -318,11 +324,37 @@ Organised by the Counties Chess Club.
 <br>Full details and entry via the <a href="https://newzealandchess.nz/1st-counties-rapid-2022/">Event website</a>.
 
 @snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>16th October 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
+
+@snippet
 @HMerv Morrison Memorial, Auckland<br>October 22nd-24th 2022
 Venue: Auckland Chess Centre, 17 Cromwell Street, Mt Eden, Auckland.
 <br>Format: 6 round Swiss tournament, time control 90+30, NZCF & FIDE rated where possible.
 <br>Entries do not open until October 2021
 <br>More details on the <a href="https://newzealandchess.nz/merv-morrison-memorial-2022/">Event website</a>.
+
+@snippet
+@HSummit Rapid Championships, Auckland<br>November 20th 2022
+Organised by Summit Chess Club
+<br>Venue: Alexandra Park, Greenlane.
+<br>Time: 9am-5:30pm
+<br>Three separate (A,B, Junior grades), six round Swiss rapid 25+5 tournaments, NZCF and FIDE rated where possible.
+<br>More details to follow.
+
+@snippet
+@HSummit Rookies/Junior Rapid, Auckland<br>11th December 2022
+Venue: 99B Gillies Ave, Epsom, Auckland.
+<br>Time: 1pm-5:30pm
+<br>Two divisions: Open (FIDE and NZCF rapid rated) and U1000 (NZCF rapid rated).
+<br>Format: Six-round Swiss, 15mins+5 secs.
+<br>Organised by Summit Chess Club, contact Ying Wang, Email: <a href="mailto:ywang@outlook.co.nz">ywang@outlook.co.nz</a>.
+<br>More details to follow.
 
 @panel
 @HOther Junior events

@@ -1,4 +1,4 @@
-##Home Page Archives
+#Home Page Archives
 
 The first part of the Archives system to be up and running is the Home Page archives. We now have
 home page stories back until 2007.

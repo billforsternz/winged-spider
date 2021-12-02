@@ -49,5 +49,5 @@ funds were passed to NZCF for safe keeping.
 </p><p>
 Michael Freeman took on the role of administrator for membership and event entries.
 </p><p>
-NZCCA still conducts an annual NZ Championship with play via the ICCF server, see the <A HREF="correspondence.html">Correspondence Page</A>.
+NZCCA still conducts an annual NZ Championship with play via the ICCF server, see the <A HREF="more-correspondence.html">Correspondence Page</A>.
 

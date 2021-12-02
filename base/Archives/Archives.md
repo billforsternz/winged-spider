@@ -1,4 +1,4 @@
-##NZCF Website Archives
+#NZCF Website Archives
 
 This is intended to be a comprehensive archive system that will comprise old Home Pages,
 Results pages, and a separate Tournament archive. A good start has been made. The home page section

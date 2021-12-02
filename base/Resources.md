@@ -66,7 +66,7 @@ More information is provided in Step 6 of the NZCF Vega guide <A HREF="NZCFdocs/
 within two weeks of the tournament finishing – see the "Payments to NZCF" section below.
 Currently the charge per player in both Swiss-system and Round Robin events is $2.50 per player.
 Please make payment into the NZCF bank account and e-mail to advise
-the NZCF Secretary <A HREF="mailto:secretary@newzealandchess.co.nz">secretary@newzealandchess.co.nz</A>.
+the NZCF Treasurer <A HREF="mailto:treasurer@newzealandchess.co.nz">treasurer@newzealandchess.co.nz</A>.
 
 NULL
 NULL
@@ -624,8 +624,8 @@ NULL
 <LI>Vice-patrons: Tony Booth, Chris Benson, Grant Kerr
 <LI>President: Nigel Metge
 <LI>Vice-president: Paul Spiller
-<LI>Secretary: Winsome Stretch
-<LI>Treasurer: Winsome Stretch
+<LI>Secretary: Bob Gibbons
+<LI>Treasurer: Richie Christie
 <LI>Councillors: Hilton Bennett, Stan Yee, Russell Dive, Bob Gibbons, Craig Hall, Ross Jackson, Quentin Johnson,
 Ying Wang, Ralph Hart, Callum Spence.
 <LI>Ratings Officer: Rowan Wood

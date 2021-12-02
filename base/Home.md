@@ -21,10 +21,66 @@
 
 @panel
 @HCovid-19
-NZCF policy is that official over the board events, including local chess club play, should be suspended during NZ Government Covid Alert level 2 or higher.
+NZCF policy is now modified, see the announcement directly below. No NZCF official tournaments will be conducted (nor should Open tournaments be conducted) until the Covid-19 Protection Framework
+(‘traffic light system’) is formally in place and the legal definitions of ‘Red’, ‘Orange’ and ‘Green’ are available.
+
+images/2021/nz-seniors-zoom.jpg
+Zoom Call
+@HNZ Seniors Online
+Everyone was looking very happy in this pre-tournament Zoom call before the NZ Seniors Online kicked off
+on Friday 26th November. The six round, two classical games per day tournament continued through
+the weekend and both competitors and Lichess live kibitzers seemed to enjoy the tournament. The
+idea of a friendly online tournament, without heavy process and camera monitoring worked well with
+this group. Steady play saw stalwarts and good mates FM Bob Gibbons and CM Hilton Bennett come out
+on top with 5.0/6 (see the <a href="results.html">Results Page</a>). Timothy Ha, the very capable technical
+director of the tournament handled the online setting with aplomb while Bruce Pollard handled the old
+school arbiter duties.
 
 @snippet
-@HAsian Amateur Online Championships 12-18 November 2021
+@HSummit Rapid and NZ Seniors stay alive by going online
+Amongst the Covid carnage on the <a href="calendar.html">NZCF Calendar</a> it's nice to see that two tournaments
+originally planned as OTB (over the board) are going to run in online form. It's not a perfect solution, but sometimes
+perfect is the enemy of good. <b>Note: Entries for the Open Seniors Online now close on Tuesday 23rd November 2021.</b>.
+
+@snippet
+@H2021 New Zealand Interschool Chess Finals Cancelled
+NZCF Council has made the difficult decision to cancel this year’s national interschool finals.
+<br>The finals were due to be held in Auckland in late December, after the covid pandemic forced their postponement from September.
+<br>However holding the competition has become virtually impossible in view of the continuing uncertainty about Auckland’s covid level status and the rules regarding gatherings of vaccinated and unvaccinated people.
+<br>My apologies; for the sake of thousands of keen young chess players around the country I can only hope that we can return to some normality next year.
+</p><p>
+Bob Smith
+<br>NZCF National Interschool Co-ordinator
+
+@snippet
+@HCovid Policy Update
+NZCF has announced an updated Covid policy which affects local chess clubs. Please see the <a href="notices.html">Notices Page</a> for full details. 
+
+@snippet
+@HAsian Youth Online Championships, 22-31 October 2021
+While this individuals tournament is in progress I will endeavour to provide some links for following progress of NZL players.
+This is work in progress, apologies for not providing anything more comprehensive at the moment.
+<br>Here is a link to the <a href="http://chess-results.com/tnr583286.aspx?lan=1&art=0&fedb=NZL&flag=30">chess-results website (Girls)</a>. 
+<br>Schedule for Girls tournaments: Fri,Sat,Sun (22nd-24th Oct); 3 rounds per day (9 total) at 7pm, 8:30pm, 10pm
+<br>Schedule for Open tournaments:  Fri,Sat,Sun (29th-31st Oct); 3 rounds per day (9 total) at 7pm, 8:30pm, 10pm
+<br>Tournament Regulations: <a href="https://secureservercdn.net/160.153.138.53/l3q.225.myftpupload.com/wp-content/uploads/2021/08/Asian-Youth.pdf">here</a>.
+<br>Here is a link to the <a href="https://tornelo.com/chess/orgs/asian-chess-federation/events/asian-youth-online-chess-championships-girls/summary">Girls' tournament, with games and results/standings, on Tornelo</a>.
+<br>Here is a link to the <a href="https://tornelo.com/chess/orgs/asian-chess-federation/events/asian-youth-online-chess-championships-open/summary">Open tournament, with games and results/standings, on Tornelo</a>.
+
+@snippet
+@HPresident’s Newsletter - COVID Update
+NZCF Council met by Zoom last Sunday 3rd October. We discussed the latest Covid update and the implications for over-the-board (OTB) play.
+It is obviously distressing to all of us that tournaments are being cancelled or postponed.
+We cannot predict if, and when we will reach ‘Level 1’.
+</p><p>
+For the moment NZCF advice is unchanged – there will be no official NZCF tournaments and no games NZCF or FIDE rated at Level 2 or above.
+But we are watching closely Government updates and what other associations of ‘mind sports’ like bridge are doing.
+There is another Council meeting 31st Oct and I will provide a further update immediately after that.
+</p><p>
+Nigel Metge, 5th October 2021
+
+@snippet
+@HAsian Amateur Online Championships, 12-18 November 2021
 <b>CLOSING DATE SUNDAY 10TH OCTOBER MIDNIGHT</b>
 <br>NZCF invites entries into this tournament organized by Oman Chess Committee on behalf of Asian Chess Federation.
 <br>Open to all amateur players with a FIDE rating 2100 or below in Open and Women categories.
@@ -53,8 +109,9 @@ on the Queens Gambit / Covid chess boom and
 <a href="https://www.newstalkzb.co.nz/on-air/mike-hosking-breakfast/audio/nigel-metge-nz-chess-federation-president-as-game-continues-to-see-meteoric-rise-in-participants/">how it is playing out in New Zealand</a>.
 
 @snippet
-@HAsian Youth Online Championships 2021 - CLOSING DATE THURSDAY 30TH SEPTEMBER MIDNIGHT
-NZCF invites entries into this tournament organized by All India Chess Federation under the authority of the Asian Chess Federation.
+@HAsian Youth Online Championships, 21-31 October 2021
+CLOSING DATE THURSDAY 30TH SEPTEMBER MIDNIGHT
+<br>NZCF invites entries into this tournament organized by All India Chess Federation under the authority of the Asian Chess Federation.
 <br>As usual two groups Open & Girls in age categories U8, U10, U12, U14, U16, U18.
 <br>All players must have FIDE ID and Tornelo registration.
 <br>All entrants must enter through <a href="https://forms.gle/DY1VUKriAbzKFHKGA">this Google docs link</a>.

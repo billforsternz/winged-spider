@@ -237,7 +237,18 @@ void parse( Page &p )
         if( p.dir.length() == 0 )
             p.target = p.base + ".html";
         else
+        {
             p.target = p.dir + '-' + p.base + ".html";
+
+            // A refinement, if filename is same as folder name, remove that duplication from the
+            //  target; eg archives/tournaments/tournaments.md -> archives-tournaments.html not archives-tournaments-tournaments.html
+            std::string final_folder = p.dir;
+            size_t offset = p.dir.find_last_of( PATH_SEPARATOR );
+            if( offset != std::string::npos )
+                final_folder = p.dir.substr(offset+1);
+            if( util::tolower(final_folder) == util::tolower(p.base) )
+                p.target = p.dir + ".html"; // eg archives/archives.md -> archives.html not archives-archives.html   
+        }
     }
     for( char &c: p.target )
     {
@@ -519,7 +530,7 @@ void treebuilder()
                 printf( "Info: Page %s has unsupported extension (not .md or .pgn or .html), disabled\n", p.path.c_str() );
                 
             }
-            else if( previous && p.target==previous->target )
+            else if( previous && previous->is_file && p.target==previous->target )
             {
                 if( previous->ext == p.ext || previous->ext == "md")
                 {

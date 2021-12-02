@@ -22,34 +22,12 @@ and the 2021, 2020, 2019, 2018 and 2017 results. Prior to 2017, the Interschools
 </p>
 
 @snippet
-@HNational Interschool Finals postponed until December
-<i>Notice dated 7th September 2021</i>
-</p><p>
-The National Interschool Finals will now be held on 18th and 19th December.
-</p><p>
-The venue remains Alexandra Park in Auckland and all other details are the
-same.
-</p><p>
-With Auckland still in Level Four and very unlikely to reach the required Level
-One by the original dates of 2nd and 3rd October, NZCF’s Interschool Committee
-and National Finals Organiser Bruce Pollard have decided that the change of
-dates will give participating schools more certainty and make it easier to plan
-travel and accommodation.
-</p><p>
-Schools now have until 1st October to confirm their entries and team lists, using
-the official entry form.
-</p><p>
-The deadline for payment of entry fees has been extended until 1st December.
-</p><p>
-Thank you to all the schools which have already confirmed their entries and
-paid the entry fee.
-</p><p>
-If the new dates change your decision please advise Bruce
-<a href="mailto:bruce.pollard@ymail.com">bruce.pollard@ymail.com</a>
-and me <a href="mailto:caissa1530@gmail.com">caissa1530@gmail.com</a>.
-</p><p>
-We look forward to another enjoyable and exciting Interschool Final.
+@H2021 New Zealand Interschool Chess Finals Cancelled
+<i>Notice dated 13th November 2021</i>
+NZCF Council has made the difficult decision to cancel this year’s national interschool finals.
+<br>The finals were due to be held in Auckland in late December, after the covid pandemic forced their postponement from September.
+<br>However holding the competition has become virtually impossible in view of the continuing uncertainty about Auckland’s covid level status and the rules regarding gatherings of vaccinated and unvaccinated people.
+<br>My apologies; for the sake of thousands of keen young chess players around the country I can only hope that we can return to some normality next year.
 </p><p>
 Bob Smith
 <br>NZCF National Interschool Co-ordinator
-<br>7th September 2021

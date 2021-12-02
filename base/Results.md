@@ -19,6 +19,73 @@
 @M more.html More
 
 @snippet
+@HNZ Open Seniors Online Championships, Online<br>November 26th-28th 2021 (Originally scheduled as OTB September 17th-19th)
+1st= FM Bob Gibbons, CM Hilton Bennett 5/6
+<br>3rd Anthony Carpinter 4/6
+</p><p>
+<pre>
+Pos NAME                           Rtg   T  Fed  Pts |   1     2     3     4     5     6
+-----------------------------------------------------------------------------------------
+  1 Gibbons, Robert E              2083  FM NZL  5.0 | +B8   +W7   =BYE  =W2   +B4   +W6
+  2 Bennett, Hilton P              2056  CM NZL  5.0 | +W11  +B4   +W6   =B1   +W3   =B5
+  3 Carpinter, Anthony L           2239     NZL  4.0 | =BYE  =BYE  +B5   +W7   -B2   +W9
+  4 Taylor, Richard                1954  CM NZL  3.5 | +B14  -W2   +B12  =W5   -W1   +B11
+  5 Spiller, Paul S                2030  CM NZL  3.0 | +W12  =B6   -W3   =B4   =W8   =W2
+  6 McIntosh, Andrew D             1781     NZL  3.0 | +W10  =W5   -B2   =B9   +W7   -B1
+  7 Gold, Hamish R                 1883     NZL  3.0 | +W9   -B1   +W14  -B3   -B6   +W12
+  8 Joel, Chris                (W) 1859     NZL  2.5 | -W1   =B9   +W10  =BYE  =B5    --
+  9 Hooton, Barry R                1597     NZL  2.5 | -B7   =W8   =B11  =W6   +W12  -B3
+ 10 Metge, J Nigel                 2044     NZL  2.0 | -B6   -W12  -B8   =BYE  =W11  +BYE
+ 11 Kerr, Grant                    1798     NZL  1.5 | -B2   -W14  =W9   =B12  =B10  -W4
+ 12 Cooper, Nigel                  1770     NZL  1.5 | -B5   +B10  -W4   =W11  -B9   -B7
+ 13 Guico, Leonides            (W) 1971     NZL  1.0 | =BYE  =BYE   --    --    --    --
+ 14 Booth, Anthony J           (W) 1599     NZL  1.0 | -W4   +B11  -B7    --    --    --
+</pre>
+</p><p>
+A PGN download is available <a href="downloads/new-zealand-online-seniors-2021.pgn">here</a>.
+<br>The NZCF tournament page which was a convenient portal for viewing the tournament is <a href="tournaments/misc/2021/NZ Seniors Online 2021.html">here</a>.
+<br>Full results on <a href="https://newzealandchess.co.nz/tournaments/bp/2021/wwwNZSeniors2021/">Vega</a>.
+</p><p>
+This tournament was originally planned as the official NZCF Senior Champs, but was played online instead in response to a Covid restrictions.
+There was no prize money and a reduced entry fee of $25, and no official ratings. The tournament was played in a spirit of friendship with no need for the normal rules surrounding cameras etc.
+Rating was Lichess only and optional.
+</p><p>
+Format: 6 round Swiss, over 3 days.
+<br>Eligibility: Players must be born before 1972.
+<br>Time control: 90 mins plus 30 sec per move.
+<br>Intl Arbiter: Bruce Pollard.
+<br>Online director: Timothy Ha.
+<br>Hosted by the Howick-Pakuranga chess club, contact Paul Spiller email: <a href="mailto:PaulSSpiller@outlook.com">PaulSSpiller@outlook.com</a>.
+<br>Entry Fee: $25 per player. Club Account for payment – BNZ 02 0168 0091321 01 Please state Name &amp; NZSenior
+<br>This <a href="downloads/Seniors Tournament 2021.pdf">original entry form</a> still has some useful information, where it conflicts with this calendar notice, the calendar notice is more up to date.
+<br>Entries and payments will still be administered by HPCC treasurer Ludi Zhang.
+
+@snippet
+@HSummit Online U1800 & Junior Championships, Online<br>November 21st 2021
+U1800
+<br>1st Francisco Nascimento 6/6
+<br>2nd= Emily Gan, Alice Wei, Justin Wang, Alexander Coates 4.5/6
+</p><p>
+Junior
+<br>1st Leo Xiao 6/6
+<br>2nd Adele Zhou 5.5/6
+<br>3rd= Maxwell Tu, Bruce Ay, Luna Xu 5/6
+</p><p>
+Two online tournaments, U1800 (FIDE or NZCF) and Junior, on Tornelo.com
+<br>The format is 6 rounds Swiss, 25 minutes + 5 seconds. Unrated. First round will start at 10am. 
+<br>Players need to register on Tornelo website.  
+<br>This is the Tornelo <a href= "https://tornelo.com/chess/orgs/summit-chess-club-nz/events/summit-rapid-chess-championships/summary">tournament link</a>.
+<br>Please check all the details <a href="downloads/21-11 Summit Rapid.pdf">here</a>.
+
+@snippet
+@HEastern Asia Youth Online Chess Championship<br>September 24th-3rd 2021
+A total of 49 New Zealand players competed in this online tournament. Many NZL
+players achieved a plus score including WCM Isabelle Ning 6.5/9 U12 Girls,
+Justin Wang 6.5/9 U10 Boys, and Daqi Mao 6/9 U10 Boys. This
+<a href="http://chess-results.com/tnr578905.aspx?lan=1&art=25&fedb=NZL&flag=30">results page</a>
+includes all results of all NZL players from all groups in all rounds.
+
+@snippet
 @HAsian Women's Online Championship, Online<br>August 23rd-26th, 2021
 WFM Vyanla Punsalan scored 4/9 and Emily Gan scored 3/9 in the <a href="https://chess-results.com/tnr574231.aspx?lan=1&art=4&flag=30">Asian Women's Online Championship</a>.
 

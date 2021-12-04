@@ -260,37 +260,51 @@ void parse( Page &p )
     if( p.target == "home.html" )
         p.target = "index.html";
 
-    // Split up the path
+    // Split path into component names, // eg "Archives/Tournaments/2020.md" -> "Archives", "Tournaments", "2020"
     size_t offset1=0, offset2;
-    std::vector<std::string> folders;
+    std::vector<std::string> components;
     while( offset1 < p.path.length() )
     {
         offset2 = p.path.find( PATH_SEPARATOR, offset1 );
         if( offset2 == std::string::npos )
+        {
+            offset2 = p.path.find( '.', offset1 );
+            if( offset2 != std::string::npos )
+            {
+                std::string name = p.path.substr(offset1,offset2-offset1);   // eg 
+                components.push_back( name );
+            }
             break;
+        }
         std::string name = p.path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
-        folders.push_back( name );
+        components.push_back( name );
         offset1 = offset2+1;
     }
 
-    // Auto generate tile, category, summary
-    p.title = p.base;
-    p.category = p.base;
-    p.summary = "";
-    size_t len = folders.size();
-    if( len > 1 )
+    // Auto generate Heading, subheading
+    // std::string heading;    // Eg "Archives Tournaments" (@S for historical reasons)
+    // std::string subheading; // Eg "2021" (@Z for historical reasons)
+    size_t len = components.size();
+    if( len >=2 && components[len-1] == components[len-2] )
     {
-        p.category = folders[len-1];
-        if( p.base == folders[len-1] )
-            p.summary  = folders[len-2] + " - " + folders[len-1];
-        else
-            p.summary  = folders[len-2] + " - " + folders[len-1] + " - " + p.base;
+        components.pop_back();
+        len--;
     }
-    else if( len > 0 )
+    if( len == 1 )
     {
-        p.category = folders[len-1];
-        if( p.base != folders[len-1] )
-            p.summary  = folders[len-1] + " - " + p.base;
+        p.subheading = "";
+        p.heading = components[0];
+    }
+    else if( len > 1 )
+    {
+        p.subheading = components[len-1];
+        p.heading = "";
+        for( size_t i=0; i<len-1; i++ )
+        {
+            p.heading += components[i];
+            if( i+1 < len-1 )
+                p.heading += " ";
+        }
     }
 }
 

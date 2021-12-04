@@ -26,7 +26,7 @@
 #endif
 
 #define BASE_IN  "base"
-#define BASE_OUT "output"
+#define BASE_OUT "C:\\Users\\Bill\\Documents\\newzealandchess.co.nz"
 
 void construct_page_group( std::vector<Page*> ptrs );
 void recurse( const std::string &path, std::vector<Page> &results );

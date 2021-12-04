@@ -37,7 +37,7 @@ History\Historical FIDE Ratings.md
 History\Representative Honours.md
 History\Archives -> archives.html
 History\Magazines -> magazines.html
-History\Listener Columns.md
+History\Listener Columns\
 History\Trophies.md -> trophies.html
 Interschools\Interschools.md
 Interschools\2021 Results.html
@@ -61,6 +61,7 @@ Magazines\NZ Chess Gazette.md
 Magazines\Monographs and More.md
 Magazines\Interactive\
 Magazines\Curator's Notes\
+Magazines\Listener Columns -> history-listener-columns.html
 More\More.md
 More\Junior Badges.html
 More\Links.html
@@ -230,7 +231,6 @@ Magazines\Curator's Notes\NZ Chess News.md
 Magazines\Curator's Notes\NZ Chess, early issues.md
 Magazines\Curator's Notes\NZ Chessplayer.md
 Magazines\Curator's Notes\NZ Chess Gazette.md
-History\Listener Columns\
 History\Listener Columns\Listener Columns.md
 History\Listener Columns\1976.md
 History\Listener Columns\1977.md

@@ -41,10 +41,8 @@ struct Page
     bool make_file_for_dir = false;
 
     // Auto generated summary text
-                            // Eg Archives/Tournaments/2021.md
-    std::string title;      // Eg "Tournaments 2021"
-    std::string category;   // Eg "Archives"
-    std::string summary;    // Eg "Archives - Tournaments - 2021"
+    std::string heading;    // Eg "Archives Tournaments" (@S for historical reasons)
+    std::string subheading; // Eg "2021" (@Z for historical reasons)
 
     // Features to be added later to support more user annotation for files
     bool empty_line_prefix = false;

@@ -51,7 +51,6 @@
                 <div class="pure-u-16-24">
                     <h1>@S</h1>
                     <h4>© New Zealand Chess Federation Inc 2021</h4>
-                    <h6>@Z</h6>
 <p><b>Download</b> games as PGN <a href="@G">here</a></p>
                 </div>
                 <div class="pure-u-4-24">

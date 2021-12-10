@@ -21,8 +21,33 @@
 
 @panel
 @HCovid-19
-NZCF policy is now modified, see the announcement directly below. No NZCF official tournaments will be conducted (nor should Open tournaments be conducted) until the Covid-19 Protection Framework
-(‘traffic light system’) is formally in place and the legal definitions of ‘Red’, ‘Orange’ and ‘Green’ are available.
+NZCF Council advises approval of NZCF official tournaments and Open tournaments only
+if CVC compliant and in regions designated by Government as ‘Orange’ or ‘Green’ (but
+not ‘Red’) under the Covid-19 Protection Framework.
+
+@snippet
+@HGood News - South Island Champs and Congress get Green Light
+<i>Craig Hall reports</i>
+<br>With the recent NZCF Council decision to approve play of NZCF tournaments in locations at Green and Orange,
+we are delighted to confirm that the South Island Championship and South Island Rapid Championship will
+both take place on 8-11 December (Championship) and 12 December (Rapid). Because of the short notice,
+NZCF Council has approved changing the prize funds from the previously guaranteed $800 and $400 respectively
+to entries less costs in the event of low entries (which seems likely given the timeline).
+</p><p>
+Please see the updated entry forms (on the <a href="calendar.html">Calendar Page</a>) to reflect this and also
+a number of additional Covid-related competition 
+rules. Of particular note is that all NZCF tournaments, including these ones, will be run under CVC compliance
+i.e. vaccine passes are required for all attendees including players, spectators, arbiters and officials unless
+a legal exemption applies (under 12 years 3 months of age, or approved exemption from the Ministry of Health).
+</p><p>
+Congress will also go ahead as scheduled – the updated entry forms will be sent out once the additional Covid
+competition rules have been added and late entry fees have been adjusted (late entry fees will only apply to
+entries received and paid on or after 20 December).
+
+@snippet
+@HCovid Policy Update
+The purple Covid notice above has been updated, please see NZCF President Nigel Metge's
+4th December newsletter on the <a href="notices.html">Notices Page</a> for all the details.
 
 images/2021/nz-seniors-zoom.jpg
 Zoom Call

@@ -68,6 +68,8 @@ More\Links.html
 More\Correspondence.html
 More\Cheap Chess Equipment -> NZCFdocs/equipmentforschools.pdf
 More\Grand Prix.html
+More\Listener Columns -> history-listener-columns.html
+More\NZ Games Database -> history-the-peter-stuart-nz-games-database.html
 NZ Chess Online\NZ Chess Online.md
 NZ Chess Online\Running Chess Clubs Online.md
 NZ Chess Online\Online Interclub.md
@@ -265,4 +267,8 @@ History\Listener Columns\Interactive\1977\Taking poison.pgn
 History\Listener Columns\Interactive\1977\Sunday, bloody Sunday.pgn
 History\Listener Columns\Interactive\1977\Beating up the oldies.pgn
 History\Listener Columns\Interactive\1977\Knight time runs out.pgn
+History\Listener Columns\Interactive\1978\Liberating chess.pgn
+History\Listener Columns\Interactive\1978\A dragon to the death.pgn
 History\Listener Columns\Interactive\1978\A touch of class.pgn
+History\Listener Columns\Interactive\1978\Freestyle.pgn
+History\Listener Columns\Interactive\1978\Masterfall.pgn

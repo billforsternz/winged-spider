@@ -40,7 +40,7 @@ bool GamesCache::Load(std::string &filename, std::string &asset_filename )
     pgn_filename = "";
     FILE *pgn_file = gbl_pgn_files.OpenRead( filename, pgn_handle );
     FILE *asset_file = fopen( asset_filename.c_str(), "wb" );
-    if( pgn_file )
+    if( pgn_file && asset_file )
     {
         loaded = Load(pgn_file,asset_file);
         if( loaded )

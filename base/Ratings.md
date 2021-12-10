@@ -35,8 +35,9 @@ FIDE standard and rapid ratings, NZCF and FIDE codes, and titles are included, m
 into the habit of checking for Vega updates (Menu Help> Check Update, the "online" version
 is Vega parlance for the latest version), new FIDE rating files, and new
 NZCF rating files before every event!
-<br><A HREF='downloads/2021-2-Standard-Vega-20210802.csv'>Standard</A>
-<br><A HREF='downloads/2021-2-Rapid-Vega-20210802.csv'>Rapid</A>
+<br><b>Note 8th December 2021 - the Vega rating files have been updated to new 2021-3 ratings</b> the other rating downloads and inline information will be updated soon.
+<br><A HREF='downloads/2021-3-Standard-Vega-20211206.csv'>Standard</A>
+<br><A HREF='downloads/2021-3-Rapid-Vega-20211206.csv'>Rapid</A>
 </p><p>
 Note that it is quite common for new New Zealand Players to appear in the FIDE database before
 they appear in the New Zealand database. So for FIDE rated tournaments, arbiters please

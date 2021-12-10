@@ -73,7 +73,7 @@ NULL
 @HPayments to NZCF
 Please use the following forms to pay  NZCF fees.
 <ul>
-<li>NZCF annual affiliation form for clubs <A HREF="NZCFdocs/NZCF ANNUAL AFFILIATION CLUBS V2 May2019.pdf">NZCF ANNUAL AFFILIATION CLUBS 2019</A>
+<li>NZCF annual affiliation form for clubs <A HREF="NZCFdocs/New Zealand Chess Federation Annual - Affiliation - Associate Form for Clubs.xlsx">NZCF ANNUAL AFFILIATION CLUBS 2021</A> (Simple .xlsx form, can be opened with Microsoft/Open/Libre Office).
 <li>NZCF Lone Wolf subscription form for players <A HREF="NZCFdocs/LONE WOLF CHESS CLUB MEMBERSHIP SUBSCRIPTION 2021.docx">NZCF Lone-Wolf</A>
 <li>NZCF junior badges order form <A HREF="NZCFdocs/NZCF JUNIOR BADGES ORDER FORM.pdf">NZCF Ord-01</A>
 <li>NZCF tournament levies form <A HREF="NZCFdocs/NZCF TOURNAMENT LEVIES FORM 08 April 2021.pdf">NZCF Tlv-02</A>

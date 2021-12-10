@@ -69,7 +69,7 @@ namespace fs = std::experimental::filesystem;
 #include "util.h"
 #include "page.h"
 #include "misc.h"
-#include "src-tarrasch/GamesCache.h"
+#include "../src-tarrasch/GamesCache.h"
 #include "md4c-html.h"
 
 // While we are getting this up to speed with some basic reconstruction of some existing functionality
@@ -749,10 +749,15 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
     bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    std::string ftemplate = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
+    std::string ftemplate = "template/template-main.txt";
     fs::path pin(in); 
     fs::path pout(out);
     fs::path ptemplate(ftemplate);
+    if( !fs::exists(ptemplate) )
+    {
+        printf( "Cannot open template file %s\n", ftemplate.c_str() );
+        return false;
+    }
     if( !fs::exists(pout) )
         needs_rebuild = true;
     else
@@ -793,10 +798,15 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     std::string pgn_asset =  std::string("assets") + std::string(PATH_SEPARATOR_STR) + p->target;
-    std::string ftemplate = "/Users/Bill/Documents/Github/winged-spider/template-pgn.txt";
+    std::string ftemplate = "template/template-pgn.txt";
     fs::path pin(in); 
     fs::path pout(out);
     fs::path ptemplate(ftemplate);
+    if( !fs::exists(ptemplate) )
+    {
+        printf( "Cannot open template file %s\n", ftemplate.c_str() );
+        return false;
+    }
     size_t offset = pgn_asset.find_last_of('.');
     if( offset != std::string::npos )
         pgn_asset = pgn_asset.substr(0,offset) + ".pgn";

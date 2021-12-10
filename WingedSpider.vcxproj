@@ -91,6 +91,8 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +125,8 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,10 +155,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="entity.c" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="md4c-html.c" />
-    <ClCompile Include="md4c.c" />
     <ClCompile Include="src-tarrasch\BinDb.cpp" />
     <ClCompile Include="src-tarrasch\CompactGame.cpp" />
     <ClCompile Include="src-tarrasch\CompressMoves.cpp" />
@@ -168,15 +168,14 @@
     <ClCompile Include="src-tarrasch\PgnFiles.cpp" />
     <ClCompile Include="src-tarrasch\PgnRead.cpp" />
     <ClCompile Include="src-tarrasch\thc.cpp" />
-    <ClCompile Include="treebuilder.cpp" />
-    <ClCompile Include="util.cpp" />
+    <ClCompile Include="src\entity.c" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\md4c-html.c" />
+    <ClCompile Include="src\md4c.c" />
+    <ClCompile Include="src\treebuilder.cpp" />
+    <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="entity.h" />
-    <ClInclude Include="md4c-html.h" />
-    <ClInclude Include="md4c.h" />
-    <ClInclude Include="misc.h" />
-    <ClInclude Include="page.h" />
     <ClInclude Include="src-tarrasch\BinaryConversions.h" />
     <ClInclude Include="src-tarrasch\BinDb.h" />
     <ClInclude Include="src-tarrasch\CompactGame.h" />
@@ -191,11 +190,20 @@
     <ClInclude Include="src-tarrasch\ListableGamePgn.h" />
     <ClInclude Include="src-tarrasch\MoveTree.h" />
     <ClInclude Include="src-tarrasch\NavigationKey.h" />
+    <ClInclude Include="src-tarrasch\Objects.h" />
+    <ClInclude Include="src-tarrasch\PackedGame.h" />
     <ClInclude Include="src-tarrasch\PgnFiles.h" />
     <ClInclude Include="src-tarrasch\PgnRead.h" />
+    <ClInclude Include="src-tarrasch\Portability.h" />
+    <ClInclude Include="src-tarrasch\ProgressBar.h" />
     <ClInclude Include="src-tarrasch\Roster.h" />
     <ClInclude Include="src-tarrasch\thc.h" />
-    <ClInclude Include="util.h" />
+    <ClInclude Include="src\entity.h" />
+    <ClInclude Include="src\md4c-html.h" />
+    <ClInclude Include="src\md4c.h" />
+    <ClInclude Include="src\misc.h" />
+    <ClInclude Include="src\page.h" />
+    <ClInclude Include="src\util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

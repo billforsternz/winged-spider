@@ -10,9 +10,9 @@
 #include <set>
 #include <time.h>
 #include <stdio.h>
-#include "..\misc.h"
-#include "..\util.h"
-#include "..\md4c-html.h"
+#include "../src/misc.h"
+#include "../src/util.h"
+#include "../src/md4c-html.h"
 #include "thc.h"
 #include "PgnFiles.h"
 #include "Lang.h"

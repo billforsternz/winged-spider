@@ -742,65 +742,140 @@ std::string macro_substitution( const std::string &input,
     return out;
 }
 
-
 static std::set<std::string> directories;
 
-bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
+bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run )
 {
+    bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    if( p->make_file_for_dir )
-        in = "";
-    std::map<char,std::string> macros;
-    macros['s'] = p->heading;       // lower case 's' and 'z' mean auto-generated
-    macros['z'] = p->subheading;
-    templat(in,"/Users/Bill/Documents/Github/winged-spider/template-main.txt",out,macros,menu,menu_idx);
+    std::string ftemplate = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
+    fs::path pin(in); 
+    fs::path pout(out);
+    fs::path ptemplate(ftemplate);
+    if( !fs::exists(pout) )
+        needs_rebuild = true;
+    else
+    {
+        fs::file_time_type time_out = last_write_time(pout);
+        if( !p->make_file_for_dir )
+        {
+            fs::file_time_type time_in = last_write_time(pin);    
+            if( time_in > time_out )
+            {
+                printf( "%s succeeds %s\n", in.c_str(), out.c_str() );
+                needs_rebuild = true;
+            }
+        }
+        fs::file_time_type time_template = last_write_time(ptemplate);
+        if( time_template > time_out )
+        {
+            printf( "%s succeeds %s\n", ftemplate.c_str(), out.c_str() );
+            needs_rebuild = true;
+        }
+    }
+    if( needs_rebuild )
+    {
+        printf( "@@@ REBUILDING %s\n", out.c_str() );
+        std::map<char,std::string> macros;
+        macros['s'] = p->heading;       // lower case 's' and 'z' mean auto-generated
+        macros['z'] = p->subheading;
+        if( p->make_file_for_dir )
+            in = "";
+        templat(in,ftemplate,out,macros,menu,menu_idx);
+    }
     return true;
 }
 
-bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
+bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run )
 {
+    bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     std::string pgn_asset =  std::string("assets") + std::string(PATH_SEPARATOR_STR) + p->target;
+    std::string ftemplate = "/Users/Bill/Documents/Github/winged-spider/template-pgn.txt";
+    fs::path pin(in); 
+    fs::path pout(out);
+    fs::path ptemplate(ftemplate);
     size_t offset = pgn_asset.find_last_of('.');
     if( offset != std::string::npos )
         pgn_asset = pgn_asset.substr(0,offset) + ".pgn";
     std::string pgn_asset_full = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + pgn_asset;
-    GamesCache gc;
-    std::map<char,std::string> macros;
-    macros['T'] = p->heading;
-    macros['S'] = p->heading;
-    macros['Z'] = p->subheading;
-    macros['G'] = pgn_asset;
-    gc.Load(in,pgn_asset_full);
-    gc.Publish("/Users/Bill/Documents/Github/winged-spider/template-pgn.txt",out,macros,menu,menu_idx);
+    if( !fs::exists(pout) )
+        needs_rebuild = true;
+    else
+    {
+        fs::file_time_type time_out = last_write_time(pout);
+        fs::file_time_type time_in = last_write_time(pin);    
+        if( time_in > time_out )
+        {
+            printf( "%s succeeds %s\n", in.c_str(), out.c_str() );
+            needs_rebuild = true;
+        }
+        fs::file_time_type time_template = last_write_time(ptemplate);
+        if( time_template > time_out )
+        {
+            printf( "%s succeeds %s\n", ftemplate.c_str(), out.c_str() );
+            needs_rebuild = true;
+        }
+    }
+    if( needs_rebuild )
+    {
+        printf( "@@@ REBUILDING %s\n", out.c_str() );
+        GamesCache gc;
+        std::map<char,std::string> macros;
+        macros['T'] = p->heading;
+        macros['S'] = p->heading;
+        macros['Z'] = p->subheading;
+        macros['G'] = pgn_asset;
+        gc.Load(in,pgn_asset_full);
+        gc.Publish(ftemplate,out,macros,menu,menu_idx);
+    }
     return true;
 }
 
 // Just copy the file - later check to see whether we need to copy it
 bool html_gen( Page *p )
 {
+    bool needs_rebuild = false;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    std::ifstream fin( in.c_str() );
-    if( !fin )
+    fs::path pin(in); 
+    fs::path pout(out);
+    if( !fs::exists(pout) )
+        needs_rebuild = true;
+    else
     {
-        printf( "Could not open file %s for reading\n", in.c_str() );
-        return false;
+        fs::file_time_type time_out = last_write_time(pout);
+        fs::file_time_type time_in = last_write_time(pin);    
+        if( time_in > time_out )
+        {
+            printf( "%s succeeds %s\n", in.c_str(), out.c_str() );
+            needs_rebuild = true;
+        }
     }
-    std::ofstream fout( out.c_str() );
-    if( !fout )
+    if( needs_rebuild )
     {
-        printf( "Could not open file %s for writing\n", out.c_str() );
-        return false;
-    }
-    for(;;)
-    {
-        std::string line;
-        if( !std::getline(fin,line) )
-            break;
-        util::putline(fout,line);
+        printf( "@@@ COPYING %s\n", out.c_str() );
+        std::ifstream fin( in.c_str() );
+        if( !fin )
+        {
+            printf( "Could not open file %s for reading\n", in.c_str() );
+            return false;
+        }
+        std::ofstream fout( out.c_str() );
+        if( !fout )
+        {
+            printf( "Could not open file %s for writing\n", out.c_str() );
+            return false;
+        }
+        for(;;)
+        {
+            std::string line;
+            if( !std::getline(fin,line) )
+                break;
+            util::putline(fout,line);
+        }
     }
     return true;
 }

@@ -26,17 +26,16 @@
 #endif
 
 #define BASE_IN  "base"
-#define BASE_OUT "C:\\Users\\Bill\\Documents\\newzealandchess.co.nz"
+#define BASE_OUT "output" // C:\\Users\\Bill\\Documents\\newzealandchess.co.nz"
 
-void construct_page_group( std::vector<Page*> ptrs );
 void recurse( const std::string &path, std::vector<Page> &results );
 void parse( Page &p );
 void read_file( const char *plan_file, std::vector<Page> &results );
 void write_file( const char *plan_file, const std::vector<Page> &results );
 void treebuilder();
 void recurse( const std::string &path, std::vector<Page> &results );
-bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
-bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
+bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run );
+bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run );
 bool html_gen( Page *p );
 void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
               std::map<char,std::string> &macros,

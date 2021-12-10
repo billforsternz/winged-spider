@@ -14,7 +14,25 @@ namespace fs = std::experimental::filesystem;
 #include "page.h"
 #include "misc.h"
 
-static std::map<std::string,Page *> directory_to_target;
+// Returns bool more
+static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart );
+
+// Build a map of the menus for each directory for the previous run, and use this
+//  to help determine if a file needs to be rebuilt
+static std::map< std::string, std::vector< std::pair<std::string,std::string> > >  menus;
+
+class Builder
+{
+    bool previous_run;
+
+public:
+    Builder( bool previous_run ) { this->previous_run = previous_run; }
+    std::map<std::string,Page *> directory_to_target;
+    void construct_dir_target( std::vector<Page*> ptrs );
+    void construct_page_group( std::vector<Page*> ptrs );
+    void run( std::vector<Page> &results );
+};
+
 
 // Each directory comprises a group of pages
 // If directory is selected from a parent menu, it needs to resolve
@@ -23,7 +41,7 @@ static std::map<std::string,Page *> directory_to_target;
 //  files, it is an empty intermediate directory. A simple .html
 //  file is constructed to represent the directory in the menu
 //  system, using the make_file_for_dir flag.
-void construct_dir_target( std::vector<Page*> ptrs )
+void Builder::construct_dir_target( std::vector<Page*> ptrs )
 {
     // Look for a file the parent directory can point to 
     for( Page *p: ptrs )
@@ -49,14 +67,10 @@ void construct_dir_target( std::vector<Page*> ptrs )
 // Construct all the pages in a directory. Build the whole menu for that directory
 // first, because each page will have the same menu (but a different idx into the
 // menu to be highlighted)
-void construct_page_group( std::vector<Page*> ptrs )
+void Builder::construct_page_group( std::vector<Page*> ptrs )
 {
     if( ptrs.size() == 0 )
         return;
-
-    static int debug_count;
-    //if( ++debug_count == 5 )
-    //    printf( "Debug Curator's Notes\n" );
 
     // Calculate the menu to present for each page in the group,
     //  Start with each element of the split path
@@ -149,6 +163,22 @@ void construct_page_group( std::vector<Page*> ptrs )
         }
         first = false;
     }
+    Page *p0 = ptrs[0];
+    bool same_menu_as_last_run = false;
+    if( previous_run )
+    {
+        menus[p0->dir] = menu;
+        return;
+    }
+    else
+    {
+        auto it = menus.find(p0->dir);
+        same_menu_as_last_run = (it != menus.end() && it->second==menu);
+        if( !same_menu_as_last_run )
+        {
+            printf( "@@@@ WHOA\n" );
+        }
+    }
     printf("\nMenu>\n");
     for(std::pair<std::string,std::string> menu_item: menu )
     {
@@ -160,7 +190,7 @@ void construct_page_group( std::vector<Page*> ptrs )
     // If we are making an html file for an empty directory, do it now with
     //  index set to the last element of the split path
     if( make_file_for_dir )
-        markdown_gen( make_file_for_dir, menu, menu_idx-1 );
+        markdown_gen( make_file_for_dir, menu, menu_idx-1, same_menu_as_last_run );
 
     // Build each page in turn
     //  (force build for now)
@@ -170,17 +200,51 @@ void construct_page_group( std::vector<Page*> ptrs )
             ;
         else if( "md" == p->ext )
         {
-            markdown_gen( p, menu, menu_idx );
+            markdown_gen( p, menu, menu_idx, same_menu_as_last_run );
         }
         else if( "pgn" == p->ext )
         {
-            pgn_to_html( p, menu, menu_idx );
+            pgn_to_html( p, menu, menu_idx, same_menu_as_last_run );
         }
         else if( "html" == p->ext )
         {
             html_gen( p );
         }
         menu_idx++;
+    }
+}
+
+void Builder::run( std::vector<Page> &results )
+{
+    // Initial scan of each page, identifying targets for each directory
+    bool first = true;
+    for( bool more=true; more;)
+    {
+        std::vector<Page*> ptrs;
+        more = get_next_page_group( results, ptrs, first );
+        first = false;
+        //-------------
+        printf( "Debug: ------ Page group begin\n" );
+        for( const Page *p: ptrs )
+        {
+            std::string status = p->is_file ? "is_file" : (p->is_link ? "is_link" : (p->is_dir?"is_dir":"is_??") );
+            printf( "status:%s dir:\"%s\" path:\"%s\"\n", status.c_str(), p->dir.c_str(), p->path.c_str() );
+        }
+        printf( "Debug: ------ Page group end\n" );
+        //-------------
+        printf( "Debug: construct_dir_target()\n" );
+        construct_dir_target(ptrs);
+    }
+
+    // Second scan of each page, building menus
+    first = true;
+    for( bool more=true; more;)
+    {
+        std::vector<Page*> ptrs;
+        more = get_next_page_group( results, ptrs, first );
+        first = false;
+        printf( "Debug: construct_page_group()\n" );
+        construct_page_group(ptrs);
     }
 }
 
@@ -420,11 +484,18 @@ static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> 
     return false;
 }
 
-// New pages not currently smoothly added, until this bug fixed do't do it
-#define BUG_NEEDS_TO_BE_FIXED   // hmm acutally we need it defined or worse happens
-
 void treebuilder()
 {
+    Builder previous_time(true);
+    Builder this_time(false);
+
+    // Build the menus for the previous run, to help us determine which pages need to be rebuilt
+    std::vector<Page> pages;
+    const char *previous_plan_file = "temp_plan_file.txt";
+    read_file( previous_plan_file, pages );
+    previous_time.run( pages );
+
+    // Now do it for real    
     std::vector<Page> results;
     const char *plan_file = "plan.txt";
     read_file( plan_file, results );
@@ -462,10 +533,8 @@ void treebuilder()
                     p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
                     p.added_to_plan_line_nbr = sec_sort++;
 
-                    #ifdef BUG_NEEDS_TO_BE_FIXED
                     p.from_plan_file = true;
                     rewrite = true;
-                    #endif
                 }
             }
         }
@@ -489,10 +558,8 @@ void treebuilder()
                     p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
                     p.added_to_plan_line_nbr = sec_sort++;
 
-                    #ifdef BUG_NEEDS_TO_BE_FIXED
                     p.from_plan_file = true;
                     rewrite = true;
-                    #endif
                 }
             }
             else
@@ -527,7 +594,7 @@ void treebuilder()
         printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
 
     // Rewrite the plan file. For the moment we use a temporary file name and don't overwrite the actual plan file
-    if( rewrite )
+    //if( rewrite )
         write_file( "temp_plan_file.txt", results );
 
     // Temporarily revert to sync order, to identify duplicate leaf nodes, eg Results.md *and* Results.html
@@ -562,36 +629,7 @@ void treebuilder()
     }
     std::sort( results.begin(), results.end(), less_than_restore_order ); // restore to plan file order
 
-    // Initial scan of each page, identifying targets for each directory
-    bool first = true;
-    for( bool more=true; more;)
-    {
-        std::vector<Page*> ptrs;
-        more = get_next_page_group( results, ptrs, first );
-        first = false;
-        //-------------
-        printf( "Debug: ------ Page group begin\n" );
-        for( const Page *p: ptrs )
-        {
-            std::string status = p->is_file ? "is_file" : (p->is_link ? "is_link" : (p->is_dir?"is_dir":"is_??") );
-            printf( "status:%s dir:\"%s\" path:\"%s\"\n", status.c_str(), p->dir.c_str(), p->path.c_str() );
-        }
-        printf( "Debug: ------ Page group end\n" );
-        //-------------
-        printf( "Debug: construct_dir_target()\n" );
-        construct_dir_target(ptrs);
-    }
-
-    // Second scan of each page, building menus
-    first = true;
-    for( bool more=true; more;)
-    {
-        std::vector<Page*> ptrs;
-        more = get_next_page_group( results, ptrs, first );
-        first = false;
-        printf( "Debug: construct_page_group()\n" );
-        construct_page_group(ptrs);
-    }
+    this_time.run( results );
 }
 
 void recurse( const std::string &path, std::vector<Page> &results )

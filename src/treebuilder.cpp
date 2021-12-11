@@ -21,6 +21,10 @@ static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> 
 //  to help determine if a file needs to be rebuilt
 static std::map< std::string, std::vector< std::pair<std::string,std::string> > >  menus;
 
+static unsigned count_md_gen;
+static unsigned count_pgn_gen;
+static unsigned count_html_gen;
+
 class Builder
 {
     bool previous_run;
@@ -29,8 +33,8 @@ public:
     Builder( bool previous_run ) { this->previous_run = previous_run; }
     std::map<std::string,Page *> directory_to_target;
     void construct_dir_target( std::vector<Page*> ptrs );
-    void construct_page_group( std::vector<Page*> ptrs );
-    void run( std::vector<Page> &results );
+    bool construct_page_group( std::vector<Page*> ptrs, bool force_rebuild );
+    bool run( std::vector<Page> &results, bool force_rebuild=false );
 };
 
 
@@ -67,10 +71,11 @@ void Builder::construct_dir_target( std::vector<Page*> ptrs )
 // Construct all the pages in a directory. Build the whole menu for that directory
 // first, because each page will have the same menu (but a different idx into the
 // menu to be highlighted)
-void Builder::construct_page_group( std::vector<Page*> ptrs )
+// Return true if changed menu detected
+bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild )
 {
     if( ptrs.size() == 0 )
-        return;
+        return false;
 
     // Calculate the menu to present for each page in the group,
     //  Start with each element of the split path
@@ -168,7 +173,7 @@ void Builder::construct_page_group( std::vector<Page*> ptrs )
     if( previous_run )
     {
         menus[p0->dir] = menu;
-        return;
+        return false;
     }
     else
     {
@@ -176,46 +181,61 @@ void Builder::construct_page_group( std::vector<Page*> ptrs )
         same_menu_as_last_run = (it != menus.end() && it->second==menu);
         if( !same_menu_as_last_run )
         {
-            printf( "@@@@ WHOA\n" );
+            printf( "Info: Menu changed for all pages in directory %s\n", p0->dir.c_str() );
         }
     }
-    printf("\nMenu>\n");
-    for(std::pair<std::string,std::string> menu_item: menu )
+    if( get_verbosity() > 0 )
     {
-        printf("%s %s\n", menu_item.first.c_str(), menu_item.second.c_str() );
-        //if( menu_item.second == "Tournaments" )
-        //    printf("Debug break 1\n");
+        printf("\nMenu>\n");
+        for(std::pair<std::string,std::string> menu_item: menu )
+        {
+            printf("%s %s\n", menu_item.first.c_str(), menu_item.second.c_str() );
+            //if( menu_item.second == "Tournaments" )
+            //    printf("Debug break 1\n");
+        }
     }
 
     // If we are making an html file for an empty directory, do it now with
     //  index set to the last element of the split path
     if( make_file_for_dir )
-        markdown_gen( make_file_for_dir, menu, menu_idx-1, same_menu_as_last_run );
+        markdown_gen( make_file_for_dir, menu, menu_idx-1, same_menu_as_last_run, force_rebuild );
 
     // Build each page in turn
-    //  (force build for now)
     for( Page *p: ptrs )
     {
         if( !p->is_file || p->disabled )
             ;
         else if( "md" == p->ext )
         {
-            markdown_gen( p, menu, menu_idx, same_menu_as_last_run );
+            if( markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
+            {
+                count_md_gen++;
+            }
         }
         else if( "pgn" == p->ext )
         {
-            pgn_to_html( p, menu, menu_idx, same_menu_as_last_run );
+            if( pgn_to_html( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
+            {
+                count_pgn_gen++;
+            }
         }
         else if( "html" == p->ext )
         {
-            html_gen( p );
+            if( html_gen( p, force_rebuild ) )
+            {
+                count_html_gen++;
+            }
         }
         menu_idx++;
     }
+    return !same_menu_as_last_run;
 }
 
-void Builder::run( std::vector<Page> &results )
+// Return true if any menu changes detected
+bool Builder::run( std::vector<Page> &results, bool force_rebuild )
 {
+    bool any=false;
+
     // Initial scan of each page, identifying targets for each directory
     bool first = true;
     for( bool more=true; more;)
@@ -224,15 +244,15 @@ void Builder::run( std::vector<Page> &results )
         more = get_next_page_group( results, ptrs, first );
         first = false;
         //-------------
-        printf( "Debug: ------ Page group begin\n" );
+        cprintf( "Debug: ------ Page group begin\n" );
         for( const Page *p: ptrs )
         {
             std::string status = p->is_file ? "is_file" : (p->is_link ? "is_link" : (p->is_dir?"is_dir":"is_??") );
-            printf( "status:%s dir:\"%s\" path:\"%s\"\n", status.c_str(), p->dir.c_str(), p->path.c_str() );
+            cprintf( "status:%s dir:\"%s\" path:\"%s\"\n", status.c_str(), p->dir.c_str(), p->path.c_str() );
         }
-        printf( "Debug: ------ Page group end\n" );
+        cprintf( "Debug: ------ Page group end\n" );
         //-------------
-        printf( "Debug: construct_dir_target()\n" );
+        cprintf( "Debug: construct_dir_target()\n" );
         construct_dir_target(ptrs);
     }
 
@@ -243,9 +263,11 @@ void Builder::run( std::vector<Page> &results )
         std::vector<Page*> ptrs;
         more = get_next_page_group( results, ptrs, first );
         first = false;
-        printf( "Debug: construct_page_group()\n" );
-        construct_page_group(ptrs);
+        cprintf( "Debug: construct_page_group()\n" );
+        if( construct_page_group(ptrs,force_rebuild) )
+            any = true;
     }
+    return any;
 }
 
 // Predicate for sorting when we are comparing the plan file and the actual directory
@@ -372,15 +394,12 @@ void parse( Page &p )
     }
 }
 
-void read_file( const char *plan_file, std::vector<Page> &results )
+bool read_file( const char *plan_file, std::vector<Page> &results )
 {
     std::ifstream fin( plan_file );
     unsigned long line_nbr=0;
     if( !fin )
-    {
-        printf( "Warning: Could not read plan file, creating new plan from directory structure\n" );
-        return;
-    }
+        return false;
     for(;;)
     {
         std::string line;
@@ -425,6 +444,7 @@ void read_file( const char *plan_file, std::vector<Page> &results )
             results.push_back( p );
         }
     }
+    return true;
 }
 
 void write_file( const char *plan_file, const std::vector<Page> &results )
@@ -484,23 +504,46 @@ static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> 
     return false;
 }
 
-void treebuilder()
+void treebuilder( bool force_rebuild )
 {
     Builder previous_time(true);
     Builder this_time(false);
 
     // Build the menus for the previous run, to help us determine which pages need to be rebuilt
     std::vector<Page> pages;
-    const char *previous_plan_file = "temp_plan_file.txt";
-    read_file( previous_plan_file, pages );
+    const char *previous_plan_file = "generated_plan_file.txt";
+    bool previous_run_plan_found = read_file( previous_plan_file, pages );
     previous_time.run( pages );
 
     // Now do it for real    
     std::vector<Page> results;
     const char *plan_file = "plan.txt";
-    read_file( plan_file, results );
+    bool plan_found = read_file( plan_file, results );
+    if( !plan_found )
+    {
+        const char *msg = 
+        "Info: File plan.txt not found. Winged Spider will use its auto generated plan\n"
+        "file generated_plan_file.txt instead and will copy that file to plan.txt for\n"
+        "next time. Please review and edit plan.txt if necessary\n";
+        printf( "%s", msg );
+    }
+    else if( !previous_run_plan_found )
+    {
+        const char *msg = 
+        "Info: Winged Spider could not find file generated_plan_file.txt from its most\n"
+        "recent run. This means it cannot check for directory changes, so it will have\n"
+        "to assume the directory structure has changed and generate new files\n";
+        printf( "%s", msg );
+    }
+    else
+    {
+        const char *msg = 
+        "Info: Creating menu structure and checking for changes from the last run\n";
+        printf( "%s", msg );
+    }
 
     // Sync the directory structure to the plan
+    printf( "Info: Synching to directory structure, in case there are changes\n" );
     recurse(BASE_IN,results);
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
     bool expecting_page_from_plan = true;
@@ -508,9 +551,12 @@ void treebuilder()
     Page *plan_page=NULL;
     unsigned long sec_sort = 1;      // Used to insert new plan lines at an appropriate point
 
-    printf( "### Sync stage 1\n" );
-    for( Page &p: results )
-        printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
+    if( get_verbosity() > 1 )
+    {
+        printf( "Before syncing\n" );
+        for( Page &p: results )
+            printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
+    }
     for( Page &p: results )
     {
         //printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
@@ -564,9 +610,11 @@ void treebuilder()
             }
             else
             {
+
                 // Multiple pages in a row from plan file = old files have been deleted
-                if( plan_page->is_file )
+                if( plan_page->is_file )   //i.e not a link
                 {
+                    rewrite = true;
                     printf( "Info: A page in plan file unexpectedly absent, disabled: %s\n", plan_page->path.c_str() );
                     plan_page->disabled = true;
                 }
@@ -589,13 +637,12 @@ void treebuilder()
     }
     results.erase( it, results.end() );
 
-    printf( "### Sync after removing Dir entries\n" );
-    for( Page &p: results )
-        printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
-
-    // Rewrite the plan file. For the moment we use a temporary file name and don't overwrite the actual plan file
-    //if( rewrite )
-        write_file( "temp_plan_file.txt", results );
+    if( get_verbosity() > 1 )
+    {
+        printf( "Syncing complete\n" );
+        for( Page &p: results )
+            cprintf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
+    }
 
     // Temporarily revert to sync order, to identify duplicate leaf nodes, eg Results.md *and* Results.html
     //  both generate same target
@@ -629,7 +676,26 @@ void treebuilder()
     }
     std::sort( results.begin(), results.end(), less_than_restore_order ); // restore to plan file order
 
-    this_time.run( results );
+    bool menu_changes = this_time.run( results, force_rebuild );
+
+    // Report results
+    if( count_md_gen==0 && count_pgn_gen==0 && count_html_gen==0 )
+        printf( "Info: No html files (re)generated\n" );
+    else
+    {
+        printf( "Info: %u output html file%s (re)generated from input markdown files\n", count_md_gen, count_md_gen==1?" was":"s were" );
+        printf( "Info: %u output html file%s (re)generated from input pgn files\n", count_pgn_gen, count_pgn_gen==1?" was":"s were" );
+        printf( "Info: %u output html file%s copied from input html files\n", count_html_gen, count_html_gen==1?" was":"s were" );
+    }
+
+    // Rewrite the plan file. For the moment at least we use a temporary file name and don't overwrite the actual plan file
+    if( rewrite || menu_changes || !plan_found || !previous_run_plan_found )
+    {
+        printf( "Info: %s generated_plan_file.txt\n", previous_run_plan_found?"Writing":"Rewriting" );
+        write_file( "generated_plan_file.txt", results );
+        if( !plan_found )
+            write_file( "plan.txt", results );
+    }
 }
 
 void recurse( const std::string &path, std::vector<Page> &results )

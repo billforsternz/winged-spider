@@ -210,7 +210,7 @@ bool PgnStateMachine( FILE *pgn_file, int &typ, char *buf, int buflen )
 
 bool GamesCache::Load( FILE *pgn_file, FILE *asset_file )
 {
-    printf( "GamesCache::Load() begin\n" );
+    cprintf( "GamesCache::Load() begin\n" );
     gds.clear();
     int game_count=0;
     gc_fixme = this;
@@ -265,7 +265,7 @@ bool GamesCache::Load( FILE *pgn_file, FILE *asset_file )
     {
         (*iter)->game_id = game_id++;
     }
-    printf( "GamesCache::Load() end count = %d\n", game_count );
+    cprintf( "GamesCache::Load() end count = %d\n", game_count );
     return true;
 }
 

@@ -1,65 +1,84 @@
 /*
-  Simple templating program
-  Inputs: a template file with header and footer, plus up to three
-  other parts for expanding data that's gathered from a text file that is
-  formatted as a list of photo plus text sections
+ 
+    Winged Spider is intended to be a innovative (I hope), spectactularly easy to use static
+    website builder. The idea is that Winged Spider will take as input content organised
+    nicely in a well named directory hierarchy, and generate as output web ready content
+    with the same structure. The directory and file names from the input are reflected
+    directly in the menu structure that is presented to the web consumer for navigation
+    through the web content.
 
-  An early version of this program (maybe git init version) is
-  C:\BillsUtilities\photos.exe, used to generate snippets of HTML in NZCF
-  images subdirectories.
+    Current status: The program is now more than usable - in fact I am using the program in
+    production for the NZCF website, but it's a bit MicKey Mouse as I am actually running
+    it from within the GUI. I need to tighten down some aspects, introduce quiet/verbose
+    flags etc. etc.
 
-  Another crystalised version of this program (after git comment
-  "add new @w macro = ..") is C:\BillsUtilities\bills-cms-proto.exe,
-  used to make first usable archives section of NZCF website
+    The notes below are largely historic although the idea of converting my @snippet etc
+    keywords to patterns of otherwise legal markdown is on-point and I hope to actually
+    implement it soon. The idea of using the directory structure to define the menus is the
+    key concept within Winged Spider and it is captured below;
+ 
+     Simple templating program
+      Inputs: a template file with header and footer, plus up to three
+      other parts for expanding data that's gathered from a text file that is
+      formatted as a list of photo plus text sections
 
-  Ideas:
-  Use explicit directives in template file
+      An early version of this program (maybe git init version) is
+      C:\BillsUtilities\photos.exe, used to generate snippets of HTML in NZCF
+      images subdirectories.
 
-  Grouped photos;
-  @pair
-  @triple
-  @quad
-  @single
+      Another crystalised version of this program (after git comment
+      "add new @w macro = ..") is C:\BillsUtilities\bills-cms-proto.exe,
+      used to make first usable archives section of NZCF website
 
-  Stories;
-  @snippet - no photos
-  @solo    - one photo
-  @panel   - highlighted snippet
+      Ideas:
+      Use explicit directives in template file
 
-  Allow these in content but migrate to detecting them as combinations of
-  normal markdown syntax;
+      Grouped photos;
+      @pair
+      @triple
+      @quad
+      @single
 
-  eg the following lines
+      Stories;
+      @snippet - no photos
+      @solo    - one photo
+      @panel   - highlighted snippet
 
-  >
-  ## Headline
+      Allow these in content but migrate to detecting them as combinations of
+      normal markdown syntax;
 
-  para
-  <
+      eg the following lines
 
-  Are interpreted as a @snippet
+      >
+      ## Headline
 
-  and these
+      para
+      <
 
-  >
-  ## Headline
+      Are interpreted as a @snippet
 
-  ![ALT](image-file)caption
-  para
-  <
+      and these
 
-  are interpreted as a solo
+      >
+      ## Headline
 
-  maybe @panel = @snippet with #Headline instead of ##Headline
+      ![ALT](image-file)caption
+      para
+      <
 
-  Also migrate the directory structure reflects site structure idea to provide the @M menu markup currently
-  manually added to start of content
+      are interpreted as a solo
+
+      maybe @panel = @snippet with #Headline instead of ##Headline
+
+      Also migrate the directory structure reflects site structure idea to provide the @M menu markup currently
+      manually added to start of content
 
 */
 
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <stdarg.h>     // va_arg() etc
 #include <string>
 #include <vector>
 #include <map>
@@ -72,87 +91,72 @@ namespace fs = std::experimental::filesystem;
 #include "../src-tarrasch/GamesCache.h"
 #include "md4c-html.h"
 
-// While we are getting this up to speed with some basic reconstruction of some existing functionality
-//  in this new context define one of these or the other
-//#define BUILD_HOME
-//#define BUILD_RESULTS
-//#define BUILD_TOURNAMENT
-//#define BUILD_PGN
-//#define BUILD_TRY_MD4C
+//
+// Helpers etc.
+//
 
-void treebuilder();
+static bool verbose;
+int get_verbosity()
+{
+    return verbose ? 1 : 0;
+}
+
+int cprintf( const char *fmt, ... )
+{
+    if( !verbose )
+        return 0;
+    int ret=0;
+	va_list args;
+	va_start( args, fmt );
+    char buf[1000];
+    vsnprintf( buf, sizeof(buf)-2, fmt, args ); 
+    buf[sizeof(buf)-1] = '\0';
+    printf("%s",buf);
+    va_end(args);
+    return ret;
+}
+
+
+//
+// main()
+//
 
 int main( int argc, char *argv[] )
 {
-#ifdef BUILD_PGN
-    #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Bulletins/October 2020/Magic in the Basement.pgn";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-pgn.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/bulletins-october-2020-magic-in-the-basement.html";
-#endif
-#ifdef BUILD_HOME
-    #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Home.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/index.html";
-#endif
-#ifdef BUILD_RESULTS
-#define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-results-results.html";
-#endif
-#ifdef BUILD_TOURNAMENT
-#define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Tournaments/2020.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-tournaments-2020.html";
-#endif
-#ifdef BUILD_TRY_MD4C
-    #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Bulletins/February 2019/February 2019.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/bulletins-february-2019-february-2019.html";
-#endif
-#ifdef DEBUG_JUST_ONE_FILE
-    std::vector<std::pair<std::string,std::string>> menu;
-    std::pair<std::string,std::string> menu_item1("index.html","Home");
-    std::pair<std::string,std::string> menu_item2("archives-archives.html","Archives");
-    std::pair<std::string,std::string> menu_item3("archives-tournaments.html","Tournaments");
-    std::pair<std::string,std::string> menu_item4("archives-tournaments-2021.html","2021");
-    std::pair<std::string,std::string> menu_item5("archives-tournaments-2021.html","2022");
-    menu.push_back(menu_item1);
-    menu.push_back(menu_item2);
-    menu.push_back(menu_item3);
-    menu.push_back(menu_item4);
-    menu.push_back(menu_item5);
-    std::map<char,std::string> macros;
-    macros['S'] = "Bulletins";
-    macros['Z'] = "July 2021";
-    macros['T'] = "Testing 1, 2, 3";
-    #ifdef BUILD_PGN
-    std::pair<std::string,std::string> menu_item6("history-trusts-best-games.html","Trusts Best Games");
-    menu.push_back(menu_item6);
-    GamesCache gc;
-    gc.Load(fin1);
-    gc.Publish(fin2,fout,macros,menu,menu.size()-1);
-    #else
-    templat(fin1,fin2,fout,macros,menu,menu.size()-1);
-    #endif
+    const char *usage =
+    "Winged Spider V0.9\n"
+    "Winged Spider is a simple static website builder\n"
+    "Winged Spider takes as input a directory hierarchy of markdown and PGN content\n"
+    "and generates from it a website users can navigate through using menus defined\n"
+    "by the folder hierarchy\n"
+    "Currently command line arguments are;\n"
+    " -v = verbose\n"
+    " -f = force rebuild\n";
+    bool force_rebuild = false;
+    for( int i=1; i<argc; i++ )
+    {
+        std::string arg(argv[i]);
+        if( arg == "-v" || arg=="-verbose" )
+            verbose = true;
+        else if( arg == "-f" || arg=="-force" )
+            force_rebuild = true;
+        else
+        {
+            printf( "%s", usage );
+            return 0;
+        }
+    }
+#if 0
+    test_builds();
 #else
-    treebuilder();
+    treebuilder( force_rebuild );
 #endif
     return 0;
 }
 
-void rtrim( std::string &s )
-{
-    size_t final_char_offset = s.find_last_not_of(" \n\r\t");
-    if( final_char_offset == std::string::npos )
-        s.clear();
-    else
-        s.erase(final_char_offset+1);
-}
+//
+// Original template system, now with real markdown support. Needs work
+//
 
 struct PICTURE
 {
@@ -174,8 +178,8 @@ void templat( const std::string &md_file, const std::string &template_file, cons
     std::map<char,std::string> &macros,
     const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
-    if( html_out_file == "output\\archives-tournaments-tournaments.html" )
-        printf( "Debug\n" );
+    //if( html_out_file == "output\\archives-tournaments-tournaments.html" )
+    //    printf( "Debug\n" );
     bool have_input_file = false;
     std::ifstream fin1;
     if( md_file != "" )
@@ -224,7 +228,7 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         std::string s;
         if( !std::getline(fin2,s) )
             break;
-        rtrim(s);
+        util::rtrim(s);
         if( !in_section )
         {
             in_section = true;
@@ -329,7 +333,7 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         std::string s;
         if( !std::getline(fin1,s) )
             break;
-        rtrim(s);
+        util::rtrim(s);
         if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
         {
             first_non_macro_line = s;
@@ -366,11 +370,11 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         }
         else if( !std::getline(fin1,s) )
             break;
-        rtrim(s);
+        util::rtrim(s);
         whole_input_file.push_back(s);
         if( s.length() == 0 )
         {
-            rtrim( picture.caption );
+            util::rtrim( picture.caption );
             if( picture.typ != "" )
                 pictures.push_back(picture);
             state = 0;
@@ -444,7 +448,7 @@ void templat( const std::string &md_file, const std::string &template_file, cons
     }
     if( state >= 3 )
     {
-        rtrim( picture.caption );
+        util::rtrim( picture.caption );
         pictures.push_back(picture);
     }
 /* for( unsigned int i=0; i<pictures.size(); i++ )
@@ -600,7 +604,7 @@ void templat( const std::string &md_file, const std::string &template_file, cons
             {
                 default:
                 {
-                    printf( "Unexpected @ in template text: \n[\n%s\n]\n", q==NULL? single.c_str() : pair.c_str() );
+                    printf( "Warning: Unexpected @ in template text: \n[\n%s\n]\n", q==NULL? single.c_str() : pair.c_str() );
                     do_replace = false;
                     next = offset+2;
                     break;
@@ -744,7 +748,7 @@ std::string macro_substitution( const std::string &input,
 
 static std::set<std::string> directories;
 
-bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run )
+bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild )
 {
     bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
@@ -755,10 +759,10 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
     fs::path ptemplate(ftemplate);
     if( !fs::exists(ptemplate) )
     {
-        printf( "Cannot open template file %s\n", ftemplate.c_str() );
+        printf( "Error: Cannot open template file %s\n", ftemplate.c_str() );
         return false;
     }
-    if( !fs::exists(pout) )
+    if( force_rebuild  || !fs::exists(pout) )
         needs_rebuild = true;
     else
     {
@@ -768,20 +772,20 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
             fs::file_time_type time_in = last_write_time(pin);    
             if( time_in > time_out )
             {
-                printf( "%s succeeds %s\n", in.c_str(), out.c_str() );
+                printf( "Info: %s succeeds %s\n", in.c_str(), out.c_str() );
                 needs_rebuild = true;
             }
         }
         fs::file_time_type time_template = last_write_time(ptemplate);
         if( time_template > time_out )
         {
-            printf( "%s succeeds %s\n", ftemplate.c_str(), out.c_str() );
+            printf( "Info: %s succeeds %s\n", ftemplate.c_str(), out.c_str() );
             needs_rebuild = true;
         }
     }
     if( needs_rebuild )
     {
-        printf( "@@@ REBUILDING %s\n", out.c_str() );
+        printf( "Info: Rebuilding %s\n", out.c_str() );
         std::map<char,std::string> macros;
         macros['s'] = p->heading;       // lower case 's' and 'z' mean auto-generated
         macros['z'] = p->subheading;
@@ -789,10 +793,10 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
             in = "";
         templat(in,ftemplate,out,macros,menu,menu_idx);
     }
-    return true;
+    return needs_rebuild;
 }
 
-bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run )
+bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild )
 {
     bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
@@ -804,14 +808,14 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     fs::path ptemplate(ftemplate);
     if( !fs::exists(ptemplate) )
     {
-        printf( "Cannot open template file %s\n", ftemplate.c_str() );
+        printf( "Error: Cannot open template file %s\n", ftemplate.c_str() );
         return false;
     }
     size_t offset = pgn_asset.find_last_of('.');
     if( offset != std::string::npos )
         pgn_asset = pgn_asset.substr(0,offset) + ".pgn";
     std::string pgn_asset_full = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + pgn_asset;
-    if( !fs::exists(pout) )
+    if( force_rebuild || !fs::exists(pout) )
         needs_rebuild = true;
     else
     {
@@ -819,19 +823,19 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
         fs::file_time_type time_in = last_write_time(pin);    
         if( time_in > time_out )
         {
-            printf( "%s succeeds %s\n", in.c_str(), out.c_str() );
+            printf( "Info: %s succeeds %s\n", in.c_str(), out.c_str() );
             needs_rebuild = true;
         }
         fs::file_time_type time_template = last_write_time(ptemplate);
         if( time_template > time_out )
         {
-            printf( "%s succeeds %s\n", ftemplate.c_str(), out.c_str() );
+            printf( "Info: %s succeeds %s\n", ftemplate.c_str(), out.c_str() );
             needs_rebuild = true;
         }
     }
     if( needs_rebuild )
     {
-        printf( "@@@ REBUILDING %s\n", out.c_str() );
+        printf( "Info: Rebuilding %s\n", out.c_str() );
         GamesCache gc;
         std::map<char,std::string> macros;
         macros['T'] = p->heading;
@@ -841,18 +845,18 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
         gc.Load(in,pgn_asset_full);
         gc.Publish(ftemplate,out,macros,menu,menu_idx);
     }
-    return true;
+    return needs_rebuild;
 }
 
 // Just copy the file - later check to see whether we need to copy it
-bool html_gen( Page *p )
+bool html_gen( Page *p, bool force_rebuild )
 {
     bool needs_rebuild = false;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     fs::path pin(in); 
     fs::path pout(out);
-    if( !fs::exists(pout) )
+    if( force_rebuild || !fs::exists(pout) )
         needs_rebuild = true;
     else
     {
@@ -860,23 +864,23 @@ bool html_gen( Page *p )
         fs::file_time_type time_in = last_write_time(pin);    
         if( time_in > time_out )
         {
-            printf( "%s succeeds %s\n", in.c_str(), out.c_str() );
+            printf( "Info: %s succeeds %s\n", in.c_str(), out.c_str() );
             needs_rebuild = true;
         }
     }
     if( needs_rebuild )
     {
-        printf( "@@@ COPYING %s\n", out.c_str() );
+        printf( "Info: Copying %s\n", out.c_str() );
         std::ifstream fin( in.c_str() );
         if( !fin )
         {
-            printf( "Could not open file %s for reading\n", in.c_str() );
+            printf( "Error: Could not open file %s for reading\n", in.c_str() );
             return false;
         }
         std::ofstream fout( out.c_str() );
         if( !fout )
         {
-            printf( "Could not open file %s for writing\n", out.c_str() );
+            printf( "Error: Could not open file %s for writing\n", out.c_str() );
             return false;
         }
         for(;;)
@@ -887,5 +891,80 @@ bool html_gen( Page *p )
             util::putline(fout,line);
         }
     }
-    return true;
+    return needs_rebuild;
+}
+
+//
+// Test builds
+//
+//  Deprecated until such time as we need something like this in which case I'll bring it
+//  back to life and remove this comment
+//
+
+// While we are getting this up to speed with some basic reconstruction of some existing functionality
+//  in this new context define one of these or the other
+//#define BUILD_HOME
+//#define BUILD_RESULTS
+//#define BUILD_TOURNAMENT
+//#define BUILD_PGN
+//#define BUILD_TRY_MD4C
+
+void test_builds()
+{
+#ifdef BUILD_PGN
+    #define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Bulletins/October 2020/Magic in the Basement.pgn";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-pgn.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/bulletins-october-2020-magic-in-the-basement.html";
+#endif
+#ifdef BUILD_HOME
+    #define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Home.md";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/index.html";
+#endif
+#ifdef BUILD_RESULTS
+#define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-results-results.html";
+#endif
+#ifdef BUILD_TOURNAMENT
+#define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Tournaments/2020.md";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-tournaments-2020.html";
+#endif
+#ifdef BUILD_TRY_MD4C
+    #define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Bulletins/February 2019/February 2019.md";
+    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
+    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/bulletins-february-2019-february-2019.html";
+#endif
+#ifdef DEBUG_JUST_ONE_FILE
+    std::vector<std::pair<std::string,std::string>> menu;
+    std::pair<std::string,std::string> menu_item1("index.html","Home");
+    std::pair<std::string,std::string> menu_item2("archives-archives.html","Archives");
+    std::pair<std::string,std::string> menu_item3("archives-tournaments.html","Tournaments");
+    std::pair<std::string,std::string> menu_item4("archives-tournaments-2021.html","2021");
+    std::pair<std::string,std::string> menu_item5("archives-tournaments-2021.html","2022");
+    menu.push_back(menu_item1);
+    menu.push_back(menu_item2);
+    menu.push_back(menu_item3);
+    menu.push_back(menu_item4);
+    menu.push_back(menu_item5);
+    std::map<char,std::string> macros;
+    macros['S'] = "Bulletins";
+    macros['Z'] = "July 2021";
+    macros['T'] = "Testing 1, 2, 3";
+    #ifdef BUILD_PGN
+    std::pair<std::string,std::string> menu_item6("history-trusts-best-games.html","Trusts Best Games");
+    menu.push_back(menu_item6);
+    GamesCache gc;
+    gc.Load(fin1);
+    gc.Publish(fin2,fout,macros,menu,menu.size()-1);
+    #else
+    templat(fin1,fin2,fout,macros,menu,menu.size()-1);
+    #endif
+#endif
 }

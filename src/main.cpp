@@ -146,7 +146,7 @@ int main( int argc, char *argv[] )
             return 0;
         }
     }
-#if 0
+#if 1
     test_builds();
 #else
     treebuilder( force_rebuild );
@@ -897,14 +897,12 @@ bool html_gen( Page *p, bool force_rebuild )
 //
 // Test builds
 //
-//  Deprecated until such time as we need something like this in which case I'll bring it
-//  back to life and remove this comment
-//
 
 // While we are getting this up to speed with some basic reconstruction of some existing functionality
 //  in this new context define one of these or the other
 //#define BUILD_HOME
 //#define BUILD_RESULTS
+#define BUILD_MIGRATE
 //#define BUILD_TOURNAMENT
 //#define BUILD_PGN
 //#define BUILD_TRY_MD4C
@@ -922,6 +920,12 @@ void test_builds()
     std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Home.md";
     std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-main.txt";
     std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/index.html";
+#endif
+#ifdef BUILD_MIGRATE
+    #define DEBUG_JUST_ONE_FILE
+    std::string fin1 = "test-input/after.md";
+    std::string fin2 = "test-template/template-main.txt";
+    std::string fout = "test-output/after.html";
 #endif
 #ifdef BUILD_RESULTS
 #define DEBUG_JUST_ONE_FILE
@@ -954,8 +958,8 @@ void test_builds()
     menu.push_back(menu_item4);
     menu.push_back(menu_item5);
     std::map<char,std::string> macros;
-    macros['S'] = "Bulletins";
-    macros['Z'] = "July 2021";
+    macros['S'] = "Heading";
+    macros['Z'] = "Subheading";
     macros['T'] = "Testing 1, 2, 3";
     #ifdef BUILD_PGN
     std::pair<std::string,std::string> menu_item6("history-trusts-best-games.html","Trusts Best Games");
@@ -964,7 +968,731 @@ void test_builds()
     gc.Load(fin1);
     gc.Publish(fin2,fout,macros,menu,menu.size()-1);
     #else
-    templat(fin1,fin2,fout,macros,menu,menu.size()-1);
+void templat_real_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+    std::map<char,std::string> &macros,
+    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
+    templat_real_md(fin1,fin2,fout,macros,menu,menu.size()-1);
     #endif
 #endif
 }
+
+std::string md( const std::string &in )
+{
+    std::string out;
+    md_html( in.c_str(), in.length(),
+        md_callback1,
+        &out,                           // userdata
+        MD_FLAG_PERMISSIVEATXHEADERS,   // parser_flags, (allow "#Heading" as well as "# Heading")
+        0                               // unsigned renderer_flags
+    );
+    return out;
+}
+
+void templat_real_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+    std::map<char,std::string> &macros,
+    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
+{
+    //if( html_out_file == "output\\archives-tournaments-tournaments.html" )
+    //    printf( "Debug\n" );
+    bool have_input_file = false;
+    std::ifstream fin1;
+    if( md_file != "" )
+    {
+        have_input_file = true;
+        fin1.open( md_file );
+        if( !fin1.is_open() )
+        {
+            printf( "Error: Could not open input file %s\n", md_file.c_str() );
+            return;
+        }
+    }
+
+    std::ifstream fin2( template_file );
+    if( !fin2 )
+    {
+        printf( "Error: Could not open template file %s\n", template_file.c_str() );
+        return;
+    }
+
+    std::ofstream fout( html_out_file );
+    if( !fout )
+    {
+        printf( "Error: Could not create output file %s\n", html_out_file.c_str() );
+        return;
+    }
+
+    std::string header;
+    std::string footer;
+    std::string single;
+    std::string pair;
+    std::string triple;
+    std::string grid_2of2;
+    std::string grid_1of2;
+    std::string grid_1of1;
+    std::string solo;
+    std::string snippet;
+    std::string panel;
+    std::vector<PICTURE> pictures;
+
+    // Read the template file
+    bool in_section = false;
+    enum { s_header, s_footer, s_single, s_pair, s_triple, s_2of2, s_1of2, s_1of1, s_snippet, s_solo, s_panel } section;
+    for(;;)
+    {
+        std::string s;
+        if( !std::getline(fin2,s) )
+            break;
+        util::rtrim(s);
+        if( !in_section )
+        {
+            in_section = true;
+            if( s == "" )
+                in_section = false;
+            else if( s == "@header" )
+                section = s_header;
+            else if( s == "@footer" )
+                section = s_footer;
+            else if( s == "@single" )
+                section = s_single;
+            else if( s == "@pair" )
+                section = s_pair;
+            else if( s == "@triple" )
+                section = s_triple;
+            else if( s == "@2of2" )
+                section = s_2of2;
+            else if( s == "@1of2" )
+                section = s_1of2;
+            else if( s == "@1of1" )
+                section = s_1of1;
+            else if( s == "@snippet" )
+                section = s_snippet;
+            else if( s == "@solo" )
+                section = s_solo;
+            else if( s == "@panel" )
+                section = s_panel;
+            else
+            {
+                if( s[0] == '@' )
+                    printf( "Error: Template file has unknown section [%s] (not @header,\n@footer, @single, @pair, @triple, @2of2, @1of2, @1of1, @snippet, @solo or @panel)\n", s.c_str() );
+                else
+                    printf( "Error: Template file has section starting without a section identifier (eg @header,\n@footer, @single, @pair, @triple, @2of2, @1of2, @1of1, @snippet, @solo or @panel)\n" );
+                return;
+            }
+        }
+        else
+        {
+            if( s.length() == 0 )
+            {
+                in_section = false;
+            }
+            else
+            {
+                switch( section )
+                {
+                    case s_header:
+                        header += s;
+                        header += '\n';
+                        break;
+                    case s_single:
+                        single += s;
+                        single += '\n';
+                        break;
+                    case s_pair:
+                        pair += s;
+                        pair += '\n';
+                        break;
+                    case s_triple:
+                        triple += s;
+                        triple += '\n';
+                        break;
+                    case s_2of2:
+                        grid_2of2 += s;
+                        grid_2of2 += '\n';
+                        break;
+                    case s_1of2:
+                        grid_1of2 += s;
+                        grid_1of2 += '\n';
+                        break;
+                    case s_1of1:
+                        grid_1of1 += s;
+                        grid_1of1 += '\n';
+                        break;
+                    case s_footer:
+                        footer += s;
+                        footer += '\n';
+                        break;
+                    case s_solo:
+                        solo += s;
+                        solo += '\n';
+                        break;
+                    case s_snippet:
+                        snippet += s;
+                        snippet += '\n';
+                        break;
+                    case s_panel:
+                        panel += s;
+                        panel += '\n';
+                        break;
+                }
+            }
+        }
+    }
+
+    // Read macros from the input file
+    std::string first_non_macro_line;
+    bool first_non_macro_line_flag=false;
+    bool md_only_no_extensions = true;
+    while( have_input_file )
+    {
+        std::string s;
+        if( !std::getline(fin1,s) )
+            break;
+        util::rtrim(s);
+        if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
+        {
+            first_non_macro_line = s;
+            first_non_macro_line_flag = true;
+            break;
+        }
+        //md_only_no_extensions = false;
+        std::string macro = s.substr(3);
+        macros[s[1]] = macro;
+    }
+
+    // If no custom heading, subheading - use autogenerated ones
+    if( macros.find('S')==macros.end() && macros.find('Z')==macros.end() )
+    {
+        macros['S'] = macros['s'];
+        macros['Z'] = macros['z'];
+    }
+
+    // Write out the the html header
+    std::string h = macro_substitution( header, macros, menu, menu_idx );
+    util::putline(fout,h);
+ 
+/*
+
+@snippet = normal markdown, nothing special needed
+
+##Heading
+
+Text
+
+(or)
+
+##Heading
+Text
+
+@solo = heading immediately followed by image and multi-para text
+
+##Heading
+![ALT](image.lpg)Caption
+Text
+
+Text
+
+Text
+
+@grid = group of adjacent images
+
+![ALT](image.lpg)Caption
+![ALT](image.lpg)Caption
+![ALT](image.lpg)Caption
+
+
+@panel = heading starts with text (panel) and then Text
+
+##(panel)Heading
+Text
+
+
+Line by line state machine
+
+evaluate each line as
+blank if empty
+img if starts with ![
+heading if starts with #
+txt if starts with alphanum
+something else otherwise
+
+idle
+ -> heading         (on heading)
+ or panel           (on (panel)heading)
+ or img             (on img)
+ or echo            (on not blank)
+heading
+ -> idle            (on blank)
+ or heading_img     (on img)
+ or echo            (on something else)
+heading_img
+ -> idle            (on blank)
+ or solo            (on text)
+ or echo            otherwise
+panel
+ -> idle            (on blank)
+ or panel_solo      (on text)
+ or echo            (on something else)
+solo
+ -> solo            (on text)
+ or solo_idle       (on blank)
+ or echo            (on anything else)
+solo_idle
+ -> solo            (on text)
+ or idle            (on blank)
+ or heading         (on heading)
+ or panel           (on (panel)heading)
+ or img             (on img)
+ or echo            (on anything else)
+panel_solo
+ -> panel_solo      (on text)
+ or panel_solo_idle (on blank)
+ or echo            (on anything else)
+panel_solo_idle
+ -> panel_solo      (on text)
+ or idle            (on blank)
+ or heading         (on heading)
+ or panel           (on (panel)heading)
+ or img             (on img)
+ or echo            (on anything else)
+img
+ -> idle            (on blank)
+ or grid            (on img)
+ or echo            (on something else)
+grid
+ -> idle            (on blank)
+ -> grid            (on img)
+ -> echo            (on something else)
+echo
+ -> idle            (on blank)
+
+*/
+
+    enum State {
+        st_idle, st_echo,
+        st_heading, st_heading_img,
+        st_solo, st_solo_idle,
+        st_panel, st_panel_solo, st_panel_solo_idle,
+        st_img, st_grid
+    };
+    const char *states[] = {
+        "st_idle", "st_echo",
+        "st_heading", "st_heading_img",
+        "st_solo", "st_solo_idle",
+        "st_panel", "st_panel_solo", "st_panel_solo_idle",
+        "st_img", "st_grid"
+    };
+    State state=st_idle;
+    enum Event {
+        ev_blank, ev_txt, ev_heading, ev_panel_heading, ev_img, ev_other
+    };
+    const char *events[] = {
+        "ev_blank", "ev_txt", "ev_heading", "ev_panel_heading", "ev_img", "ev_other"
+    };
+    std::string accum;
+    std::string alt;
+    std::string imgfile;
+    std::string caption;
+    std::string header_txt;
+    std::string solo_alt;
+    std::string solo_imgfile;
+    std::string solo_caption;
+    std::string solo_header_txt;
+    int running=2;
+    while( running > 0 )
+    {
+        // Get next line
+        std::string s;
+        if( running == 1 )
+            running--;
+        else
+        {
+            if( first_non_macro_line_flag )
+            {
+                s = first_non_macro_line;
+                first_non_macro_line_flag = false;
+            }
+            else if( !std::getline(fin1,s) )
+            {
+                s = "";
+                running = 1;    // process the last line like a ev_blank followed by ev_other
+            }
+        }
+        util::rtrim(s);
+
+        // What kind of event?
+        Event ev = ev_other;
+        if( s.length() == 0 )
+            ev = ev_blank;
+        else if( s[0] == '#' )
+        {
+            ev = ev_heading;
+            size_t idx =0;
+            for( char c:s )
+            {
+                if( c != '#' )
+                {
+                    std::string t = s.substr(idx);
+                    if( util::prefix(s,"(panel)") )
+                    {
+                        ev = ev_panel_heading;
+                        header_txt = s.substr(strlen("(panel)"));
+                    }
+                    break;
+                }
+                idx++;
+            }
+        }
+        else if( s.length()>=2 && s[0]=='!' && s[1]=='[' )
+        {
+            size_t offset = s.find("](",2);
+            if( offset != std::string::npos && s.length() > offset+3 )
+            {
+                alt = s.substr(3,offset-3);
+                offset += 2;
+                size_t offset2 = s.find(')',offset);
+                if( offset2 != std::string::npos )
+                {
+                    imgfile = s.substr(offset,offset2-offset);
+                    caption = s.substr(offset2+1);
+                    offset = imgfile.find_last_of('.');
+                    if( offset != std::string::npos )
+                    {
+                        std::string ext = imgfile.substr(offset+1);
+                        ext = util::tolower(ext);
+                        if( ext=="jpg" || ext=="jpeg" || ext == "png" || ext=="gif" )
+                            ev = ev_img;
+                    }
+                }
+            }
+        }
+        else if( s[0] != ' ' )
+            ev = ev_txt;
+        if( running == 0 )
+            ev = ev_other;
+
+        // State machine
+        State old_state = state;
+        switch( state )
+        {
+            case st_idle:
+            {
+                switch( ev )
+                {
+                    case ev_heading:        state = st_heading;        break;
+                    case ev_panel_heading:  state = st_panel;          break;
+                    case ev_img:            state = st_img;            break;  
+                    case ev_blank:                                     break; 
+                    default:                state = st_echo;           break;         
+                }
+                break;
+            }
+            case st_heading:
+            {
+                switch( ev )
+                {
+                    case ev_blank:          state = st_idle;           break;         
+                    case ev_img:            state = st_heading_img;    break;  
+                    default:                state = st_echo;           break;         
+                }
+                break;
+            }
+            case st_heading_img:
+            {
+                switch( ev )
+                {
+                    case ev_blank:          state = st_idle;           break; 
+                    case ev_txt:            state = st_solo;           break; 
+                    default:                state = st_echo;           break; 
+                }
+                break;
+            }
+            case st_panel:
+            {
+                switch( ev )
+                {
+                    case ev_blank:          state = st_idle;           break;         
+                    case ev_txt:            state = st_panel_solo;     break;   
+                    default:                state = st_echo;           break;         
+                }
+                break;
+            }
+            case st_solo:
+            {
+                switch( ev )
+                {
+                    case ev_txt:            state = st_solo;           break;        
+                    case ev_blank:          state = st_solo_idle;      break;   
+                    default:                state = st_echo;           break;        
+                }
+                break;
+            }
+            case st_solo_idle:
+            {
+                switch( ev )
+                {
+                    case ev_txt:            state = st_solo;           break;   
+                    case ev_blank:          state = st_idle;           break;   
+                    case ev_heading:        state = st_heading;        break;
+                    case ev_panel_heading:  state = st_panel;          break;  
+                    case ev_img:            state = st_img;            break;    
+                    default:                state = st_echo;           break;   
+                }
+                break;
+            }
+            case st_panel_solo:
+            {
+                switch( ev )
+                {
+                    case ev_txt:            state = st_panel_solo;     break;     
+                    case ev_blank:          state = st_panel_solo_idle;break;
+                    default:                state = st_echo;           break;           
+                }
+                break;
+            }
+            case st_panel_solo_idle:
+            {
+                switch( ev )
+                {
+                    case ev_txt:            state = st_panel_solo;     break;   
+                    case ev_blank:          state = st_idle;           break;         
+                    case ev_heading:        state = st_heading;        break;      
+                    case ev_panel_heading:  state = st_panel;          break;        
+                    case ev_img:            state = st_img;            break;          
+                    default:                state = st_echo;           break;         
+                }
+                break;
+            }
+            case st_img:
+            {
+                switch( ev )
+                {
+                    case ev_blank:          state = st_idle;           break;     
+                    case ev_img:            state = st_grid;           break;     
+                    default:                state = st_echo;           break;     
+                }
+                break;
+            }
+            case st_grid:
+            {
+                switch( ev )
+                {
+                    case ev_blank:          state = st_idle;           break;
+                    case ev_img:            state = st_grid;           break;
+                    default:                state = st_echo;           break;
+                }
+                break;
+            }
+            case st_echo:
+            {
+                switch( ev )
+                {
+                    case ev_blank:          state = st_idle;           break;
+                }
+                break;
+            }
+        }
+
+        bool change = (old_state!=state);
+        if( change )
+            printf( "%s: %s -> %s\n", events[ev], states[old_state], states[state] );
+        if( change && old_state==st_grid )
+            accum.clear();
+        else if( change && state==st_solo && old_state==st_heading_img )
+        {
+            solo_alt = alt;
+            solo_imgfile = imgfile;
+            solo_caption = caption;
+            solo_header_txt = header_txt;
+            accum.clear();
+        }
+        else if( change && state!=st_solo && old_state==st_solo_idle )
+        {
+            printf( "solo: %s\n", accum.c_str() );
+            std::string s = solo;
+            bool macro_substitution_required = true;
+
+            // Replace @F, @A, @C with filename, alt_text and caption repeatedly
+            int filename_idx = 0;
+            int alt_text_idx = 0;
+            int caption_idx  = 0;
+            int heading_idx  = 0;
+            size_t next = 0;
+            while( macro_substitution_required )
+            {
+                size_t offset = s.find('@',next);
+                if( offset == std::string::npos )
+                    break;
+                if( offset+1 >= s.length() )
+                    break;
+                bool do_replace = true;
+                std::string replacement;
+                switch( s[offset+1] )
+                {
+                    default:
+                    {
+                        printf( "Warning: Unexpected @ in template text: \n[\n%s\n]\n", solo.c_str() );
+                        do_replace = false;
+                        next = offset+2;
+                        break;
+                    }
+                    case 'F':
+                    {
+                        replacement = solo_imgfile;
+                        break;
+                    }
+                    case 'A':
+                    {
+                        replacement = solo_alt;
+                        break;
+                    }
+                    case 'H':
+                    {
+                        replacement = solo_header_txt;
+                        break;
+                    }
+                    case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
+                    case 'C':
+                    {
+                        replacement = md(accum);
+                        break;
+                    }
+                }
+                if( do_replace )
+                {
+                    next = offset + replacement.length();
+                    std::string temp = s.substr(0,offset) +
+                        replacement +
+                        s.substr(offset+2);
+                    s = temp;
+                }
+            }
+            util::putline(fout,s);
+            accum.clear();
+        }
+        else if( change && old_state==st_panel_solo_idle )
+            accum.clear();
+        else if( change && state==st_idle )
+        {
+            std::string html = md(accum);
+            accum.clear();
+            util::puts(fout,html);
+        }
+        else if( change && old_state==st_echo )
+        {
+            std::string html = md(accum);
+            accum.clear();
+            util::puts(fout,html);
+        }
+        accum += s;
+        accum += "\n";
+    }
+    std::string f = macro_substitution( footer, macros, menu, menu_idx );
+    util::putline(fout,f);
+
+#if 0
+
+        // Substitution logic, default is @solo
+
+        picture.typ = "@solo";  // solo is default, unspoken
+        picture.filename = s;
+        picture.alt_text = s;
+        picture.heading = s.substr(2);
+        picture.caption += s;
+        picture.caption += '\n';
+        PICTURE *p = &pictures[i];
+        PICTURE *q = NULL;
+        PICTURE *r = NULL;
+        std::string s = solo;
+        bool macro_substitution_required = true;
+
+        // Replace @F, @A, @C with filename, alt_text and caption repeatedly
+        //  Use the first picture (i.e. p) for the first instance of each
+        int filename_idx = 0;
+        int alt_text_idx = 0;
+        int caption_idx  = 0;
+        int heading_idx  = 0;
+        size_t next = 0;
+        while( macro_substitution_required )
+        {
+            size_t offset = s.find('@',next);
+            if( offset == std::string::npos )
+                break;
+            if( offset+1 >= s.length() )
+                break;
+            bool do_replace = true;
+            std::string replacement;
+            switch( s[offset+1] )
+            {
+                default:
+                {
+                    printf( "Warning: Unexpected @ in template text: \n[\n%s\n]\n", q==NULL? single.c_str() : pair.c_str() );
+                    do_replace = false;
+                    next = offset+2;
+                    break;
+                }
+                case 'F':
+                {
+                    replacement = filename_idx==0 ? p->filename : (filename_idx==1?q->filename:r->filename);
+                    filename_idx++;
+                    if( filename_idx==1 && q==NULL )
+                        filename_idx--;
+                    else if( filename_idx==2 && r==NULL )
+                        filename_idx--;
+                    if( filename_idx > 2 )
+                        filename_idx = 2;
+                    break;
+                }
+                case 'A':
+                {
+                    replacement = alt_text_idx==0 ? p->alt_text : (alt_text_idx==1?q->alt_text:r->alt_text);
+                    alt_text_idx++;
+                    if( alt_text_idx==1 && q==NULL )
+                        alt_text_idx--;
+                    else if( alt_text_idx==2 && r==NULL )
+                        alt_text_idx--;
+                    if( alt_text_idx > 2 )
+                        alt_text_idx = 2;
+                    break;
+                }
+                case 'H':
+                {
+                    replacement = heading_idx==0 ? p->heading : (heading_idx==1?q->heading:r->heading);
+                    heading_idx++;
+                    if( heading_idx==1 && q==NULL )
+                        heading_idx--;
+                    else if( heading_idx==2 && r==NULL )
+                        heading_idx--;
+                    if( heading_idx > 2 )
+                        heading_idx = 2;
+                    break;
+                }
+                case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
+                case 'C':
+                {
+                    replacement = caption_idx==0 ? p->caption : (caption_idx==1?q->caption:r->caption);
+                    caption_idx++;
+                    if( caption_idx==1 && q==NULL )
+                        caption_idx--;
+                    else if( caption_idx==2 && r==NULL )
+                        caption_idx--;
+                    if( caption_idx > 2 )
+                        caption_idx = 2;
+                    break;
+                }
+            }
+            if( do_replace )
+            {
+                next = offset + replacement.length();
+                std::string temp = s.substr(0,offset) +
+                    replacement +
+                    s.substr(offset+2);
+                s = temp;
+            }
+        }
+        util::putline(fout,s);
+
+
+#endif
+
+}
+

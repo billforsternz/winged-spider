@@ -21,6 +21,7 @@ Archives\Home Page\
 Archives\Results Page\
 Archives\Tournaments\
 Bulletins\Bulletins.md
+Bulletins\December 2021\
 Bulletins\July 2021\
 Bulletins\October 2020\
 Bulletins\August 2020\
@@ -130,6 +131,9 @@ Archives\Tournaments\2013.md
 Archives\Tournaments\2008.md
 Archives\Tournaments\2007.md
 Archives\Tournaments\2006.md
+Bulletins\December 2021\December 2021.md
+Bulletins\December 2021\South Island Champs.pgn
+Bulletins\December 2021\The Big Rivalry.pgn
 Bulletins\July 2021\July 2021.md
 Bulletins\July 2021\Trusts Best Games.pgn
 Bulletins\July 2021\The Australian Attack.pgn

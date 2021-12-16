@@ -1032,7 +1032,6 @@ void templat_real_md( const std::string &md_file, const std::string &template_fi
     std::string solo;
     std::string snippet;
     std::string panel;
-    std::vector<PICTURE> pictures;
 
     // Read the template file
     bool in_section = false;
@@ -1297,6 +1296,10 @@ echo
     std::string solo_imgfile;
     std::string solo_caption;
     std::string solo_header_txt;
+    std::string save_alt;
+    std::string save_caption;
+    std::string save_imgfile;
+    std::vector<PICTURE> pictures;
     int running=2;
     while( running > 0 )
     {
@@ -1332,10 +1335,10 @@ echo
                 if( c != '#' )
                 {
                     std::string t = s.substr(idx);
-                    if( util::prefix(s,"(panel)") )
+                    if( util::prefix(t,"(panel)") )
                     {
                         ev = ev_panel_heading;
-                        header_txt = s.substr(strlen("(panel)"));
+                        header_txt = t.substr(strlen("(panel)"));
                     }
                     break;
                 }
@@ -1497,9 +1500,167 @@ echo
             printf( "%s: %s -> %s\n", events[ev], states[old_state], states[state] );
         if( change && old_state==st_grid )
             accum.clear();
-        else if( change && state==st_solo && old_state==st_heading_img )
+
+        // Grid
+        if( state==st_img )
         {
-            solo_alt = alt;
+            save_alt     = alt;
+            save_caption = caption;
+            save_imgfile = imgfile;
+        }
+        bool goto_grid_single = (old_state==st_img && state==st_idle);
+        if( old_state==st_img && (state==st_grid || goto_grid_single) )
+        {
+            pictures.clear();
+            PICTURE picture;
+            picture.alt_text = save_alt;
+            picture.caption  = save_caption;
+            picture.filename = save_imgfile;
+            pictures.push_back(picture);
+        }
+        if( state==st_grid )
+        {
+            PICTURE picture;
+            picture.alt_text = alt;
+            picture.caption  = caption;
+            picture.filename = imgfile;
+            pictures.push_back(picture);
+        }
+        if( goto_grid_single || (change && old_state==st_grid) )
+        {
+            accum.clear();
+
+            // Loop through the pictures
+            size_t len = pictures.size();
+            bool in_grid=false;
+            for( size_t i=0; i<len; i++ )
+            {
+                PICTURE *p = &pictures[i];
+                PICTURE *q = NULL;
+                PICTURE *r = NULL;
+                std::string s = solo;
+                bool macro_substitution_required = true;
+                int grid_count = len-i;
+                switch( grid_count )
+                {
+                    case 1:
+                    {
+                        s = in_grid? single : grid_1of1;
+                        break;
+                    }
+                    case 2:
+                    {
+                        s = in_grid? pair : grid_1of2;
+                        i++;
+                        q = &pictures[i];
+                        break;
+                    }
+                    default:
+                    case 3:
+                    {
+                        s = triple;
+                        i++;
+                        q = &pictures[i];
+                        i++;
+                        r = &pictures[i];
+                        break;
+                    }
+                }
+
+                // Replace @F, @A, @C with filename, alt_text and caption repeatedly
+                //  Use the first picture (i.e. p) for the first instance of each
+                int filename_idx = 0;
+                int alt_text_idx = 0;
+                int caption_idx  = 0;
+                int heading_idx  = 0;
+                size_t next = 0;
+                std::string template_txt = s;
+                while( macro_substitution_required )
+                {
+                    size_t offset = s.find('@',next);
+                    if( offset == std::string::npos )
+                        break;
+                    if( offset+1 >= s.length() )
+                        break;
+                    bool do_replace = true;
+                    std::string replacement;
+                    switch( s[offset+1] )
+                    {
+                        default:
+                        {
+                            printf( "Warning: Unexpected @ in template text: \n[\n%s\n]\n", template_txt.c_str() );
+                            do_replace = false;
+                            next = offset+2;
+                            break;
+                        }
+                        case 'F':
+                        {
+                            replacement = filename_idx==0 ? p->filename : (filename_idx==1?q->filename:r->filename);
+                            filename_idx++;
+                            if( filename_idx==1 && q==NULL )
+                                filename_idx--;
+                            else if( filename_idx==2 && r==NULL )
+                                filename_idx--;
+                            if( filename_idx > 2 )
+                                filename_idx = 2;
+                            break;
+                        }
+                        case 'A':
+                        {
+                            replacement = alt_text_idx==0 ? p->alt_text : (alt_text_idx==1?q->alt_text:r->alt_text);
+                            alt_text_idx++;
+                            if( alt_text_idx==1 && q==NULL )
+                                alt_text_idx--;
+                            else if( alt_text_idx==2 && r==NULL )
+                                alt_text_idx--;
+                            if( alt_text_idx > 2 )
+                                alt_text_idx = 2;
+                            break;
+                        }
+                        case 'H':
+                        {
+                            replacement = heading_idx==0 ? p->heading : (heading_idx==1?q->heading:r->heading);
+                            heading_idx++;
+                            if( heading_idx==1 && q==NULL )
+                                heading_idx--;
+                            else if( heading_idx==2 && r==NULL )
+                                heading_idx--;
+                            if( heading_idx > 2 )
+                                heading_idx = 2;
+                            break;
+                        }
+                        case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
+                        case 'C':
+                        {
+                            replacement = caption_idx==0 ? p->caption : (caption_idx==1?q->caption:r->caption);
+                            caption_idx++;
+                            if( caption_idx==1 && q==NULL )
+                                caption_idx--;
+                            else if( caption_idx==2 && r==NULL )
+                                caption_idx--;
+                            if( caption_idx > 2 )
+                                caption_idx = 2;
+                            break;
+                        }
+                    }
+                    if( do_replace )
+                    {
+                        next = offset + replacement.length();
+                        std::string temp = s.substr(0,offset) +
+                            replacement +
+                            s.substr(offset+2);
+                        s = temp;
+                    }
+                }
+                util::putline(fout,s);
+                in_grid = true;
+            }
+        }
+
+        // Solo
+        if( change && state==st_solo && old_state==st_heading_img )
+        {
+            solo_alt     = alt;
             solo_imgfile = imgfile;
             solo_caption = caption;
             solo_header_txt = header_txt;
@@ -1569,6 +1730,62 @@ echo
             util::putline(fout,s);
             accum.clear();
         }
+
+        // Panel
+        else if( change && state==st_panel_solo && old_state==st_panel )
+        {
+            solo_header_txt = header_txt;
+            accum.clear();
+        }
+        else if( change && state!=st_panel_solo && old_state==st_panel_solo_idle )
+        {
+            printf( "panel: %s\n", accum.c_str() );
+            std::string s = panel;
+            bool macro_substitution_required = true;
+
+            // Replace @T with text
+            size_t next = 0;
+            while( macro_substitution_required )
+            {
+                size_t offset = s.find('@',next);
+                if( offset == std::string::npos )
+                    break;
+                if( offset+1 >= s.length() )
+                    break;
+                bool do_replace = true;
+                std::string replacement;
+                switch( s[offset+1] )
+                {
+                    default:
+                    {
+                        printf( "Warning: Unexpected @ in template text: \n[\n%s\n]\n", panel.c_str() );
+                        do_replace = false;
+                        next = offset+2;
+                        break;
+                    }
+                    case 'T':
+                    {
+                        replacement = md(accum);
+                        break;
+                    }
+                    case 'H':
+                    {
+                        replacement = solo_header_txt;
+                        break;
+                    }
+                }
+                if( do_replace )
+                {
+                    next = offset + replacement.length();
+                    std::string temp = s.substr(0,offset) +
+                        replacement +
+                        s.substr(offset+2);
+                    s = temp;
+                }
+            }
+            util::putline(fout,s);
+            accum.clear();
+        }
         else if( change && old_state==st_panel_solo_idle )
             accum.clear();
         else if( change && state==st_idle )
@@ -1588,111 +1805,5 @@ echo
     }
     std::string f = macro_substitution( footer, macros, menu, menu_idx );
     util::putline(fout,f);
-
-#if 0
-
-        // Substitution logic, default is @solo
-
-        picture.typ = "@solo";  // solo is default, unspoken
-        picture.filename = s;
-        picture.alt_text = s;
-        picture.heading = s.substr(2);
-        picture.caption += s;
-        picture.caption += '\n';
-        PICTURE *p = &pictures[i];
-        PICTURE *q = NULL;
-        PICTURE *r = NULL;
-        std::string s = solo;
-        bool macro_substitution_required = true;
-
-        // Replace @F, @A, @C with filename, alt_text and caption repeatedly
-        //  Use the first picture (i.e. p) for the first instance of each
-        int filename_idx = 0;
-        int alt_text_idx = 0;
-        int caption_idx  = 0;
-        int heading_idx  = 0;
-        size_t next = 0;
-        while( macro_substitution_required )
-        {
-            size_t offset = s.find('@',next);
-            if( offset == std::string::npos )
-                break;
-            if( offset+1 >= s.length() )
-                break;
-            bool do_replace = true;
-            std::string replacement;
-            switch( s[offset+1] )
-            {
-                default:
-                {
-                    printf( "Warning: Unexpected @ in template text: \n[\n%s\n]\n", q==NULL? single.c_str() : pair.c_str() );
-                    do_replace = false;
-                    next = offset+2;
-                    break;
-                }
-                case 'F':
-                {
-                    replacement = filename_idx==0 ? p->filename : (filename_idx==1?q->filename:r->filename);
-                    filename_idx++;
-                    if( filename_idx==1 && q==NULL )
-                        filename_idx--;
-                    else if( filename_idx==2 && r==NULL )
-                        filename_idx--;
-                    if( filename_idx > 2 )
-                        filename_idx = 2;
-                    break;
-                }
-                case 'A':
-                {
-                    replacement = alt_text_idx==0 ? p->alt_text : (alt_text_idx==1?q->alt_text:r->alt_text);
-                    alt_text_idx++;
-                    if( alt_text_idx==1 && q==NULL )
-                        alt_text_idx--;
-                    else if( alt_text_idx==2 && r==NULL )
-                        alt_text_idx--;
-                    if( alt_text_idx > 2 )
-                        alt_text_idx = 2;
-                    break;
-                }
-                case 'H':
-                {
-                    replacement = heading_idx==0 ? p->heading : (heading_idx==1?q->heading:r->heading);
-                    heading_idx++;
-                    if( heading_idx==1 && q==NULL )
-                        heading_idx--;
-                    else if( heading_idx==2 && r==NULL )
-                        heading_idx--;
-                    if( heading_idx > 2 )
-                        heading_idx = 2;
-                    break;
-                }
-                case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
-                case 'C':
-                {
-                    replacement = caption_idx==0 ? p->caption : (caption_idx==1?q->caption:r->caption);
-                    caption_idx++;
-                    if( caption_idx==1 && q==NULL )
-                        caption_idx--;
-                    else if( caption_idx==2 && r==NULL )
-                        caption_idx--;
-                    if( caption_idx > 2 )
-                        caption_idx = 2;
-                    break;
-                }
-            }
-            if( do_replace )
-            {
-                next = offset + replacement.length();
-                std::string temp = s.substr(0,offset) +
-                    replacement +
-                    s.substr(offset+2);
-                s = temp;
-            }
-        }
-        util::putline(fout,s);
-
-
-#endif
-
 }
 

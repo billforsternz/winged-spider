@@ -152,7 +152,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
             menu_item = std::pair<std::string,std::string> ( p->link, p->base );
         else if( p->is_file )
         {
-            if( p->ext=="md" || p->ext=="pgn" || p->ext=="html" )
+            if( p->ext=="md" || p->ext=="md2" || p->ext=="pgn" || p->ext=="html" )
                 menu_item = std::pair<std::string,std::string>( p->target, p->base );
             else
                 skip = true;
@@ -206,6 +206,13 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
         if( !p->is_file || p->disabled )
             ;
         else if( "md" == p->ext )
+        {
+            if( bill_markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
+            {
+                count_md_gen++;
+            }
+        }
+        else if( "md2" == p->ext )
         {
             if( markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
             {
@@ -570,7 +577,7 @@ void treebuilder( bool force_rebuild )
             }
             else
             {
-                if( p.is_dir || p.ext=="md" || p.ext=="pgn" || p.ext=="html" )
+                if( p.is_dir || p.ext=="md" || p.ext=="md2" || p.ext=="pgn" || p.ext=="html" )
                 {
                     // Multiple pages in a row from directory structure = new files we don't know about
                     printf( "Info: new file or directory present: %s\n", p.path.c_str() );
@@ -652,7 +659,7 @@ void treebuilder( bool force_rebuild )
     {
         if( p.is_file )
         {
-            if( p.ext != "md" && p.ext != "html" && p.ext != "pgn")
+            if( p.ext != "md" && p.ext != "md2" && p.ext != "html" && p.ext != "pgn")
             {
                 p.disabled = true;
                 printf( "Info: Page %s has unsupported extension (not .md or .pgn or .html), disabled\n", p.path.c_str() );

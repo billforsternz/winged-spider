@@ -117,12 +117,194 @@ int cprintf( const char *fmt, ... )
 }
 
 
+/* Perhaps return to this concept at a later date,
+   for now accept that we have some copy-pasted coded
+   without a smooth mechanism for adding extra extensions */
+/*
+struct Extension
+{
+    bool ready = false;
+    bool just_copy = false;
+    std::string ext;
+    std::string filename;
+    std::vector<std::string> file_contents;
+};
+
+static std::vector<Extension> extensions; */
+
+static bool probe()
+{
+    bool ok = true;
+    const char* help =
+    "Winged Spider is a tool for building websites. It expects to see \"input\"\n"
+    "\"output\" and \"template\" directories. The \"input\" directory holds\n"
+    "the content of the website, hopefully organised in a sensible folder\n"
+    "hierarchy. Winged Spider converts this input into html files in the\n"
+    "\"output\" directory, using templates from the \"template\" directory.\n"
+    "Normally the input files are in markdown format, and the template-md.txt\n"
+    "file in the \"template\" directory guides the conversion process. Winged\n"
+    "Spider is distributed with a simple example to get you started.\n";
+    
+    //std::string path("template");
+    std::vector<std::string> prerequisites{BASE_IN,BASE_OUT,"template"};
+    for( std::string s: prerequisites )
+    {
+        fs::path dir(s); 
+        if( !fs::exists(dir) )
+        {
+            printf( "Error: Required directory \"%s\" doesn't exist\n", s.c_str() );
+            ok = false;
+        }
+        else if( !fs::is_directory(dir) )
+        {
+            printf( "Error: Required directory \"%s\" is a file not a directory\n", s.c_str() );
+            ok = false;
+        }
+    }
+    if( !ok )
+    {
+        printf( "%s", help );
+        return ok;
+    }
+    std::string assets = BASE_OUT;
+    assets += PATH_SEPARATOR_STR;
+    assets += "assets";
+    fs::path dir(assets); 
+    if( !fs::exists(dir) || !fs::is_directory(dir) )
+    {
+        bool ok2 = fs::create_directory(dir);
+        if( ok2 )
+            printf( "Warning: Directory \"%s\" not found, successfully created\n", assets.c_str() );
+        else
+        {
+            printf( "Error: Directory \"%s\" not found and could not be created\n", assets.c_str() );
+            return false;
+        }
+    }
+
+    // Set up each extension, HTML is simple copy to output
+    /*
+    Extension html;
+    html.ready = true;
+    html.just_copy = true;
+    extensions.push_back(html);
+
+    // Markdown is primary and compulsory
+    Extension md;
+    md.ext = "md";
+    md.filename = "template/template-md.txt";
+    if( !fs::exists(md.filename) )
+    {
+        printf( "Error: The markdown template file \"%s\" is not present\n", md.filename.c_str() );
+        return false;
+    }
+    md.ready = true;
+    extensions.push_back(md);
+
+    // PGN is optional
+    Extension pgn;
+    pgn.ext = "pgn";
+    pgn.filename = "template/template-pgn.txt";
+    if( fs::exists(pgn.filename) )
+        pgn.ready = true;
+    extensions.push_back(pgn);
+
+    // .md2 is temporary dev only
+    Extension md2;
+    md2.ext = "md2";
+    md2.filename = "template/template-md2.txt";
+    if( fs::exists(md2.filename) )
+        md2.ready = true;
+    extensions.push_back(md2); */
+
+    // Copy all template files, except .txt files, to output. The idea is that runtime
+    //  files defined in the templates (eg javascript and css files) can be conveniently
+    //  put in the template directory and will be copied (once) to the output directory
+    std::string template_path("template");
+    for( const auto & entry : fs::directory_iterator(template_path) )
+    {
+        std::string s( entry.path().string() );
+        bool is_dir = is_directory(entry);
+        bool is_file = !is_dir;
+        if( is_file )
+        {
+            size_t offset = s.find_last_of('.');
+            bool is_txt_file = (offset != std::string::npos  &&  util::tolower(s.substr(offset)) == ".txt");
+            if( is_txt_file )
+                continue;
+            std::string out = BASE_OUT;
+            out += "/";
+            out += s.substr(strlen("template")+1);
+            fs::path pout(out);
+            bool copy=false;
+            if( !fs::exists(pout) )
+            {
+                copy = true;
+                printf( "Info: Copying %s to output directory\n", s.c_str() );
+            }
+            else
+            {
+                fs::file_time_type time_in  = last_write_time(entry);    
+                fs::file_time_type time_out = last_write_time(pout);
+                if( time_in > time_out )
+                {
+                    copy = true;
+                    printf( "Info: Copying %s over %s because it post-dates it\n", s.c_str(), out.c_str() );
+                }
+            }
+            if( copy )
+            {
+                bool ok2 = false;
+                std::string err;
+                try {
+                    ok2 = fs::copy_file( entry, pout, fs::copy_options::overwrite_existing );
+                } catch(fs::filesystem_error& e) {
+                    ok = false;
+                    err = " (";
+                    err += e.what();
+                    err += ")";
+                }
+                if( !ok2 )
+                {
+                    printf( "Error: Copying %s to %s failed%s\n", s.c_str(), out.c_str(), err.c_str() );
+                    ok = false;
+                }
+            }
+        }
+
+/*
+        fs::file_time_type time_out = last_write_time(pout);
+        if( !p->make_file_for_dir )
+        {
+            fs::file_time_type time_in = last_write_time(pin);    
+            if( time_in > time_out )
+            {
+                printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
+                needs_rebuild = true;
+            }
+        }
+        fs::file_time_type time_template = last_write_time(ptemplate);
+        if( time_template > time_out )
+        {
+            printf( "Info: %s post-dates %s\n", ftemplate.c_str(), out.c_str() );
+            needs_rebuild = true;
+        }
+    }
+  */
+
+    }
+    return ok;
+}
+
+
 //
 // main()
 //
 
 int main( int argc, char *argv[] )
 {
+
+    // Process command line arguments
     const char *usage =
     "Winged Spider V0.9\n"
     "Winged Spider is a simple static website builder\n"
@@ -146,12 +328,20 @@ int main( int argc, char *argv[] )
             return 0;
         }
     }
+
+    // Check pre-requistites etc.
+    bool ok = probe();
+
+    // If all ok go for it
+    if( ok )
+    {
 #if 1
-    test_builds();
+        test_builds();
 #else
-    treebuilder( force_rebuild );
+        treebuilder( force_rebuild );
 #endif
-    return 0;
+    }
+    return ok ? 0 : -1;
 }
 
 //
@@ -167,14 +357,14 @@ struct PICTURE
     std::string caption;
 };
 
-static void md_callback1( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string )
+static void md_callback( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string )
 {
     std::string *ps = (std::string *)addr_std_string;
     std::string s(txt,len);
     *ps += s;
 }
 
-void templat( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+void template_bill_md( const std::string &md_file, const std::string &md2_file, const std::string &template_file, const std::string &html_out_file,
     std::map<char,std::string> &macros,
     const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
@@ -204,6 +394,13 @@ void templat( const std::string &md_file, const std::string &template_file, cons
     if( !fout )
     {
         printf( "Error: Could not create output file %s\n", html_out_file.c_str() );
+        return;
+    }
+
+    std::ofstream fout2( md2_file );
+    if( !fout2 )
+    {
+        printf( "Error: Could not create output file %s\n", md2_file.c_str() );
         return;
     }
 
@@ -334,6 +531,7 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         if( !std::getline(fin1,s) )
             break;
         util::rtrim(s);
+        util::putline(fout2,s);
         if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
         {
             first_non_macro_line = s;
@@ -471,11 +669,12 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         std::string out;
         for( std::string line : whole_input_file )
         {
+            util::putline(fout2,line);
             in += line;
             in += "\n";
         }
         md_html( in.c_str(), in.length(),
-            md_callback1,
+            md_callback,
             &out,                           // userdata
             MD_FLAG_PERMISSIVEATXHEADERS,   // parser_flags, (allow "#Heading" as well as "# Heading")
             0                               // unsigned renderer_flags
@@ -494,8 +693,63 @@ void templat( const std::string &md_file, const std::string &template_file, cons
         pictures.clear();
     }
 
-    // Loop through the pictures
+    // Loop through the pictures (1)
     size_t len = pictures.size();
+    PICTURE *p_previous = NULL;
+    for( size_t i=0; i<len; i++ )
+    {
+        PICTURE *p = &pictures[i];
+        if( p_previous && p_previous->typ=="@grid" && p->typ!="@grid" )
+        {
+            util::putline(fout2,"");
+        }
+        std::string txt = p->caption;
+        util::replace_all( txt, "</p><p>\n", "\n");
+        if( p->typ == "@solo" )
+        {
+            util::puts(fout2,"##");
+            util::putline(fout2,p->heading);
+            std::string filename = p->filename;
+            util::replace_all( filename, " ", "%20");
+            std::string t = util::sprintf("![%s](%s)\n%s\n", p->alt_text.c_str(), filename.c_str(), txt.c_str() );
+            util::putline(fout2,t.c_str());
+        }
+        else if( p->typ == "@para" )
+        {
+            util::putline(fout2,txt);
+            util::putline(fout2,"");
+        }
+        else if( p->typ == "@naked" )
+        {
+            util::putline(fout2,txt);
+            util::putline(fout2,"");
+        }
+        else if( p->typ == "@panel" )
+        {
+            util::puts(fout2,"##(panel)");
+            util::putline(fout2,p->heading);
+            util::putline(fout2,txt);
+            util::putline(fout2,"");
+
+        }
+        else if( p->typ == "@snippet" )
+        {
+            util::puts(fout2,"##");
+            util::putline(fout2,p->heading);
+            util::putline(fout2,txt);
+            util::putline(fout2,"");
+        }
+        else if( p->typ == "@grid" )
+        {
+            std::string filename = p->filename;
+            util::replace_all( filename, " ", "%20");
+            std::string t = util::sprintf("![%s](%s)%s", p->alt_text.c_str(), filename.c_str(), p->caption.c_str() );
+            util::putline(fout2,t.c_str());
+        }
+        p_previous = p;
+    }
+
+    // Loop through the pictures (2)
     bool in_grid=false;
     for( size_t i=0; i<len; i++ )
     {
@@ -748,6 +1002,61 @@ std::string macro_substitution( const std::string &input,
 
 static std::set<std::string> directories;
 
+bool bill_markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild )
+{
+    bool needs_rebuild = !same_menu_as_last_run;
+    std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
+    std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
+    std::string ftemplate = "template/template-main.txt";
+    std::string fmd2 = in + "3";  // => .md3 file for now
+
+    fs::path pin(in); 
+    fs::path pout(out);
+    fs::path ptemplate(ftemplate);
+    if( !fs::exists(ptemplate) )
+    {
+        printf( "Error: Cannot open template file %s\n", ftemplate.c_str() );
+        return false;
+    }
+    if( force_rebuild  || !fs::exists(pout) )
+        needs_rebuild = true;
+    else
+    {
+        fs::file_time_type time_out = last_write_time(pout);
+        if( !p->make_file_for_dir )
+        {
+            bool exists = fs::exists(pin);
+            fs::file_time_type time_in;
+            if( exists )
+                time_in = last_write_time(pin);    
+            else
+                needs_rebuild = true;
+            if( exists && time_in > time_out )
+            {
+                printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
+                needs_rebuild = true;
+            }
+        }
+        fs::file_time_type time_template = last_write_time(ptemplate);
+        if( time_template > time_out )
+        {
+            printf( "Info: %s post-dates %s\n", ftemplate.c_str(), out.c_str() );
+            needs_rebuild = true;
+        }
+    }
+    if( needs_rebuild )
+    {
+        printf( "Info: Rebuilding %s\n", out.c_str() );
+        std::map<char,std::string> macros;
+        macros['s'] = p->heading;       // lower case 's' and 'z' mean auto-generated
+        macros['z'] = p->subheading;
+        if( p->make_file_for_dir )
+            in = "";
+        template_bill_md(in,fmd2,ftemplate,out,macros,menu,menu_idx);
+    }
+    return needs_rebuild;
+}
+
 bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild )
 {
     bool needs_rebuild = !same_menu_as_last_run;
@@ -772,14 +1081,14 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
             fs::file_time_type time_in = last_write_time(pin);    
             if( time_in > time_out )
             {
-                printf( "Info: %s succeeds %s\n", in.c_str(), out.c_str() );
+                printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
                 needs_rebuild = true;
             }
         }
         fs::file_time_type time_template = last_write_time(ptemplate);
         if( time_template > time_out )
         {
-            printf( "Info: %s succeeds %s\n", ftemplate.c_str(), out.c_str() );
+            printf( "Info: %s post-dates %s\n", ftemplate.c_str(), out.c_str() );
             needs_rebuild = true;
         }
     }
@@ -791,7 +1100,7 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
         macros['z'] = p->subheading;
         if( p->make_file_for_dir )
             in = "";
-        templat(in,ftemplate,out,macros,menu,menu_idx);
+        template_md(in,ftemplate,out,macros,menu,menu_idx);
     }
     return needs_rebuild;
 }
@@ -823,13 +1132,13 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
         fs::file_time_type time_in = last_write_time(pin);    
         if( time_in > time_out )
         {
-            printf( "Info: %s succeeds %s\n", in.c_str(), out.c_str() );
+            printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
             needs_rebuild = true;
         }
         fs::file_time_type time_template = last_write_time(ptemplate);
         if( time_template > time_out )
         {
-            printf( "Info: %s succeeds %s\n", ftemplate.c_str(), out.c_str() );
+            printf( "Info: %s post-dates %s\n", ftemplate.c_str(), out.c_str() );
             needs_rebuild = true;
         }
     }
@@ -923,9 +1232,9 @@ void test_builds()
 #endif
 #ifdef BUILD_MIGRATE
     #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "test-input/after.md";
-    std::string fin2 = "test-template/template-main.txt";
-    std::string fout = "test-output/after.html";
+    std::string fin1 = "test-input/Home.md";
+    std::string fin2 = "template/template-md.txt";
+    std::string fout = "test-output/Home.html";
 #endif
 #ifdef BUILD_RESULTS
 #define DEBUG_JUST_ONE_FILE
@@ -968,10 +1277,10 @@ void test_builds()
     gc.Load(fin1);
     gc.Publish(fin2,fout,macros,menu,menu.size()-1);
     #else
-void templat_real_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+void template_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
     std::map<char,std::string> &macros,
     const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
-    templat_real_md(fin1,fin2,fout,macros,menu,menu.size()-1);
+    template_md(fin1,fin2,fout,macros,menu,menu.size()-1);
     #endif
 #endif
 }
@@ -980,7 +1289,7 @@ std::string md( const std::string &in )
 {
     std::string out;
     md_html( in.c_str(), in.length(),
-        md_callback1,
+        md_callback,
         &out,                           // userdata
         MD_FLAG_PERMISSIVEATXHEADERS,   // parser_flags, (allow "#Heading" as well as "# Heading")
         0                               // unsigned renderer_flags
@@ -988,7 +1297,7 @@ std::string md( const std::string &in )
     return out;
 }
 
-void templat_real_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
+void template_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
     std::map<char,std::string> &macros,
     const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
@@ -1215,9 +1524,9 @@ txt if starts with alphanum
 something else otherwise
 
 idle
- -> heading         (on heading)
- or panel           (on (panel)heading)
- or img             (on img)
+ -> heading         (on heading)              idle->heading->heading_img->solo->solo_idle->solo->solo_idle->[idle/heading/panel/img/echo]
+ or panel           (on (panel)heading)       idle->panel->panel_solo->panel_solo_idle->panel_solo->panel_solo_idle->[idle/heading/panel/img/echo]
+ or grid            (on img)                  idle->grid[->grid]->idle
  or echo            (on not blank)
 heading
  -> idle            (on blank)
@@ -1227,14 +1536,14 @@ heading_img
  -> idle            (on blank)
  or solo            (on text)
  or echo            otherwise
-panel
- -> idle            (on blank)
- or panel_solo      (on text)
- or echo            (on something else)
 solo
  -> solo            (on text)
  or solo_idle       (on blank)
  or echo            (on anything else)
+panel
+ -> idle            (on blank)
+ or panel_solo      (on text)
+ or echo            (on something else)
 solo_idle
  -> solo            (on text)
  or idle            (on blank)
@@ -1253,16 +1562,25 @@ panel_solo_idle
  or panel           (on (panel)heading)
  or img             (on img)
  or echo            (on anything else)
-img
+grid
  -> idle            (on blank)
  or grid            (on img)
  or echo            (on something else)
-grid
- -> idle            (on blank)
- -> grid            (on img)
- -> echo            (on something else)
 echo
  -> idle            (on blank)
+
+ Generate grid/solo/panel
+ idle->heading->heading_img->solo->solo_idle->solo->solo_idle->[idle/heading/panel/img/echo]
+ idle->panel->panel_solo->panel_solo_idle->panel_solo->panel_solo_idle->[idle/heading/panel/img/echo]
+ idle->grid[->grid]->idle
+
+ Bail out
+ idle->heading->idle
+ idle->heading->heading_img->idle
+ idle->panel->idle
+
+ Accumulate until leave idle, immediately begin accumulating again
+ Flush accumulation without writing it only on generation of grid/solo/panel
 
 */
 
@@ -1271,14 +1589,14 @@ echo
         st_heading, st_heading_img,
         st_solo, st_solo_idle,
         st_panel, st_panel_solo, st_panel_solo_idle,
-        st_img, st_grid
+        st_grid
     };
     const char *states[] = {
         "st_idle", "st_echo",
         "st_heading", "st_heading_img",
         "st_solo", "st_solo_idle",
         "st_panel", "st_panel_solo", "st_panel_solo_idle",
-        "st_img", "st_grid"
+        "st_grid"
     };
     State state=st_idle;
     enum Event {
@@ -1288,6 +1606,7 @@ echo
         "ev_blank", "ev_txt", "ev_heading", "ev_panel_heading", "ev_img", "ev_other"
     };
     std::string accum;
+    std::string solo_txt;
     std::string alt;
     std::string imgfile;
     std::string caption;
@@ -1296,11 +1615,9 @@ echo
     std::string solo_imgfile;
     std::string solo_caption;
     std::string solo_header_txt;
-    std::string save_alt;
-    std::string save_caption;
-    std::string save_imgfile;
     std::vector<PICTURE> pictures;
     int running=2;
+    int flush_count=0;
     while( running > 0 )
     {
         // Get next line
@@ -1335,6 +1652,7 @@ echo
                 if( c != '#' )
                 {
                     std::string t = s.substr(idx);
+                    header_txt = t;
                     if( util::prefix(t,"(panel)") )
                     {
                         ev = ev_panel_heading;
@@ -1348,9 +1666,9 @@ echo
         else if( s.length()>=2 && s[0]=='!' && s[1]=='[' )
         {
             size_t offset = s.find("](",2);
-            if( offset != std::string::npos && s.length() > offset+3 )
+            if( offset != std::string::npos && s.length() > offset+2 )
             {
-                alt = s.substr(3,offset-3);
+                alt = s.substr(2,offset-2);
                 offset += 2;
                 size_t offset2 = s.find(')',offset);
                 if( offset2 != std::string::npos )
@@ -1383,7 +1701,7 @@ echo
                 {
                     case ev_heading:        state = st_heading;        break;
                     case ev_panel_heading:  state = st_panel;          break;
-                    case ev_img:            state = st_img;            break;  
+                    case ev_img:            state = st_grid;           break;  
                     case ev_blank:                                     break; 
                     default:                state = st_echo;           break;         
                 }
@@ -1437,7 +1755,7 @@ echo
                     case ev_blank:          state = st_idle;           break;   
                     case ev_heading:        state = st_heading;        break;
                     case ev_panel_heading:  state = st_panel;          break;  
-                    case ev_img:            state = st_img;            break;    
+                    case ev_img:            state = st_grid;           break;    
                     default:                state = st_echo;           break;   
                 }
                 break;
@@ -1460,18 +1778,8 @@ echo
                     case ev_blank:          state = st_idle;           break;         
                     case ev_heading:        state = st_heading;        break;      
                     case ev_panel_heading:  state = st_panel;          break;        
-                    case ev_img:            state = st_img;            break;          
+                    case ev_img:            state = st_grid;           break;          
                     default:                state = st_echo;           break;         
-                }
-                break;
-            }
-            case st_img:
-            {
-                switch( ev )
-                {
-                    case ev_blank:          state = st_idle;           break;     
-                    case ev_img:            state = st_grid;           break;     
-                    default:                state = st_echo;           break;     
                 }
                 break;
             }
@@ -1495,40 +1803,35 @@ echo
             }
         }
 
+        // Accumulate until leave idle, immediately begin accumulating again
+        //  Flush accumulation without writing it only on generation of grid/solo/panel
         bool change = (old_state!=state);
         if( change )
             printf( "%s: %s -> %s\n", events[ev], states[old_state], states[state] );
-        if( change && old_state==st_grid )
+        if( change && ev!=ev_txt && (old_state==st_idle || old_state==st_echo) )
+        {
+            printf( "%d flushes\n", ++flush_count );
+            std::string html = md(accum);
             accum.clear();
+            util::puts(fout,html);
+        }
 
-        // Grid
-        if( state==st_img )
-        {
-            save_alt     = alt;
-            save_caption = caption;
-            save_imgfile = imgfile;
-        }
-        bool goto_grid_single = (old_state==st_img && state==st_idle);
-        if( old_state==st_img && (state==st_grid || goto_grid_single) )
-        {
-            pictures.clear();
-            PICTURE picture;
-            picture.alt_text = save_alt;
-            picture.caption  = save_caption;
-            picture.filename = save_imgfile;
-            pictures.push_back(picture);
-        }
-        if( state==st_grid )
+        // Enter/continue Grid
+        if( state == st_grid )
         {
             PICTURE picture;
+            if( old_state == st_idle )
+                pictures.clear();
             picture.alt_text = alt;
             picture.caption  = caption;
             picture.filename = imgfile;
             pictures.push_back(picture);
         }
-        if( goto_grid_single || (change && old_state==st_grid) )
+
+        // Complete grid
+        else if( state==st_idle && old_state==st_grid )
         {
-            accum.clear();
+            accum.clear(); //  Flush accumulation without writing it only on generation of grid/solo/panel
 
             // Loop through the pictures
             size_t len = pictures.size();
@@ -1629,10 +1932,10 @@ echo
                                 heading_idx = 2;
                             break;
                         }
-                        case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
-                        case 'C':
+                        case 'T':   // 'T'ext (or caption)
                         {
                             replacement = caption_idx==0 ? p->caption : (caption_idx==1?q->caption:r->caption);
+                            replacement = md(replacement);
                             caption_idx++;
                             if( caption_idx==1 && q==NULL )
                                 caption_idx--;
@@ -1657,18 +1960,21 @@ echo
             }
         }
 
-        // Solo
+        // Enter Solo
         if( change && state==st_solo && old_state==st_heading_img )
         {
-            solo_alt     = alt;
-            solo_imgfile = imgfile;
-            solo_caption = caption;
+            solo_alt        = alt;
+            solo_imgfile    = imgfile;
+            solo_caption    = caption;
             solo_header_txt = header_txt;
-            accum.clear();
+            solo_txt.clear();
         }
+
+        // Complete Solo
         else if( change && state!=st_solo && old_state==st_solo_idle )
         {
-            printf( "solo: %s\n", accum.c_str() );
+            accum.clear();  // Flush accumulation without writing it only on generation of grid/solo/panel
+            printf( "solo: %s\n", solo_txt.c_str() );
             std::string s = solo;
             bool macro_substitution_required = true;
 
@@ -1714,7 +2020,7 @@ echo
                     case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
                     case 'C':
                     {
-                        replacement = md(accum);
+                        replacement = md(solo_txt);
                         break;
                     }
                 }
@@ -1728,17 +2034,20 @@ echo
                 }
             }
             util::putline(fout,s);
-            accum.clear();
+            solo_txt.clear();
         }
 
-        // Panel
-        else if( change && state==st_panel_solo && old_state==st_panel )
+        // Enter Panel
+        if( change && state==st_panel_solo && old_state==st_panel )
         {
             solo_header_txt = header_txt;
-            accum.clear();
+            solo_txt.clear();
         }
+
+        // Leave Panel
         else if( change && state!=st_panel_solo && old_state==st_panel_solo_idle )
         {
+            accum.clear();  // Flush accumulation without writing it only on generation of grid/solo/panel
             printf( "panel: %s\n", accum.c_str() );
             std::string s = panel;
             bool macro_substitution_required = true;
@@ -1765,7 +2074,7 @@ echo
                     }
                     case 'T':
                     {
-                        replacement = md(accum);
+                        replacement = md(solo_txt);
                         break;
                     }
                     case 'H':
@@ -1784,24 +2093,12 @@ echo
                 }
             }
             util::putline(fout,s);
-            accum.clear();
-        }
-        else if( change && old_state==st_panel_solo_idle )
-            accum.clear();
-        else if( change && state==st_idle )
-        {
-            std::string html = md(accum);
-            accum.clear();
-            util::puts(fout,html);
-        }
-        else if( change && old_state==st_echo )
-        {
-            std::string html = md(accum);
-            accum.clear();
-            util::puts(fout,html);
+            solo_txt.clear();
         }
         accum += s;
         accum += "\n";
+        solo_txt += s;
+        solo_txt += "\n";
     }
     std::string f = macro_substitution( footer, macros, menu, menu_idx );
     util::putline(fout,f);

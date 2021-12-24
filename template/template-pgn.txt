@@ -14,7 +14,7 @@
     <script type="text/javascript" src="jquery.animate-enhanced.min.js"></script>
     <script type="text/javascript" src="publishv1.04.js"></script>
     <link rel="stylesheet" href="pure.css">
-    <link rel="stylesheet" href="pure-customised.css">
+    <link rel="stylesheet" href="pure-customised2.css">
     <link rel="stylesheet" type="text/css" href="chess.css" />
     <style>
     table, th, td {

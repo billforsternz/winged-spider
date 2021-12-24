@@ -25,8 +25,8 @@
 #define PATH_SEPARATOR_STR "/"
 #endif
 
-#define BASE_IN  "input2"
-#define BASE_OUT "output2"
+#define BASE_IN  "input3"
+#define BASE_OUT "output3"
 
 void recurse( const std::string &path, std::vector<Page> &results );
 void parse( Page &p );
@@ -34,7 +34,7 @@ bool read_file( const char *plan_file, std::vector<Page> &results );
 void write_file( const char *plan_file, const std::vector<Page> &results );
 void treebuilder( bool force_rebuild );
 void recurse( const std::string &path, std::vector<Page> &results );
-bool bill_markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
+//bool bill_markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
 bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
 bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
 bool html_gen( Page *p, bool force_rebuild );

@@ -207,18 +207,18 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
             ;
         else if( "md" == p->ext )
         {
-            if( bill_markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
-            {
-                count_md_gen++;
-            }
-        }
-        else if( "md2" == p->ext )
-        {
             if( markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
             {
                 count_md_gen++;
             }
         }
+     /* else if( "md2" == p->ext )
+        {
+            if( bill_markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
+            {
+                count_md_gen++;
+            }
+        } */
         else if( "pgn" == p->ext )
         {
             if( pgn_to_html( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )

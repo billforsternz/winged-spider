@@ -1,4 +1,4 @@
-Home.md2
+Home.md
 Calendar.md
 Results.md
 Notices.md

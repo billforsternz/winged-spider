@@ -1,4 +1,4 @@
-#Winged Spider, a static website builder
+# Winged Spider, a static website builder
 
 Winged Spider is a spectactularly easy to use, very fast static
 website builder. Winged Spider takes as input content organised
@@ -22,7 +22,7 @@ works well for simple projects and sometimes not being maintained is a feature n
 bug (because the sands aren't shifting under you, you're using something that's finished
 and works).
 
-#Status
+# Status
 
 Winged Spider is approaching Release 1.0 status. I have been using it in production for
 an important, medium sized project (the New Zealand Chess Federation website) for a
@@ -34,13 +34,13 @@ with one scone because the example is the documentation! I have put
 the [rendered example here](https://triplehappy.com/winged-spider-example/index.html)
 pending placement on Github pages or similar.
 
-#Chess
+# Chess
 
 Winged Spider was created for a chess website, and has built in support for interactive
 chess presentation. For more details see the
 [example project](https://triplehappy.com/winged-spider-example/details-chess.html)
 
-#The name means what?
+# The name means what?
 
 The name Winged Spider means nothing - it's just a cool name, and I bought wingedspider.com
 a few years back.

@@ -5,7 +5,7 @@ the content to be rendered into a website. The defining idea of Winged Spider
 is that the user will get to navigate around in the ultimate rendered website using
 menus defined by the names given to the content files and folders.
 
-##Output Folder
+##The Output Folder
 
 Alongside the 'input' folder are two other folders required for every Winged Spider
 project. Perhaps you've already guessed that one of them is 'output', which is where
@@ -17,7 +17,7 @@ projects I tend to use a program called Filezilla (available for Windows for exa
 on ninite.com) to simply copy the contents of the output folder to the html directory
 of an Apache web server. You may have other arrangements.
 
-##Template Folder
+##The Template Folder
 The other fundamental folder is 'template'. Unsurprisingly I suppose this is where
 Winged Spider looks for the template that tells it how to render markdown into
 the final website. It would be terribly inflexible to have this information baked

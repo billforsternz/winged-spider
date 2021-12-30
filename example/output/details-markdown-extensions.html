@@ -111,7 +111,8 @@ and will just be passed through to the normal markdown processor. This is a feat
 perhaps you want to have a heading, an image and some paragraphs but not presented as a 'solo'
 as defined in the Winged Spider template. That's okay, you can do it by (for example) introducing
 a blank line after the header, or using the alternative underline header syntax, or making any other
-deviation from the strict 'solo' pattern seen in the example above.</p>
+deviation from the strict 'solo' pattern seen in the example above. Solo formatting is defined
+by the @solo template in template-md.txt</p>
 <h2>This is an Example Snippet</h2>
 <p>In fact this is just normal markdown, it turned out that the concept of a snippet (a heading plus
 text) was perfectly handled by markdown without any special syntax. There's no longer a '@snippet'
@@ -148,7 +149,8 @@ panel is a purple box.</p>
 <br>
 
 <h3>Code for the example panel</h3>
-<p>Here is the markdown corresponding to the example panel above (it's just a snippet with the special
+<p>The panel formatting is defined by the @panel template in template-md.txt. Here is the markdown
+corresponding to the example panel above (it's just a snippet with the special
 intro text '(panel)';</p>
 <pre>
 <br>
@@ -322,6 +324,11 @@ get arranged into their own rows, of less than three images.</p>
 ![Dog](images/dog.jpg)This a rather attractive dog, this time it occupies the whole row itself
 <br>
 </pre>
+<h3>Grid Templates</h3>
+<p>Formatting of the grids is defined by the five grid templates in template-md.txt. The templates are
+@single (a row of 1 large picture), @pair (a balanced row of 2 pictures), @triple (a full row of
+three pictures), @1of3 (a ragged final row of just 1 small picture of 3) and @2of3 (a ragged final
+row of 2 small pictures of 3).</p>
         <p></p>
         <p></p>
         </div>

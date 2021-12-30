@@ -14,7 +14,7 @@ intuitive way, using menus that directly reflect the structure defined by the fo
 hierarchy.
 
 The first pre-supplied template is based on "pure", a CSS framework from Yahoo.
-I had good results with it in with manually generated pages, and am now having
+I had good results with it with manually generated pages, and am now having
 equally good results using Winged Spider to make my websites instead.
 
 Pure is not being maintained, but it

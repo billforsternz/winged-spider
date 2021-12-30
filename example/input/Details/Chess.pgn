@@ -66,7 +66,7 @@ Rxe6 37. Kxh4 Ke5 38. Kg4 Rg6+ 39. Kf3 Kd4 40. Nb3+ Kc3 41. Nc5 a5 42. Ke2 Kc4
 
 If you have text like this after the last game, unfortunately you also need to add
 a dummy game to go with it. This is a quirk of the Tarrasch publishing code
-which processes all text strictly as a *prefix* to a game. So I need a game
+which processes all text between games strictly as a *prefix* to a game. So I need a game
 for which this text is prefix. It's not a serious problem just make a
 Dummy game at the very end of the file which looks like
 this. <br><pre>&#x23;SkipGame<br><br>[White &quot;Dummy&quot;]<br>[Black &quot;Dummy&quot;]<br>[Result &quot;&#x2a;&quot;]<br><br>&#x2a;<br></pre>

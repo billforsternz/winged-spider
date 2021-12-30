@@ -5,7 +5,6 @@ Notices.md
 Resources.md
 Ratings.md
 NZ Chess Online\
-Olympiad 2022.md
 Interschools\
 Chess Clubs.html
 History\
@@ -21,7 +20,6 @@ Archives\Home Page\
 Archives\Results Page\
 Archives\Tournaments\
 Bulletins\Bulletins.md
-Bulletins\December 2021\
 Bulletins\July 2021\
 Bulletins\October 2020\
 Bulletins\August 2020\
@@ -36,10 +34,10 @@ History\Correspondence Chess.md
 History\Sound Archives.md
 History\Historical FIDE Ratings.md
 History\Representative Honours.md
-History\Archives -> archives.html
-History\Magazines -> magazines.html
-History\Listener Columns\
-History\Trophies.md -> trophies.html
+History\Archives -> archives-archives.html
+History\Magazines -> magazines-magazines.html
+History\Listener Columns.md
+History\Trophies.md
 Interschools\Interschools.md
 Interschools\2021 Results.html
 Interschools\2021 Calendar.html
@@ -62,15 +60,12 @@ Magazines\NZ Chess Gazette.md
 Magazines\Monographs and More.md
 Magazines\Interactive\
 Magazines\Curator's Notes\
-Magazines\Listener Columns -> history-listener-columns.html
 More\More.md
 More\Junior Badges.html
 More\Links.html
 More\Correspondence.html
-More\Cheap Chess Equipment -> NZCFdocs/equipmentforschools.pdf
+More\Cheap Chess Equipment -> https://newzealandchess.co.nz/NZCFdocs/equipmentforschools.pdf
 More\Grand Prix.html
-More\Listener Columns -> history-listener-columns.html
-More\NZ Games Database -> history-the-peter-stuart-nz-games-database.html
 NZ Chess Online\NZ Chess Online.md
 NZ Chess Online\Running Chess Clubs Online.md
 NZ Chess Online\Online Interclub.md
@@ -131,9 +126,6 @@ Archives\Tournaments\2013.md
 Archives\Tournaments\2008.md
 Archives\Tournaments\2007.md
 Archives\Tournaments\2006.md
-Bulletins\December 2021\December 2021.md
-Bulletins\December 2021\South Island Champs.pgn
-Bulletins\December 2021\The Big Rivalry.pgn
 Bulletins\July 2021\July 2021.md
 Bulletins\July 2021\Trusts Best Games.pgn
 Bulletins\July 2021\The Australian Attack.pgn
@@ -237,42 +229,3 @@ Magazines\Curator's Notes\NZ Chess News.md
 Magazines\Curator's Notes\NZ Chess, early issues.md
 Magazines\Curator's Notes\NZ Chessplayer.md
 Magazines\Curator's Notes\NZ Chess Gazette.md
-History\Listener Columns\Listener Columns.md
-History\Listener Columns\1976.md
-History\Listener Columns\1977.md
-History\Listener Columns\1978.md
-History\Listener Columns\1979.md
-History\Listener Columns\1980.md
-History\Listener Columns\1981.md
-History\Listener Columns\1982.md
-History\Listener Columns\1983.md
-History\Listener Columns\1984.md
-History\Listener Columns\1985.md
-History\Listener Columns\1986.md
-History\Listener Columns\1987.md
-History\Listener Columns\1988.md
-History\Listener Columns\Interactive\
-History\Listener Columns\Interactive\Interactive.md
-History\Listener Columns\Interactive\1976\
-History\Listener Columns\Interactive\1977\
-History\Listener Columns\Interactive\1978\
-History\Listener Columns\Interactive\1976\Advice I never follow.pgn
-History\Listener Columns\Interactive\1976\Assault and battery.pgn
-History\Listener Columns\Interactive\1976\Mean time at Greenwich.pgn
-History\Listener Columns\Interactive\1976\Steady.pgn
-History\Listener Columns\Interactive\1976\A new move.pgn
-History\Listener Columns\Interactive\1976\Playing with the clock.pgn
-History\Listener Columns\Interactive\1976\Down but not out.pgn
-History\Listener Columns\Interactive\1976\Well played, young sir.pgn
-History\Listener Columns\Interactive\1976\A game to go around the world.pgn
-History\Listener Columns\Interactive\1976\Setting up a pecking order.pgn
-History\Listener Columns\Interactive\1976\The mice that roared.pgn
-History\Listener Columns\Interactive\1977\Taking poison.pgn
-History\Listener Columns\Interactive\1977\Sunday, bloody Sunday.pgn
-History\Listener Columns\Interactive\1977\Beating up the oldies.pgn
-History\Listener Columns\Interactive\1977\Knight time runs out.pgn
-History\Listener Columns\Interactive\1978\Liberating chess.pgn
-History\Listener Columns\Interactive\1978\A dragon to the death.pgn
-History\Listener Columns\Interactive\1978\A touch of class.pgn
-History\Listener Columns\Interactive\1978\Freestyle.pgn
-History\Listener Columns\Interactive\1978\Masterfall.pgn

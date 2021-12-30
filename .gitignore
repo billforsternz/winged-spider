@@ -1,6 +1,10 @@
 Debug
 Release
+exe-snapshots
+.vs
 base
+input
+input-uses-bills-md-format
 output
 test
 retired
@@ -8,4 +12,9 @@ ref
 sandpit
 temp
 treebuilder
-
+template
+plan.txt
+generated-plan.txt
+ws.exe
+WingedSpider.vcxproj.filters
+WingedSpider.vcxproj.user

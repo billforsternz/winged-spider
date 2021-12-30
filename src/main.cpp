@@ -1,77 +1,11 @@
 /*
- 
-    Winged Spider is intended to be a innovative (I hope), spectactularly easy to use static
-    website builder. The idea is that Winged Spider will take as input content organised
-    nicely in a well named directory hierarchy, and generate as output web ready content
-    with the same structure. The directory and file names from the input are reflected
-    directly in the menu structure that is presented to the web consumer for navigation
-    through the web content.
 
-    Current status: The program is now more than usable - in fact I am using the program in
-    production for the NZCF website, but it's a bit MicKey Mouse as I am actually running
-    it from within the GUI. I need to tighten down some aspects, introduce quiet/verbose
-    flags etc. etc.
+    Winged Spider is a static website builder. For full documentation start at the project's
+    home page
 
-    The notes below are largely historic although the idea of converting my @snippet etc
-    keywords to patterns of otherwise legal markdown is on-point and I hope to actually
-    implement it soon. The idea of using the directory structure to define the menus is the
-    key concept within Winged Spider and it is captured below;
- 
-     Simple templating program
-      Inputs: a template file with header and footer, plus up to three
-      other parts for expanding data that's gathered from a text file that is
-      formatted as a list of photo plus text sections
+    https://github.com/billforsternz/winged-spider.html
 
-      An early version of this program (maybe git init version) is
-      C:\BillsUtilities\photos.exe, used to generate snippets of HTML in NZCF
-      images subdirectories.
-
-      Another crystalised version of this program (after git comment
-      "add new @w macro = ..") is C:\BillsUtilities\bills-cms-proto.exe,
-      used to make first usable archives section of NZCF website
-
-      Ideas:
-      Use explicit directives in template file
-
-      Grouped photos;
-      @pair
-      @triple
-      @quad
-      @single
-
-      Stories;
-      @snippet - no photos
-      @solo    - one photo
-      @panel   - highlighted snippet
-
-      Allow these in content but migrate to detecting them as combinations of
-      normal markdown syntax;
-
-      eg the following lines
-
-      >
-      ## Headline
-
-      para
-      <
-
-      Are interpreted as a @snippet
-
-      and these
-
-      >
-      ## Headline
-
-      ![ALT](image-file)caption
-      para
-      <
-
-      are interpreted as a solo
-
-      maybe @panel = @snippet with #Headline instead of ##Headline
-
-      Also migrate the directory structure reflects site structure idea to provide the @M menu markup currently
-      manually added to start of content
+    Winged Spider is currently approaching V1.0 release status
 
 */
 
@@ -95,6 +29,7 @@ namespace fs = std::experimental::filesystem;
 // Helpers etc.
 //
 
+static bool check_dependencies_only;
 static bool verbose;
 int get_verbosity()
 {
@@ -314,6 +249,7 @@ int main( int argc, char *argv[] )
     "Currently command line arguments are;\n"
     " -v = verbose\n"
     " -f = force rebuild\n";
+    " -d = don't rebuild targets (e.g. for non destructive check only)\n";
     bool force_rebuild = false;
     for( int i=1; i<argc; i++ )
     {
@@ -322,11 +258,18 @@ int main( int argc, char *argv[] )
             verbose = true;
         else if( arg == "-f" || arg=="-force" )
             force_rebuild = true;
+        else if( arg == "-d" || arg=="-don't" )
+            check_dependencies_only = true;
         else
         {
             printf( "%s", usage );
             return 0;
         }
+    }
+    if( check_dependencies_only && force_rebuild )
+    {
+        force_rebuild = false;
+        printf( "-d option overrules -f option, -f option turned off\n" );
     }
 
     // Check pre-requistites etc.
@@ -338,7 +281,7 @@ int main( int argc, char *argv[] )
 #if 0
         test_builds();
 #else
-        treebuilder( force_rebuild );
+        treebuilder( force_rebuild, check_dependencies_only );
 #endif
     }
     return ok ? 0 : -1;
@@ -382,13 +325,18 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
     }
     if( needs_rebuild )
     {
-        printf( "Info: Rebuilding %s\n", out.c_str() );
-        std::map<char,std::string> macros;
-        macros['s'] = p->heading;       // lower case 's' and 'z' mean auto-generated
-        macros['z'] = p->subheading;
-        if( p->make_file_for_dir )
-            in = "";
-        template_md(in,ftemplate,out,macros,menu,menu_idx);
+        if( check_dependencies_only )
+            printf( "Info: Check dependencies only, %s will be rebuilt on normal run\n", out.c_str() );
+        else
+        {
+            printf( "Info: Rebuilding %s\n", out.c_str() );
+            std::map<char,std::string> macros;
+            macros['s'] = p->heading;       // lower case 's' and 'z' mean auto-generated
+            macros['z'] = p->subheading;
+            if( p->make_file_for_dir )
+                in = "";
+            template_md(in,ftemplate,out,macros,menu,menu_idx);
+        }
     }
     return needs_rebuild;
 }
@@ -432,15 +380,20 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     }
     if( needs_rebuild )
     {
-        printf( "Info: Rebuilding %s\n", out.c_str() );
-        GamesCache gc;
-        std::map<char,std::string> macros;
-        macros['T'] = p->heading;
-        macros['S'] = p->heading;
-        macros['Z'] = p->subheading;
-        macros['G'] = pgn_asset;
-        gc.Load(in,pgn_asset_full);
-        gc.Publish(ftemplate,out,macros,menu,menu_idx);
+        if( check_dependencies_only )
+            printf( "Info: Check dependencies only, %s will be rebuilt on normal run\n", out.c_str() );
+        else
+        {
+            printf( "Info: Rebuilding %s\n", out.c_str() );
+            GamesCache gc;
+            std::map<char,std::string> macros;
+            macros['T'] = p->heading;
+            macros['S'] = p->heading;
+            macros['Z'] = p->subheading;
+            macros['G'] = pgn_asset;
+            gc.Load(in,pgn_asset_full);
+            gc.Publish(ftemplate,out,macros,menu,menu_idx);
+        }
     }
     return needs_rebuild;
 }
@@ -467,25 +420,30 @@ bool html_gen( Page *p, bool force_rebuild )
     }
     if( needs_rebuild )
     {
-        printf( "Info: Copying %s\n", out.c_str() );
-        std::ifstream fin( in.c_str() );
-        if( !fin )
+        if( check_dependencies_only )
+            printf( "Info: Check dependencies only, %s will be copied on normal run\n", out.c_str() );
+        else
         {
-            printf( "Error: Could not open file %s for reading\n", in.c_str() );
-            return false;
-        }
-        std::ofstream fout( out.c_str() );
-        if( !fout )
-        {
-            printf( "Error: Could not open file %s for writing\n", out.c_str() );
-            return false;
-        }
-        for(;;)
-        {
-            std::string line;
-            if( !std::getline(fin,line) )
-                break;
-            util::putline(fout,line);
+            printf( "Info: Copying %s\n", out.c_str() );
+            std::ifstream fin( in.c_str() );
+            if( !fin )
+            {
+                printf( "Error: Could not open file %s for reading\n", in.c_str() );
+                return false;
+            }
+            std::ofstream fout( out.c_str() );
+            if( !fout )
+            {
+                printf( "Error: Could not open file %s for writing\n", out.c_str() );
+                return false;
+            }
+            for(;;)
+            {
+                std::string line;
+                if( !std::getline(fin,line) )
+                    break;
+                util::putline(fout,line);
+            }
         }
     }
     return needs_rebuild;
@@ -1361,7 +1319,7 @@ echo
             std::string s = solo;
             bool macro_substitution_required = true;
 
-            // Replace @F, @A, @C with filename, alt_text and caption repeatedly
+            // Replace @F, @A, @C, @T with filename, alt_text, caption and paragraph text
             int filename_idx = 0;
             int alt_text_idx = 0;
             int caption_idx  = 0;
@@ -1400,8 +1358,12 @@ echo
                         replacement = solo_header_txt;
                         break;
                     }
-                    case 'T':   // 'T'ext, an alternative to heading now that photos can be optional
                     case 'C':
+                    {
+                        replacement = md(solo_caption);
+                        break;
+                    }
+                    case 'T':
                     {
                         replacement = md(solo_txt);
                         break;

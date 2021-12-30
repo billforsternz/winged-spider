@@ -511,7 +511,7 @@ static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> 
     return false;
 }
 
-void treebuilder( bool force_rebuild )
+void treebuilder( bool force_rebuild, bool check_dependencies_only )
 {
     Builder previous_time(true);
     Builder this_time(false);
@@ -686,13 +686,27 @@ void treebuilder( bool force_rebuild )
     bool menu_changes = this_time.run( results, force_rebuild );
 
     // Report results
-    if( count_md_gen==0 && count_pgn_gen==0 && count_html_gen==0 )
-        printf( "Info: No html files (re)generated\n" );
+    if( check_dependencies_only )
+    {
+        if( count_md_gen==0 && count_pgn_gen==0 && count_html_gen==0 )
+            printf( "Info: No html files need to be (re)generated\n" );
+        else
+        {
+            printf( "Info: %u output html file%s need to be (re)generated from input markdown files\n", count_md_gen, count_md_gen==1?"":"s" );
+            printf( "Info: %u output html file%s need to be (re)generated from input pgn files\n", count_pgn_gen, count_pgn_gen==1?"":"s" );
+            printf( "Info: %u output html file%s need to be copied from input html files\n", count_html_gen, count_html_gen==1?"":"s" );
+        }
+    }
     else
     {
-        printf( "Info: %u output html file%s (re)generated from input markdown files\n", count_md_gen, count_md_gen==1?" was":"s were" );
-        printf( "Info: %u output html file%s (re)generated from input pgn files\n", count_pgn_gen, count_pgn_gen==1?" was":"s were" );
-        printf( "Info: %u output html file%s copied from input html files\n", count_html_gen, count_html_gen==1?" was":"s were" );
+        if( count_md_gen==0 && count_pgn_gen==0 && count_html_gen==0 )
+            printf( "Info: No html files (re)generated\n" );
+        else
+        {
+            printf( "Info: %u output html file%s (re)generated from input markdown files\n", count_md_gen, count_md_gen==1?" was":"s were" );
+            printf( "Info: %u output html file%s (re)generated from input pgn files\n", count_pgn_gen, count_pgn_gen==1?" was":"s were" );
+            printf( "Info: %u output html file%s copied from input html files\n", count_html_gen, count_html_gen==1?" was":"s were" );
+        }
     }
 
     // Rewrite the plan file. For the moment at least we use a temporary file name and don't overwrite the actual plan file

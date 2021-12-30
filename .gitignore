@@ -3,9 +3,7 @@ Release
 exe-snapshots
 .vs
 base
-input
 input-uses-bills-md-format
-output
 test
 retired
 ref

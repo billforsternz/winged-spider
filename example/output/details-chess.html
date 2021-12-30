@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Winged Spider - Details</title>
+	<meta name="description" content="Winged Spider Example Project">
+	<meta name="keywords" content="Winged Spider">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="jquery.animate-enhanced.min.js"></script>
+    <script type="text/javascript" src="publishv1.03.js"></script>
+    <link rel="stylesheet" href="pure.css">
+    <link rel="stylesheet" href="pure-customised.css">
+    <link rel="stylesheet" type="text/css" href="chess.css" />
+    <style>
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 5px;
+    }
+    </style>
+</head>
+<body>
+    <div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+    <div id="menu">
+        <div class="pure-menu">
+            <ul class="pure-menu-list">
+            <a class="pure-menu-heading" href="https://lichess.org">Lichess</a>
+                                <li class="pure-menu-item"><a href="index.html" class="pure-menu-link">Home</a>
+                <li class="pure-menu-item"><a href="details.html" class="pure-menu-link">Details</a>
+                <li class="pure-menu-item"><a href="details-markdown-extensions.html" class="pure-menu-link">Markdown Extensions</a>
+                <li class="pure-menu-item"><a href="details-template-system.html" class="pure-menu-link">Template System</a>
+                <li class="pure-menu-item menu-item-divided pure-menu-selected"><a href="details-chess.html" class="pure-menu-link">Chess</a>
+                <li class="pure-menu-item"><a href="details-quirks-and-rough-edges.html" class="pure-menu-link">Quirks and Rough Edges</a>
+            </ul>
+        </div>
+    </div>
+    <div id="main">
+         <div class="header">
+            <div class="pure-g">
+                <div class="pure-u-4-24">
+                </div>
+                <div class="pure-u-16-24">
+                    <h1>Details</h1>
+                    <h3>Chess</h3>
+                    <p><b>Download</b> games as PGN <a href="assets\details-chess.pgn">here</a></p>
+                </div>
+                <div class="pure-u-4-24">
+                </div>
+            </div>
+        </div>
+        <div class="content">
+
+<p>Winged Spider was developed to maintain the New Zealand Chess Federation
+website, and it makes sense for it to have a special chess feature built in.
+Basically I have copied and pasted it from the nascent 'Publish' feature
+included in my Tarrasch Chess GUI. I made interactive Magazine, Listener
+and Bulletin pages on the NZCF site with Tarrasch for several years, but
+it involved repetitious labour in a GUI and it was a great relief to
+automate it with Winged Spider.</p>
+<p>Basically all you need to do if you want to use this feature is put .pgn
+files alongside markdown files. It's also possible to use a text editor
+to add markdown format text like this between the games. Make sure you
+leave a blank line between the text and the chess content and very
+importantly, see also the note at the bottom of the page.</p>
+<p>The rendered pages themselves I quite like, preferring the 'chess book'
+style presentation to the more normal one big diagram presentation. It
+can be a little slow if you don't have a fast connection to the server,
+hopefully I'll have a chance to improve it at some time (the underlying
+technology is unchanged for years).</p>
+<p>One important technical point, on the NZCF website I use publishv1.04.js
+which is exactly the same as publishv1.03.js used in this example <em>except</em>
+that 1.04 assumes there are two images in the header and 1.03 assumes there
+are none. Relying on exactly zero, or two or any other number of extra images
+is a truly sad limitation I hope to eliminate at some stage, hopefully sooner
+rather than later. The only place you can safely add images to chess pages
+like this is after all the chess.</p>
+<p>In my chess writing I am normally (and justifiably) very self deprecating
+but for my example here I thought I would take the opportunity to show I
+can play a bit, this is perhaps my favourite game, from New Zealand's
+biggest weekender, in 2007.</p>
+<h2>Krstev, Mario - Forster, Bill</h2>
+<h3>Waitakere Trust Open 2007</h3>
+<div class='moves'>
+<p>
+<span id='mv-3' rel='0 ahff32FFAH 0.NoMove -1 0 Pd2d4' class='main'></span>
+<span id='mv0' rel='0 ahff19P12T1FAH 1.d4 -3 1 Pd2d4' class='main'>1.d4 </span>
+<span id='mv1' rel='0 agff5n13P12T1FAH 1...Nf6 0 2 ng8f6' class='main'>Nf6 </span>
+<span id='mv2' rel='0 agff5n12D12D2FAH 2.c4 1 3 Pc2c4' class='main'>2.c4 </span>
+<span id='mv3' rel='0 agf1t4pn12D12D2FAH 2...e6 2 4 pe7e6' class='main'>e6 </span>
+<span id='mv4' rel='0 agf1t4pn12D6N5D2FUH 3.Nc3 3 5 Nb1c3' class='main'>3.Nc3 </span>
+<span id='mv5' rel='0 avf1t4pn11bD6N5D2FUH 3...Bb4 4 6 bf8b4' class='main'>Bb4 </span>
+<span id='mv6' rel='0 avf1t4pn11bD6N2P2D2P1DUH 4.f3 5 7 Pf2f3' class='main'>4.f3 </span>
+<span id='mv7' rel='0 avt2t4pn5p5bD6N2P2D2P1DUH 4...d5 6 8 pd7d5' class='main'>d5 </span>
+<span id='mv8' rel='0 avt2t4pn5p5bD4P1N2P3P2P1DUH 5.a3 7 9 Pa2a3' class='main'>5.a3 </span>
+<span id='mv9' rel='0 avt2t4pn5p6D4P1b2P3P2P1DUH 5...Bxc3+ 8 10 bb4c3' class='main'>Bxc3+ </span>
+<span id='mv10' rel='0 avt2t4pn5p6D4P1P2P6P1DUH 6.bxc3 9 11 Pb2c3' class='main'>6.bxc3 </span>
+<span id='mv11' rel='0 avt2t4pn12pP4P1P2P6P1DUH 6...dxc4 10 12 pd5c4' class='main'>dxc4 </span>
+<span id='mv12' rel='0 avt2t4pn12pD3P1P2P8DUH 7.e4 11 13 Pe2e4' class='main'>7.e4 </span>
+<span id='mv13' rel='0 avt2t5n6p5pD3P1P2P8DUH 7...e5 12 14 pe6e5' class='main'>e5? </span>
+<span id='mv14' rel='0 avt2t5n6p5BD3P1P2P8DUM 8.Bxc4 13 15 Bf1c4' class='main'>8.Bxc4 </span>
+<span id='mv15' rel='0 svt2t4bn6p5BD3P1P2P8DUM 8...Be6 14 16 bc8e6' class='main'>Be6 </span>
+<span id='mv16' rel='0 svt2t4Bn6p6D3P1P2P8DUM 9.Bxe6 15 17 Bc4e6' class='main'>9.Bxe6 </span>
+<span id='mv17' rel='0 svt3d4pn6p6D3P1P2P8DUM 9...fxe6 16 18 pf7e6' class='main'>fxe6 </span>
+<span id='mv18' rel='0 svt3d4pn6p6D3PQP2P8DR1B1M 10.Qb3 17 19 Qd1b3' class='main'>10.Qb3 </span>
+<span id='mv19' rel='0 sct3d4pn6p6D3PQP2P8DR1B1M 10...O-O 18 20 ke8g8' class='main'>O-O </span>
+<span id='mv20' rel='0 sct3d4Qn6p6D3P1P2P8DR1B1M 11.Qxe6+ 19 21 Qb3e6' class='main'>11.Qxe6+ </span>
+<span id='mv21' rel='0 s1r1kt3d4Qn6p6D3P1P2P8DR1B1M 11...Kh8 20 22 kg8h8' class='main'>Kh8 </span>
+<span id='mv22' rel='0 s1r1kt3d5n6Q6D3P1P2P8DR1B1M 12.Qxe5 21 23 Qe6e5' class='main'>12.Qxe5 </span>
+Objectively the opening has been a catastrophe and Black is quite lost, but he does have a lead in development...&nbsp;
+<span id='mv23' rel='0 e1r1kt3d2n2n6Q6D3P1P2P8DR1B1M 12...Nc6 22 24 nb8c6' class='main'>12...Nc6 </span>
+<span id='mv24' rel='0 e1r1kt3d2n2n13D3P1P2PQ7DR1B1M 13.Qg3 23 25 Qe5g3' class='main'>13.Qg3? </span>
+</p>
+</div>
+<div style='clear:both;'></div>
+<div class='diagram_outer'>
+<div class='diagram' rel='e1r1kt3d2n2n13D3P1P2PQ7DR1B1M 0'>
+<img src='png/brw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/bqb.png' alt=''><img src='png/w.png' alt=''><img src='png/brb.png' alt=''><img src='png/w.png' alt=''><img src='png/bkb.png' alt=''><br>
+<img src='png/bpb.png' alt=''><img src='png/bpw.png' alt=''><img src='png/bpb.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/bpb.png' alt=''><img src='png/bpw.png' alt=''><br>
+<img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/bnw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/bnb.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><br>
+<img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><br>
+<img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/wpb.png' alt=''><img src='png/wpw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><br>
+<img src='png/wpb.png' alt=''><img src='png/w.png' alt=''><img src='png/wpb.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/wpw.png' alt=''><img src='png/wqb.png' alt=''><img src='png/w.png' alt=''><br>
+<img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/wpw.png' alt=''><img src='png/wpb.png' alt=''><br>
+<img src='png/wrb.png' alt=''><img src='png/w.png' alt=''><img src='png/wbb.png' alt=''><img src='png/w.png' alt=''><img src='png/wkb.png' alt=''><img src='png/w.png' alt=''><img src='png/wnb.png' alt=''><img src='png/wrw.png' alt=''><br>
+</div>
+<div class='buttons' id='buttons0'>
+</div>
+<div class='label'><p id='diagram0'>Moves are clickable</p></div>
+</div>
+<div class='moves'>
+<p>
+Just one mistake is sufficient for a turnaround. This is not the best square and Black has a lot of fun for the rest of the game. Both White's proud extra centre pawns look securely defended but Black gives up both knights for them to tear the position open.&nbsp;
+<span id='mv25' rel='0 e1r1kt3d5n13nP3P1P2PQ7DR1B1M 13...Nxd4 24 26 nc6d4' class='main'>13...Nxd4! </span>
+<span id='mv26' rel='0 e1r1kt3d5n13D3P4PQ7DR1B1M 14.cxd4 25 27 Pc3d4' class='main'>14.cxd4 </span>
+<span id='mv27' rel='0 r4r1kt3d5n13qP3P4PQ7DR1B1M 14...Qxd4 26 28 qd8d4' class='main'>Qxd4 </span>
+<span id='mv28' rel='0 r4r1kt3d5n13qP3P4PQ1R5D2B1M 15.Ra2 27 29 Ra1a2' class='main'>15.Ra2 </span>
+<span id='mv29' rel='0 r4r1kt3d5n12q1P3P4PQ1R5D2B1M 15...Qc4 28 30 qd4c4' class='main'>Qc4 </span>
+Fork!&nbsp;
+<span id='mv30' rel='0 r4r1kt3d5n12q1P3P4PQ1R3N1D2B1V 16.Ne2 29 31 Ng1e2' class='main'>16.Ne2 </span>
+<span id='mv31' rel='0 r4r1kt3d5n14P3P4PQ1q3N1D2B1V 16...Qxa2 30 32 qc4a2' class='main'>Qxa2 </span>
+<span id='mv32' rel='0 r4r1kdQ3d5n14P3P4P2q3N1D2B1V 17.Qxc7 31 34 Qg3c7' class='main'>17.Qxc7? </span>
+Inviting catastrophe&nbsp;(<span id='mv33' rel='0 r4r1kt3d5n6Q7P3P4P2q3N1D2B1V 17.Qe5 31 -1 Qg3e5' class='variation'>17.Qe5 </span>
+returns the Queen from exile and White can try to grovel an exchange down&nbsp;) <span id='mv34' rel='0 2r2r1kdQ3d5n14P3P4P2q3N1D2B1V 17...Rac8 32 35 ra8c8' class='main'>17...Rac8 </span>
+<span id='mv35' rel='0 2r2r1kpQ4d5n14P3P4P2q3N1D2B1V 18.Qxb7 34 36 Qc7b7' class='main'>18.Qxb7 </span>
+</p>
+</div>
+<div style='clear:both;'></div>
+<div class='diagram_outer'>
+<div class='diagram' rel='2r2r1kpQ4d5n14P3P4P2q3N1D2B1V 1'>
+<img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/brw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/brb.png' alt=''><img src='png/w.png' alt=''><img src='png/bkb.png' alt=''><br>
+<img src='png/bpb.png' alt=''><img src='png/wqw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/bpb.png' alt=''><img src='png/bpw.png' alt=''><br>
+<img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/bnb.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><br>
+<img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><br>
+<img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/wpw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><br>
+<img src='png/wpb.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/wpw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><br>
+<img src='png/bqw.png' alt=''><img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/wnw.png' alt=''><img src='png/b.png' alt=''><img src='png/wpw.png' alt=''><img src='png/wpb.png' alt=''><br>
+<img src='png/b.png' alt=''><img src='png/w.png' alt=''><img src='png/wbb.png' alt=''><img src='png/w.png' alt=''><img src='png/wkb.png' alt=''><img src='png/w.png' alt=''><img src='png/b.png' alt=''><img src='png/wrw.png' alt=''><br>
+</div>
+<div class='buttons' id='buttons1'>
+</div>
+<div class='label'><p id='diagram1'>&nbsp;</p></div>
+</div>
+<div class='moves'>
+<p>
+<span id='mv36' rel='1 2r2r1kpQ4d20n3P4P2q3N1D2B1V 18...Nxe4 35 37 nf6e4' class='main'>18...Nxe4! </span>
+<span id='mv37' rel='1 2r2r1kpQ4d20P3P7q3N1D2B1V 19.fxe4 36 38 Pf3e4' class='main'>19.fxe4 </span>
+<span id='mv38' rel='1 5r1kpQ4d20P3P7q3N1D2r1V 19...Rxc1+ 37 39 rc8c1' class='main'>Rxc1+! </span>
+<span id='mv39' rel='1 5r1kpQ4d20P3P7q5D2N1V 20.Nxc1 38 40 Ne2c1' class='main'>20.Nxc1 </span>
+<span id='mv40' rel='1 5r1kpQ4d20P3P13qP2N1V 20...Qxg2 39 41 qa2g2' class='main'>Qxg2! </span>
+Leaving White completely helpless&nbsp;
+<span id='mv41' rel='1 5r1kpQ4d20P3P2N10qP4V 21.Nd3 40 42 Nc1d3' class='main'>21.Nd3 </span>
+<span id='mv42' rel='1 5r1kpQ4d20P3P2N11P4K2q 21...Qxh1+ 41 43 qg2h1' class='main'>Qxh1+ </span>
+<span id='mv43' rel='1 5r1kpQ4d20P3P2N7K3P7q 22.Kd2 42 44 Ke1d2' class='main'>22.Kd2 </span>
+<span id='mv44' rel='1 5r1kpQ4d20P3P2N7K3q 22...Qxh2+ 43 45 qh1h2' class='main'>Qxh2+ </span>
+<span id='mv45' rel='1 5r1kpQ4d20P3P1KN11q 23.Kc3 44 46 Kd2c3' class='main'>23.Kc3 </span>
+<span id='mv46' rel='1 1q3r1kpQ4d20P3P1KN 23...Qb8 45 47 qh2b8' class='main'>Qb8 </span>
+<span id='mv47' rel='1 1q3r1kp3Q1d20P3P1KN 24.Qe7 46 48 Qb7e7' class='main'>24.Qe7 </span>
+<span id='mv48' rel='1 1q2r2kp3Q1d20P3P1KN 24...Re8 47 49 rf8e8' class='main'>Re8 </span>
+<span id='mv49' rel='1 1q2r2kp5d20P2QP1KN 25.Qh4 48 50 Qe7h4' class='main'>25.Qh4 </span>
+<span id='mv50' rel='1 4r2kp1q3d20P2QP1KN 25...Qc7+ 49 51 qb8c7' class='main'>Qc7+ </span>
+<span id='mv51' rel='1 4r2kp1q3d20P2QP2N7K 26.Kd2 50 52 Kc3d2' class='main'>26.Kd2 </span>
+<span id='mv52' rel='1 4r2kp5d8q11P2QP2N7K 26...Qa5+ 51 53 qc7a5' class='main'>Qa5+ </span>
+<span id='mv53' rel='1 4r2kp5d8q11P2QP2N8K 27.Ke2 52 54 Kd2e2' class='main'>27.Ke2 </span>
+<span id='mv54' rel='1 4r2kp5d20P2Qq2N8K 27...Qxa3 53 55 qa5a3' class='main'>Qxa3 </span>
+<span id='mv55' rel='1 4r2kp5d12P10Qq2N8K 28.e5 54 56 Pe4e5' class='main'>28.e5 </span>
+<span id='mv56' rel='1 4r2kp5dq11P10Q3N8K 28...Qa6 55 57 qa3a6' class='main'>Qa6 </span>
+<span id='mv57' rel='1 4r2kp5dq11P10Q3N7K 29.Kd2 56 58 Ke2d2' class='main'>29.Kd2 </span>
+<span id='mv58' rel='1 4r2kp5d7q4P10Q3N7K 29...Qh6+ 57 59 qa6h6' class='main'>Qh6+! </span>
+A nice practical decision. White does not want to be accused of premature resignation. For anxious players like me in such circumstances it's a good idea to permanently prevent any possible queen plus knight shenanigans. A knight hates rook pawns, and here it faces three of them! Even so as a nervous finisher I wanted to give up my rook for the knight and eliminate the possibility of forks as well, but White never gave me a chance.&nbsp;
+<span id='mv59' rel='1 4r2kp5d7Q4P14N7K 30.Qxh6 58 60 Qh4h6' class='main'>30.Qxh6 </span>
+<span id='mv60' rel='1 4r2kp6p7p4P14N7K 30...gxh6 59 61 pg7h6' class='main'>gxh6 </span>
+<span id='mv61' rel='1 4r2kp6p7p4P14NK 31.Ke3 60 62 Kd2e3' class='main'>31.Ke3 </span>
+<span id='mv62' rel='1 4r3p5kp7p4P14NK 31...Kg7 61 63 kh8g7' class='main'>Kg7 </span>
+<span id='mv63' rel='1 4r3p5kp7p4P7K6N 32.Ke4 62 64 Ke3e4' class='main'>32.Ke4 </span>
+<span id='mv64' rel='1 4r3p6p6kp4P7K6N 32...Kg6 63 65 kg7g6' class='main'>Kg6 </span>
+<span id='mv65' rel='1 4r3p6p6kp2N1P7K 33.Nc5 64 66 Nd3c5' class='main'>33.Nc5 </span>
+<span id='mv66' rel='1 4r3p6p6k3N1P2p4K 33...h5 65 67 ph6h5' class='main'>h5 </span>
+<span id='mv67' rel='1 4r3p6p6k3N1P2p5K 34.Kf4 66 68 Ke4f4' class='main'>34.Kf4 </span>
+<span id='mv68' rel='1 4r3p6p6k3N1P8K1p 34...h4 67 69 ph5h4' class='main'>h4 </span>
+<span id='mv69' rel='1 4r3p6p4P1k3N10K1p 35.e6 68 70 Pe5e6' class='main'>35.e6 </span>
+<span id='mv70' rel='1 4r3p6p4Pk4N10K1p 35...Kf6 69 71 kg6f6' class='main'>Kf6 </span>
+<span id='mv71' rel='1 4r3p6p4Pk4N11Kp 36.Kg4 70 72 Kf4g4' class='main'>36.Kg4 </span>
+<span id='mv72' rel='1 8p6p3c3N11Kp 36...Rxe6 71 73 re8e6' class='main'>Rxe6 </span>
+<span id='mv73' rel='1 8p6p3c3N12K 37.Kxh4 72 74 Kg4h4' class='main'>37.Kxh4 </span>
+<span id='mv74' rel='1 8p6p4r5N1k10K 37...Ke5 73 75 kf6e5' class='main'>Ke5 </span>
+<span id='mv75' rel='1 8p6p4r5N1k9K 38.Kg4 74 76 Kh4g4' class='main'>38.Kg4 </span>
+<span id='mv76' rel='1 8p6p6r3N1k9K 38...Rg6+ 75 77 re6g6' class='main'>Rg6+ </span>
+<span id='mv77' rel='1 8p6p6r3N1k16K 39.Kf3 76 78 Kg4f3' class='main'>39.Kf3 </span>
+<span id='mv78' rel='1 8p6p6r3N8k9K 39...Kd4 77 79 ke5d4' class='main'>Kd4 </span>
+<span id='mv79' rel='1 8p6p6r12k5N3K 40.Nb3+ 78 80 Nc5b3' class='main'>40.Nb3+ </span>
+<span id='mv80' rel='1 8p6p6r18Nk2K 40...Kc3 79 81 kd4c3' class='main'>Kc3 </span>
+<span id='mv81' rel='1 8p6p6r3N15k2K 41.Nc5 80 82 Nb3c5' class='main'>41.Nc5 </span>
+<span id='mv82' rel='1 15p6r1p1N15k2K 41...a5 81 83 pa7a5' class='main'>a5 </span>
+<span id='mv83' rel='1 15p6r1p1N15k9K 42.Ke2 82 84 Kf3e2' class='main'>42.Ke2 </span>
+<span id='mv84' rel='1 15p6r1p1N7k17K 42...Kc4 83 85 kc3c4' class='main'>Kc4 </span>
+<span id='mv85' rel='1 15p6r1p7N1k17K 43.Na4 84 86 Nc5a4' class='main'>43.Na4 </span>
+<span id='mv86' rel='1 15p6r1p7Nk18K 43...Kb4 85 87 kc4b4' class='main'>Kb4 </span>
+<span id='mv87' rel='1 15p6r1p8k15N2K 44.Nb2 86 88 Na4b2' class='main'>44.Nb2 </span>
+<span id='mv88' rel='1 15p8p8k15N2K1r 44...Rg2+ 87 -1 rg6g2' class='main'>Rg2+ </span>
+<b> 0-1</b></p>
+</div>
+<div style='clear:both;'></div>
+
+<p>If you have text like this after the last game, unfortunately you also need to add
+a dummy game to go with it. This is a quirk of the Tarrasch publishing code
+which processes all text strictly as a <em>prefix</em> to a game. So I need a game
+for which this text is prefix. It's not a serious problem just make a
+Dummy game at the very end of the file which looks like
+this. <br><pre>#SkipGame<br><br>[White &quot;Dummy&quot;]<br>[Black &quot;Dummy&quot;]<br>[Result &quot;*&quot;]<br><br>*<br></pre></p>
+<p>With the dummy game in place, the prefix to the dummy game will be rendered as
+html, but the dummy game won't be.</p>
+        <p></p>
+        <p></p>
+        </div>
+    </div>
+<script src="menu-ui.js"></script>
+</body>
+</html>
+

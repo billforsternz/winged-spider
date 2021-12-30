@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Winged Spider - Getting Started</title>
+	<meta name="description" content="Winged Spider Example Project">
+	<meta name="keywords" content="Winged Spider">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="pure.css">
+    <link rel="stylesheet" href="pure-customised.css">
+    <style>
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 5px;
+    }
+    </style>
+</head>
+<body>
+    <div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+    <div id="menu">
+        <div class="pure-menu">
+            <ul class="pure-menu-list">
+                                <li class="pure-menu-item"><a href="index.html" class="pure-menu-link">Home</a>
+                <li class="pure-menu-item menu-item-divided pure-menu-selected"><a href="getting-started.html" class="pure-menu-link">Getting Started</a>
+                <li class="pure-menu-item"><a href="experiments.html" class="pure-menu-link">Experiments</a>
+                <li class="pure-menu-item"><a href="details.html" class="pure-menu-link">Details</a>
+            </ul>
+        </div>
+    </div>
+    <div id="main">
+         <div class="header">
+            <div class="pure-g">
+                <div class="pure-u-4-24">
+                </div>
+                <div class="pure-u-16-24">
+                    <h1>Winged Spider</h1>
+                    <h3>Getting Started</h3>
+                    <h6></h6>
+                </div>
+                <div class="pure-u-4-24">
+                </div>
+            </div>
+        </div>
+        <div class="content">
+
+<h2>The Input Folder</h2>
+<p>The example project, just like any Winged Spider project is structured as a series of
+standard subdirectories (also known as folders). The 'input' folder contains all of
+the content to be rendered into a website. The defining idea of Winged Spider
+is that the user will get to navigate around in the ultimate rendered website using
+menus defined by the names given to the content files and folders.</p>
+<h2>Output Folder</h2>
+<p>Alongside the 'input' folder are two other folders required for every Winged Spider
+project. Perhaps you've already guessed that one of them is 'output', which is where
+Winged Spider puts the completed html (and css, and javascript) of the completed
+project. Winged Spider is a static website generator, its responsibilities end with
+the generation of the completed 'output'. To actually deploy the output onto a live
+website is a separate topic beyond the scope of Winged Spider itself. For my own
+projects I tend to use a program called Filezilla (available for Windows for example
+on ninite.com) to simply copy the contents of the output folder to the html directory
+of an Apache web server. You may have other arrangements.</p>
+<h2>Template Folder</h2>
+<p>The other fundamental folder is 'template'. Unsurprisingly I suppose this is where
+Winged Spider looks for the template that tells it how to render markdown into
+the final website. It would be terribly inflexible to have this information baked
+permanently into the Winged Spider executable, some kind of template feature is
+essential. The Winged Spider templating system is very simple. Initially there is
+just one template, using a simple CSS framework from Yahoo called Pure (you can
+Google it). It would be nice if someday there are other Winged Spider templates,
+you can never tell how these things are going to go. For the moment Winged Spider
+and its single template is sufficient for live operation of the significant medium
+sized production website it was created for, so I am confident it is fit for purpose.</p>
+<h2>It's a Command Line Tool</h2>
+<p>Winged Spider is a command line tool, a single executable program that
+runs with minimal command line arguments. The initial target for Winged
+Spider is Windows, and the program there is called winged-spider.exe. I
+plan to test it on Linux and Mac OS as well. If you need to
+compile it from source - the key thing to know is that it's just a matter of compiling
+and linking the C++ files (as found in the Github repository), in the
+simplest possible way, there's no need for external dependencies or special
+options. Run the Winged Spider executable in your project directory, the
+directory with 'input', 'output' and 'template' directories. Run it
+with a '-?' argument to get a list of command line options.</p>
+<h2>Learn by doing</h2>
+<p>To get started with Winged Spider, the best idea is to make a copy of the
+Example project that comes with the Winged Spider distribution and start
+experimenting with it. Once you've got a feel for Winged Spider that way,
+you should be better able to judge whether it is suitable for whatever
+project you have in mind for it. If you judge that Winged Spider is
+suitable, you might decide to start that project by modifying a copy of
+the example project, or by starting afresh, it's a matter of personal
+taste.</p>
+<p>For best results make sure you can quickly grab a fresh copy of the
+unaltered example project, that way you can restart the experimentation
+from a known starting point easily, at any stage.</p>
+<h2>Experiment 1) Rebuilding the Example Project</h2>
+<p>To start off, rebuild the example project. To do that run the winged spider
+executable in the project directory, with the -f flag. The -f flag indicates
+'force a complete rebuild'. Winged Spider should provide an informative report
+on its operations that will help if for some reason you need to troubleshoot
+this basic operation. Assuming all goes well you should see newly rebuilt
+html files in the 'output' folder and you should be able to browse them with
+any browser.</p>
+<p>The <a href="experiments.html">next section</a> has a series of further experiments where
+we can continue to learn by doing.</p>
+        <p></p>
+        <p></p>
+        </div>
+    </div>
+<script src="menu-ui.js"></script>
+</body>
+</html>
+

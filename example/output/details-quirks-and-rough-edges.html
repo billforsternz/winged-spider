@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Winged Spider - Details</title>
+	<meta name="description" content="Winged Spider Example Project">
+	<meta name="keywords" content="Winged Spider">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="pure.css">
+    <link rel="stylesheet" href="pure-customised.css">
+    <style>
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 5px;
+    }
+    </style>
+</head>
+<body>
+    <div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+    <div id="menu">
+        <div class="pure-menu">
+            <ul class="pure-menu-list">
+                                <li class="pure-menu-item"><a href="index.html" class="pure-menu-link">Home</a>
+                <li class="pure-menu-item"><a href="details.html" class="pure-menu-link">Details</a>
+                <li class="pure-menu-item"><a href="details-markdown-extensions.html" class="pure-menu-link">Markdown Extensions</a>
+                <li class="pure-menu-item"><a href="details-template-system.html" class="pure-menu-link">Template System</a>
+                <li class="pure-menu-item"><a href="details-chess.html" class="pure-menu-link">Chess</a>
+                <li class="pure-menu-item menu-item-divided pure-menu-selected"><a href="details-quirks-and-rough-edges.html" class="pure-menu-link">Quirks and Rough Edges</a>
+            </ul>
+        </div>
+    </div>
+    <div id="main">
+         <div class="header">
+            <div class="pure-g">
+                <div class="pure-u-4-24">
+                </div>
+                <div class="pure-u-16-24">
+                    <h1>Winged Spider</h1>
+                    <h3>Details</h3>
+                    <h6>Quirks and Rough Edges</h6>
+                </div>
+                <div class="pure-u-4-24">
+                </div>
+            </div>
+        </div>
+        <div class="content">
+
+<p>This a just a collection area for points that haven't arisen elsewhere, plus notes on things that
+need improvement or otherwise might change (in as much as this can be anticipated!)</p>
+<ul>
+<li>Winged spider will always convert Home.md in the root of the 'input' folder to index.html in
+the root of the output folder, hopefully as a convenience.</li>
+</ul>
+<ul>
+<li>Winged spider flattens the output directory structure, basically in order to avoid the difficulty
+of referencing .css and .js files in nested parent folders.</li>
+</ul>
+<ul>
+<li>You can include html files in the 'input' folders and they will be copied to the 'output' without
+extra processing. The user will not get the Winged Spider menu navigation when they alight on raw
+html files like this, but they can still use the native browser features, in particular the back
+button to get back into the menu system.</li>
+</ul>
+<ul>
+<li>BUG. Winged spider fails to copy the png directory (or any directory actually) needed for the chess
+extension from the 'template' directory to the 'output' directory automatically. For the moment it
+must be copied manually, once, after which it will sit happily forever.</li>
+</ul>
+<ul>
+<li>It would possibly be better to accept user macros in the plan.txt file (indented say, in a list
+directly after the corresponding markdown file) rather than in the first lines of the markdown
+file itself. This is for further consideration/study.</li>
+</ul>
+<ul>
+<li>I want to use the '/' character instead of the '\' character as a path separator everywhere. That will make
+getting a Unix/Linux/Mac OS port going much easier, but I haven't quite got around to it yet.</li>
+</ul>
+        <p></p>
+        <p></p>
+        </div>
+    </div>
+<script src="menu-ui.js"></script>
+</body>
+</html>
+

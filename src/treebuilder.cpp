@@ -518,7 +518,7 @@ void treebuilder( bool force_rebuild )
 
     // Build the menus for the previous run, to help us determine which pages need to be rebuilt
     std::vector<Page> pages;
-    const char *previous_plan_file = "generated_plan_file.txt";
+    const char *previous_plan_file = "generated-plan.txt";
     bool previous_run_plan_found = read_file( previous_plan_file, pages );
     previous_time.run( pages );
 
@@ -530,16 +530,16 @@ void treebuilder( bool force_rebuild )
     {
         const char *msg = 
         "Info: File plan.txt not found. Winged Spider will use its auto generated plan\n"
-        "file generated_plan_file.txt instead and will copy that file to plan.txt for\n"
+        "file generated-plan.txt instead and will copy that file to plan.txt for\n"
         "next time. Please review and edit plan.txt if necessary\n";
         printf( "%s", msg );
     }
     else if( !previous_run_plan_found )
     {
         const char *msg = 
-        "Info: Winged Spider could not find file generated_plan_file.txt from its most\n"
-        "recent run. This means it cannot check for directory changes, so it will have\n"
-        "to assume the directory structure has changed and generate new files\n";
+        "Info: Winged Spider could not find file generated-plan.txt from its most\n"
+        "recent run. This means it cannot check for directory changes, so it will\n"
+        "have to assume the directory structure has changed and generate new files\n";
         printf( "%s", msg );
     }
     else
@@ -698,8 +698,8 @@ void treebuilder( bool force_rebuild )
     // Rewrite the plan file. For the moment at least we use a temporary file name and don't overwrite the actual plan file
     if( rewrite || menu_changes || !plan_found || !previous_run_plan_found )
     {
-        printf( "Info: %s generated_plan_file.txt\n", previous_run_plan_found?"Writing":"Rewriting" );
-        write_file( "generated_plan_file.txt", results );
+        printf( "Info: %s generated-plan.txt\n", previous_run_plan_found?"Writing":"Rewriting" );
+        write_file( "generated-plan.txt", results );
         if( !plan_found )
             write_file( "plan.txt", results );
     }

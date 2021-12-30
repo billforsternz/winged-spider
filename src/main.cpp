@@ -1187,12 +1187,14 @@ echo
         // Accumulate until leave idle, immediately begin accumulating again
         //  Flush accumulation without writing it only on generation of grid/solo/panel
         bool change = (old_state!=state);
-        //if( change )
-        //    printf( "%s: %s -> %s\n", events[ev], states[old_state], states[state] );
+        if( change )
+            cprintf( "%s: %s -> %s\n", events[ev], states[old_state], states[state] );
         if( change && ev!=ev_txt && (old_state==st_idle || old_state==st_echo) )
         {
-            //printf( "%d flushes\n", ++flush_count );
+            cprintf( "%d flushes\n", ++flush_count );
             std::string html = md(accum);
+            cprintf( "***ACCUM in  ***\n%s\n", accum.c_str() );
+            cprintf( "***ACCUM out ***\n%s\n", html.c_str() );
             accum.clear();
             util::puts(fout,html);
         }

@@ -671,19 +671,17 @@ void template_md( const std::string &md_file, const std::string &template_file, 
 
     std::string header;
     std::string footer;
-    std::string single;
-    std::string pair;
+    std::string grid_1of3;
+    std::string grid_2of3;
     std::string triple;
-    std::string grid_2of2;
-    std::string grid_1of2;
-    std::string grid_1of1;
+    std::string pair;
+    std::string single;
     std::string solo;
-    std::string snippet;
     std::string panel;
 
     // Read the template file
     bool in_section = false;
-    enum { s_header, s_footer, s_single, s_pair, s_triple, s_2of2, s_1of2, s_1of1, s_snippet, s_solo, s_panel } section;
+    enum { s_header, s_footer, s_1of3, s_2of3, s_triple, s_pair, s_single, s_solo, s_panel } section;
     for(;;)
     {
         std::string s;
@@ -699,20 +697,16 @@ void template_md( const std::string &md_file, const std::string &template_file, 
                 section = s_header;
             else if( s == "@footer" )
                 section = s_footer;
+            else if( s == "@1of3" )
+                section = s_1of3;
+            else if( s == "@2of3" )
+                section = s_2of3;
             else if( s == "@single" )
                 section = s_single;
             else if( s == "@pair" )
                 section = s_pair;
             else if( s == "@triple" )
                 section = s_triple;
-            else if( s == "@2of2" )
-                section = s_2of2;
-            else if( s == "@1of2" )
-                section = s_1of2;
-            else if( s == "@1of1" )
-                section = s_1of1;
-            else if( s == "@snippet" )
-                section = s_snippet;
             else if( s == "@solo" )
                 section = s_solo;
             else if( s == "@panel" )
@@ -720,9 +714,9 @@ void template_md( const std::string &md_file, const std::string &template_file, 
             else
             {
                 if( s[0] == '@' )
-                    printf( "Error: Template file has unknown section [%s] (not @header,\n@footer, @single, @pair, @triple, @2of2, @1of2, @1of1, @snippet, @solo or @panel)\n", s.c_str() );
+                    printf( "Error: Template file has unknown section [%s] (not @header,\n@footer, @solo, @panel, @single, @pair, @1of3, @2of3 or @triple)\n", s.c_str() );
                 else
-                    printf( "Error: Template file has section starting without a section identifier (eg @header,\n@footer, @single, @pair, @triple, @2of2, @1of2, @1of1, @snippet, @solo or @panel)\n" );
+                    printf( "Error: Template file has section starting without a section identifier (eg @header,\n@footer, @solo, @panel, @single, @pair, @1of3, @2of3 or @triple)\n" );
                 return;
             }
         }
@@ -740,29 +734,25 @@ void template_md( const std::string &md_file, const std::string &template_file, 
                         header += s;
                         header += '\n';
                         break;
-                    case s_single:
-                        single += s;
-                        single += '\n';
+                    case s_1of3:
+                        grid_1of3 += s;
+                        grid_1of3 += '\n';
                         break;
-                    case s_pair:
-                        pair += s;
-                        pair += '\n';
+                    case s_2of3:
+                        grid_2of3 += s;
+                        grid_2of3 += '\n';
                         break;
                     case s_triple:
                         triple += s;
                         triple += '\n';
                         break;
-                    case s_2of2:
-                        grid_2of2 += s;
-                        grid_2of2 += '\n';
+                    case s_pair:
+                        pair += s;
+                        pair += '\n';
                         break;
-                    case s_1of2:
-                        grid_1of2 += s;
-                        grid_1of2 += '\n';
-                        break;
-                    case s_1of1:
-                        grid_1of1 += s;
-                        grid_1of1 += '\n';
+                    case s_single:
+                        single += s;
+                        single += '\n';
                         break;
                     case s_footer:
                         footer += s;
@@ -771,10 +761,6 @@ void template_md( const std::string &md_file, const std::string &template_file, 
                     case s_solo:
                         solo += s;
                         solo += '\n';
-                        break;
-                    case s_snippet:
-                        snippet += s;
-                        snippet += '\n';
                         break;
                     case s_panel:
                         panel += s;
@@ -1189,12 +1175,12 @@ echo
                 {
                     case 1:
                     {
-                        s = in_grid? single : grid_1of1;
+                        s = in_grid? grid_1of3 : single;
                         break;
                     }
                     case 2:
                     {
-                        s = in_grid? pair : grid_1of2;
+                        s = in_grid? grid_2of3 : pair;
                         i++;
                         q = &pictures[i];
                         break;

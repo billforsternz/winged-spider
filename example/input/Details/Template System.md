@@ -8,9 +8,9 @@ party underpinnings.
 The file template-md.txt within the 'template' directory serves as the template for
 markdown to html generation. The file is divided into sections separated by a single
 blank line. There are 9 sections header, footer, solo, panel, single, pair, triple,
-1of1, 1of2. Each section is html text, with a simple macro system for parameterisation.
+1of3, 2of3. Each section is html text, with a simple macro system for parameterisation.
 The first line of each section is not part of the section proper, it serves to
-identify the section, and comprises an '@' chatacter followed by the section name,
+identify the section, and comprises an '@' character followed by the section name,
 for example @header.
 
 The header and footer sections provide whatever boilerplate is required at the start

@@ -31,14 +31,14 @@ few weeks now, even as I tightened down many details.
 In preparation for 1.0 I have created comprehensive user documentation and a full
 example (checked into the repo in the 'example' directory). In fact I fed two birds
 with one scone because the example is the documentation! I have put
-the [rendered example here](https://triplehappy.com/winged-spider-example/index.html)
+the [rendered example here](https://triplehappy.com/winged-spider-example/output/index.html)
 pending placement on Github pages or similar.
 
 # Chess
 
 Winged Spider was created for a chess website, and has built in support for interactive
 chess presentation. For more details see the
-[example project](https://triplehappy.com/winged-spider-example/details-chess.html)
+[example project](https://triplehappy.com/winged-spider-example/output/details-chess.html)
 
 # The name means what?
 

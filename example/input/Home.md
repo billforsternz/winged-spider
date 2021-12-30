@@ -5,6 +5,10 @@ nicely in a well named directory hierarchy, and generate as output web ready con
 with the same structure. The directory and file names from the input are reflected
 directly in the menu structure that is presented to the web consumer for navigation.
 
+This is the Winged Spider example project from the project's reference repository
+at [Github](https://github.com/billforsternz/winged-spider). It does double
+duty, as it's also the Winged Spider user documentation.
+
 To make a website with Winged Spider, simply write some pages in markdown, and name them
 sensibly. Then run Winged Spider with a pre-supplied or custom template file and get a
 website that lets users navigate through all the content using a menu that that uses

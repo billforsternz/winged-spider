@@ -249,7 +249,7 @@ int main( int argc, char *argv[] )
     "Currently command line arguments are;\n"
     " -v = verbose\n"
     " -f = force rebuild\n";
-    " -d = don't rebuild targets (e.g. for non destructive check only)\n";
+    " -s = status check, don't rebuild targets\n";
     bool force_rebuild = false;
     for( int i=1; i<argc; i++ )
     {
@@ -258,7 +258,7 @@ int main( int argc, char *argv[] )
             verbose = true;
         else if( arg == "-f" || arg=="-force" )
             force_rebuild = true;
-        else if( arg == "-d" || arg=="-don't" )
+        else if( arg == "-s" || arg=="-status" )
             check_dependencies_only = true;
         else
         {
@@ -269,7 +269,7 @@ int main( int argc, char *argv[] )
     if( check_dependencies_only && force_rebuild )
     {
         force_rebuild = false;
-        printf( "-d option overrules -f option, -f option turned off\n" );
+        printf( "-s option overrules -f option, -f option turned off\n" );
     }
 
     // Check pre-requistites etc.

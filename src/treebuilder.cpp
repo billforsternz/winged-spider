@@ -710,6 +710,8 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     }
 
     // Rewrite the plan file. For the moment at least we use a temporary file name and don't overwrite the actual plan file
+    if( check_dependencies_only )
+        return;
     if( rewrite || menu_changes || !plan_found || !previous_run_plan_found )
     {
         printf( "Info: %s generated-plan.txt\n", previous_run_plan_found?"Writing":"Rewriting" );

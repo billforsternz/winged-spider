@@ -248,7 +248,7 @@ int main( int argc, char *argv[] )
     "by the folder hierarchy\n"
     "Currently command line arguments are;\n"
     " -v = verbose\n"
-    " -f = force rebuild\n";
+    " -f = force rebuild\n"
     " -s = status check, don't rebuild targets\n";
     bool force_rebuild = false;
     for( int i=1; i<argc; i++ )

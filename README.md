@@ -32,7 +32,7 @@ In preparation for 1.0 I have created comprehensive user documentation and a ful
 example (checked into the repo in the 'example' directory). In fact I fed two birds
 with one scone because the example is the documentation! I have put
 the [rendered example here](https://triplehappy.com/winged-spider-example/output/index.html)
-pending placement on Github pages or similar.
+and it's also now available directly via [Github pages](https://billforsternz.github.io/winged-spider/example/output/index.html).
 
 # Chess
 

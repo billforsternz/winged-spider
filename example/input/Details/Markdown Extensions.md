@@ -1,4 +1,4 @@
-##Background
+## Background
 
 Winged Spider went through a period of evolution like any project. Originally
 it didn't use real markdown at all. The New Zealand Chess Federation website that
@@ -13,7 +13,7 @@ features still available as extensions but now identified as distinctive pattern
 markdown? After making this important improvement, all of markdown is now available to
 supplement the original patterns that are still useful.
 
-##Solo, Snippet, Panel and Grid
+## Solo, Snippet, Panel and Grid
 
 A 'solo' is a heading, plus an image plus some text that flows around the image. A
 'snippet' is a 'solo' without an image. A 'panel' is a specially highlighted snippet.
@@ -25,7 +25,7 @@ use the unfortunate phrase 'eating your own dogfood' for this concept). If anyth
 is unclear you can grab the example project to look at the original markdown that corresponds
 to this page and experiment with it.
 
-##This is an Example Solo
+## This is an Example Solo
 ![Horses](images/horses.jpg)
 For the website that Winged Spider was first used on, small stories were the bread and
 butter components. A story was basically a heading, a picture and some text. Sometimes
@@ -62,19 +62,19 @@ a blank line after the header, or using the alternative underline header syntax,
 deviation from the strict 'solo' pattern seen in the example above. Solo formatting is defined
 by the @solo template in template-md.txt
 
-##This is an Example Snippet
+## This is an Example Snippet
 In fact this is just normal markdown, it turned out that the concept of a snippet (a heading plus
 text) was perfectly handled by markdown without any special syntax. There's no longer a '@snippet'
 section in the template file. The idea of a snippet is retained only to help make sense of the
 other markdown extensions.
 
-###Code for the example snippet
+### Code for the example snippet
 
 Here is the (perfectly normal, no extensions) markdown corresponding to the example snippet above;
 
 <pre>
 <br>
-##This is an Example Snippet
+## This is an Example Snippet
 In fact this is just normal markdown, it turned out that the concept of a snippet (a heading plus
 text) was perfectly handled by markdown without any special syntax (Doh!) There's no longer a '@snippet'
 section in the template file. The idea of a snippet is retained only to help make sense of the
@@ -89,7 +89,7 @@ panel is a purple box.
 
 Like a solo or a snippet, a panel can have multiple paragraphs like this.
 
-###Code for the example panel
+### Code for the example panel
 
 The panel formatting is defined by the @panel template in template-md.txt. Here is the markdown
 corresponding to the example panel above (it's just a snippet with the special
@@ -106,7 +106,7 @@ Like a solo or a snippet, a panel can have multiple paragraphs like this.
 <br>
 </pre>
 
-##Putting Images in Grids
+## Putting Images in Grids
 
 I wanted to use the facilities of the 'pure' CSS framework I was using to organise attractive grids
 of annotated images. There are similar facilities in all of the competing CSS frameworks, but not
@@ -117,7 +117,7 @@ The @grid extensions I used in my pre-markdown markup system was a little clunky
 and using specific patterns of real markdown instead is actually a great improvement. Here are some
 examples;
 
-###Rows of up to three images
+### Rows of up to three images
 
 ![Horses](images/horses.jpg)This is a group of wild horses. All of these images were picked off [pixabay.com](https://pixabay.com)
 ![Cat](images/cat.jpg)A cat. Helpfully [pixabay.com](https://pixabay.com) offers completely free images with no need for royalties or even attribution, even for commercial purposes
@@ -125,7 +125,7 @@ examples;
 ![Eagle](images/eagle.jpg)An eagle is somehow always noble and dignified
 ![Dog](images/dog.jpg)This a rather attractive dog, it completes an array of five images using the default arrangement, which is rows of three with a ragged/incomplete final row if, as in this case, there is not a multiple of three images in the array
 
-###Code for the three images in a row example
+### Code for the three images in a row example
 
 Here is the markdown corresponding to the five image array above. It is just normal markdown image
 syntax, one image per line, at indent zero. There must be a blank line before and after the grid.
@@ -144,7 +144,7 @@ single leading space will do.
 <br>
 </pre>
 
-###Rows of less than three images
+### Rows of less than three images
 
 ![Horses](images/horses.jpg)This is a group of wild horses. All of these images were picked off [pixabay.com](https://pixabay.com)
 ![Cat](images/cat.jpg)A cat. Helpfully [pixabay.com](https://pixabay.com) offers completely free images with no need for royalties or even attribution, even for commercial purposes
@@ -154,7 +154,7 @@ single leading space will do.
 
 ![Dog](images/dog.jpg)This a rather attractive dog, this time it occupies the whole row itself
 
-###Code for the less than three images in a row example
+### Code for the less than three images in a row example
 
 Once again the grid pattern is just a list of images in markdown format, at zero indent, preceded and
 succeeded by a blank line. The difference in this example to the previous one is that additional blank
@@ -173,7 +173,7 @@ get arranged into their own rows, of less than three images.
 <br>
 </pre>
 
-###Grid Templates
+### Grid Templates
 
 Formatting of the grids is defined by the five grid templates in template-md.txt. The templates are
 @single (a row of 1 large picture), @pair (a balanced row of 2 pictures), @triple (a full row of

@@ -5,7 +5,7 @@ the content to be rendered into a website. The defining idea of Winged Spider
 is that the user will get to navigate around in the ultimate rendered website using
 menus defined by the names given to the content files and folders.
 
-##The Output Folder
+## The Output Folder
 
 Alongside the 'input' folder are two other folders required for every Winged Spider
 project. Perhaps you've already guessed that one of them is 'output', which is where
@@ -17,7 +17,7 @@ projects I tend to use a program called Filezilla (available for Windows for exa
 on ninite.com) to simply copy the contents of the output folder to the html directory
 of an Apache web server. You may have other arrangements.
 
-##The Template Folder
+## The Template Folder
 The other fundamental folder is 'template'. Unsurprisingly I suppose this is where
 Winged Spider looks for the template that tells it how to render markdown into
 the final website. It would be terribly inflexible to have this information baked
@@ -29,7 +29,7 @@ you can never tell how these things are going to go. For the moment Winged Spide
 and its single template is sufficient for live operation of the significant medium
 sized production website it was created for, so I am confident it is fit for purpose.
 
-##It's a Command Line Tool
+## It's a Command Line Tool
 Winged Spider is a command line tool, a single executable program that
 runs with minimal command line arguments. The initial target for Winged
 Spider is Windows, and the program there is called winged-spider.exe. I
@@ -41,7 +41,7 @@ options. Run the Winged Spider executable in your project directory, the
 directory with 'input', 'output' and 'template' directories. Run it
 with a '-?' argument to get a list of command line options.
 
-##Learn by doing
+## Learn by doing
 To get started with Winged Spider, the best idea is to make a copy of the
 Example project that comes with the Winged Spider distribution and start
 experimenting with it. Once you've got a feel for Winged Spider that way,
@@ -55,7 +55,7 @@ For best results make sure you can quickly grab a fresh copy of the
 unaltered example project, that way you can restart the experimentation
 from a known starting point easily, at any stage.
 
-##Experiment 1) Rebuilding the Example Project
+## Experiment 1) Rebuilding the Example Project
 To start off, rebuild the example project. To do that run the winged spider
 executable in the project directory, with the -f flag. The -f flag indicates
 'force a complete rebuild'. Winged Spider should provide an informative report

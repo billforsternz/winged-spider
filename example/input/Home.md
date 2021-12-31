@@ -1,4 +1,4 @@
-##Introduction
+## Introduction
 Winged Spider is intended to be a innovative (I hope), spectactularly easy to use static
 website builder. The idea is that Winged Spider will take as input content organised
 nicely in a well named directory hierarchy, and generate as output web ready content

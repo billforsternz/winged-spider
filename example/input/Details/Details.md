@@ -1,4 +1,4 @@
-#Details
+# Details
 
 It is a convention, but not a necessity, to start each subfolder with a markdown
 file named for that subfolder. Perhaps you can use it to introduce the subfolder

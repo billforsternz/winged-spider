@@ -2,9 +2,9 @@
 @Z (continued)
 
 The [previous section](getting-started.html) introduced a series of experiments,
-let's keep the momentup flowing.
+let's keep the momentum flowing.
 
-##Experiment #2, Unaltered Project
+## Experiment #2, Unaltered Project
 
 The next experiment is to run winged-spider without forcing a rebuild
 (no command line options). In this case Winged Spider 
@@ -19,7 +19,7 @@ For a further demonstation of this 'make' like behaviour, minimally modify
 one of the input markdown files and run Winged Spider again. It should build the
 corresponding html file (and only that one).
 
-##Experiment #3, Force Rebuild by Deleting Output
+## Experiment #3, Force Rebuild by Deleting Output
 
 Next temporarily rename the 'output' folder. When you run it
 after doing that, Winged Spider will report a problem, it needs that 'output'
@@ -57,7 +57,7 @@ At this stage please solve the missing image file problem we've just identified 
 by deleting the new output directory and renaming the temporary one back to 'output',
 or simply start again from scratch.
 
-##Experiment #4, The plan.txt file
+## Experiment #4, The plan.txt file
 
 Next create a new markdown file in the 'input' directory alongside Home.md, Getting Started.md
 and the rest. Call it 'About.md' say and write a line or two of hello world type material
@@ -130,7 +130,7 @@ will not only create generated-plan.txt it will copy it to plan.txt to give you 
 point. As we have found, the main thing, perhaps the only thing, wrong with the auto generated
 plan.txt will be that the pages will probably not be in the best or even a sensible order.
 
-### Other possible experiments
+## Other possible experiments
 
 Of course the experiments above are far from exhaustive.
 

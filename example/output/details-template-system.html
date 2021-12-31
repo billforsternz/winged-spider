@@ -55,8 +55,8 @@
 <h1>Template System</h1>
 <p>The template system that comes with this example is sufficient to get started with
 Winged Spider, this is supplementary information that will hopefully be of help if
-the user wants or needs to modify it or create a new template with different third
-party underpinnings.</p>
+you want or need to modify the existing template or create a new template, perhaps
+with different third party underpinnings.</p>
 <p>The file template-md.txt within the 'template' directory serves as the template for
 markdown to html generation. The file is divided into sections separated by a single
 blank line. There are 9 sections header, footer, solo, panel, single, pair, triple,
@@ -65,23 +65,23 @@ The first line of each section is not part of the section proper, it serves to
 identify the section, and comprises an '@' character followed by the section name,
 for example @header.</p>
 <p>The header and footer sections provide whatever boilerplate is required at the start
-and end of the html file, and then introduce and close the content section that will
-correspond to the markdown provided by the user.</p>
+and end of the html file to introduce and close off the content section that will
+correspond to the markdown file.</p>
 <p>Header and footer alone would actually be sufficient for a truly minimalist system,
 but Winged Spider chooses to also support some presentation features over and above
 base markdown, and the other seven sections are there to enable them. The solo and
 panel sections define parameterised html corresponding to two special paragraph types.
 Solo is a heading, plus a picture plus some text that flows around the picture.
-Panel is a highlighted purple panel. The other five sections define grid layouts.
+Panel is a highlighted panel. The other five sections define grid image layouts.
 More information on the solo, panel and the grid features can be found
 <a href="details-markdown-extensions.html">here</a>.</p>
 <p>Parameterised macros are an important part of the Winged Spider template system
-but the user will typically not need to use them at all unless they wish to make
+but you will typically not need to use them at all unless you wish to make
 significant changes to the existing Yahoo 'Pure' template, or create a brand new
 template system.</p>
 <p>In all cases macros are represented by a single @ character followed by a single
-ASCII letter (it's a simple system!). As an example look at the 'solo' template from the template-md.txt
-file in the template directory;</p>
+ASCII letter (it's a simple system!). As an example look at the 'solo' template
+from the template-md.txt file in the template directory;</p>
 <pre>
 &lt;div&gt;
 &lt;h2&gt;@H&lt;/h2&gt;
@@ -117,7 +117,7 @@ opportunity actually.</p>
 'header' template. It is basically a chunk of boilerplate html that starts each page
 before the actual content of the page (as represented by the markdown) starts. As
 such the header, together with the much smaller footer, is responsible for pulling
-in the CSS and Javascript files that will be used at
+in the CSS and Javascript files that will be used
 to provide styling and menu navigation. You will almost certainly want to make
 at least some modifications to this template to reference your organisation and project.
 You won't initially want to change the CSS and Javascript invocation, but it might be
@@ -132,7 +132,7 @@ does not need to care about it at all.</p>
 <p>The other two macros that appear in the default Winged Spider header template and
 which Winged Spider has built in support for are @S and @Z which stand for Subtitle
 and Sub-Subtitle respectively.</p>
-<p>Winged Spider calculates a default Subtitle Sub-subtitle for you using the names of the
+<p>Winged Spider calculates a default Subtitle and Sub-subtitle for you using the names of the
 folder hierarchy, but you <em>may</em> want to override these. Winged spider looks for user
 macro definitions in the first lines of each input markdown file it processes. The
 syntax is simply;</p>
@@ -145,8 +145,8 @@ and follow them with a blank line. You can add additional macros for your modifi
 the header (and/or footer) templates if required. For example you might want to parameterise
 the title, in which case @T is a natural fit. Just avoid clashes with the built in support
 for @M, @S and @Z.</p>
-<p>Note that if either a User Title or User Subtitle are defined, Winged Spider discards its
-auto generated title AND subtitle, so if you define only one the other will be blank, this
+<p>Note that if either a User Subitle or User Sub-subtitle are defined, Winged Spider discards its
+auto generated subtitle AND sub-subtitle, so if you define only one the other will be blank, this
 is desirable behaviour, the definitions work best as a pair and you won't want to mix and
 match them.</p>
         <p></p>

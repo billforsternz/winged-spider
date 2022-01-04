@@ -198,7 +198,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
     // If we are making an html file for an empty directory, do it now with
     //  index set to the last element of the split path
     if( make_file_for_dir )
-        markdown_gen( make_file_for_dir, menu, menu_idx-1, same_menu_as_last_run, force_rebuild );
+        md_to_html( make_file_for_dir, menu, menu_idx-1, same_menu_as_last_run, force_rebuild );
 
     // Build each page in turn
     for( Page *p: ptrs )
@@ -207,7 +207,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
             ;
         else if( "md" == p->ext )
         {
-            if( markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
+            if( md_to_html( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
             {
                 count_md_gen++;
             }

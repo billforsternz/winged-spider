@@ -25,10 +25,234 @@ namespace fs = std::experimental::filesystem;
 #include "../src-tarrasch/GamesCache.h"
 #include "md4c-html.h"
 
+struct MD_TEMPLATE
+{
+    std::string         filename;
+    fs::file_time_type  file_time;
+    std::string         header;
+    std::string         footer;
+    std::string         grid_1of3;
+    std::string         grid_2of3;
+    std::string         triple;
+    std::string         pair;
+    std::string         single;
+    std::string         solo;
+    std::string         panel;
+
+    // Read in the markdown->html template from file, once
+    bool read_template( const std::string &template_file )
+    {
+        filename = template_file;
+        fs::path ptemplate(template_file);
+        if( !fs::exists(ptemplate) )
+        {
+            printf( "Error: Template file %s doesn't exist\n", template_file.c_str() );
+            return false;
+        }
+        file_time = last_write_time(ptemplate);
+
+        std::ifstream fin( template_file );
+        if( !fin )
+        {
+            printf( "Error: Could not open template file %s\n", template_file.c_str() );
+            return false;
+        }
+        bool in_section = false;
+        enum { s_header, s_footer, s_1of3, s_2of3, s_triple, s_pair, s_single, s_solo, s_panel } section;
+        for(;;)
+        {
+            std::string s;
+            if( !std::getline(fin,s) )
+                break;
+            util::rtrim(s);
+            if( !in_section )
+            {
+                in_section = true;
+                if( s == "" )
+                    in_section = false;
+                else if( s == "@header" )
+                    section = s_header;
+                else if( s == "@footer" )
+                    section = s_footer;
+                else if( s == "@1of3" )
+                    section = s_1of3;
+                else if( s == "@2of3" )
+                    section = s_2of3;
+                else if( s == "@single" )
+                    section = s_single;
+                else if( s == "@pair" )
+                    section = s_pair;
+                else if( s == "@triple" )
+                    section = s_triple;
+                else if( s == "@solo" )
+                    section = s_solo;
+                else if( s == "@panel" )
+                    section = s_panel;
+                else
+                {
+                    if( s[0] == '@' )
+                        printf( "Error: Template file has unknown section [%s] (not @header,\n@footer, @solo, @panel, @single, @pair, @1of3, @2of3 or @triple)\n", s.c_str() );
+                    else
+                        printf( "Error: Template file has section starting without a section identifier (eg @header,\n@footer, @solo, @panel, @single, @pair, @1of3, @2of3 or @triple)\n" );
+                    return false;
+                }
+            }
+            else
+            {
+                if( s.length() == 0 )
+                {
+                    in_section = false;
+                }
+                else
+                {
+                    switch( section )
+                    {
+                        case s_header:
+                            header += s;
+                            header += '\n';
+                            break;
+                        case s_1of3:
+                            grid_1of3 += s;
+                            grid_1of3 += '\n';
+                            break;
+                        case s_2of3:
+                            grid_2of3 += s;
+                            grid_2of3 += '\n';
+                            break;
+                        case s_triple:
+                            triple += s;
+                            triple += '\n';
+                            break;
+                        case s_pair:
+                            pair += s;
+                            pair += '\n';
+                            break;
+                        case s_single:
+                            single += s;
+                            single += '\n';
+                            break;
+                        case s_footer:
+                            footer += s;
+                            footer += '\n';
+                            break;
+                        case s_solo:
+                            solo += s;
+                            solo += '\n';
+                            break;
+                        case s_panel:
+                            panel += s;
+                            panel += '\n';
+                            break;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // Use the template to generate each html file from markdown
+    void gen_html(  const std::string &in_file,
+                    const std::string &html_out_file,
+                    std::map<char,std::string> &macros,
+                    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
+};
+
+struct PGN_TEMPLATE
+{
+    std::string         filename;
+    fs::file_time_type  file_time;
+    std::string         header;
+    std::string         footer;
+
+    // Read in the pgn->html template from file, once
+    bool read_template( const std::string &template_file )
+    {
+        filename = template_file;
+        fs::path ptemplate(template_file);
+        if( !fs::exists(ptemplate) )
+        {
+            printf( "Error: Template file %s doesn't exist\n", template_file.c_str() );
+            return false;
+        }
+        file_time = last_write_time(ptemplate);
+        std::ifstream fin( template_file );
+        if( !fin )
+        {
+            printf( "Error: Could not open template file %s\n", template_file.c_str() );
+            return false;
+        }
+
+        // Read the template file
+        bool in_section = false;
+        enum { s_header, s_footer } section;
+        for(;;)
+        {
+            std::string s;
+            if( !std::getline(fin,s) )
+                break;
+            util::rtrim(s);
+            if( !in_section )
+            {
+                in_section = true;
+                if( s == "" )
+                    in_section = false;
+                else if( s == "@header" )
+                    section = s_header;
+                else if( s == "@footer" )
+                    section = s_footer;
+                else
+                {
+                    if( s[0] == '@' )
+                        printf( "Error: PGN Template file has unknown section [%s] (not @header or @footer)\n", s.c_str() );
+                    else
+                        printf( "Error: PGN Template file has section starting without a section identifier (eg @header or @footer)\n" );
+                    return false;
+                }
+            }
+            else
+            {
+                if( s.length() == 0 )
+                {
+                    in_section = false;
+                }
+                else
+                {
+                    switch( section )
+                    {
+                        case s_header:
+                            header += s;
+                            header += '\n';
+                            break;
+                        case s_footer:
+                            footer += s;
+                            footer += '\n';
+                            break;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // Use the template to generate each html file from PGN
+    void gen_html(  const std::string &in_file,
+                    const std::string &html_out_file,
+                    const std::string &pgn_asset_full,
+                    std::map<char,std::string> &macros,
+                    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
+    {
+        GamesCache gc;
+        gc.Load(in_file,pgn_asset_full);
+        gc.Publish(html_out_file,header,footer,macros,menu,menu_idx);
+    }
+};
+
 //
 // Helpers etc.
 //
 
+static MD_TEMPLATE md_template;
+static PGN_TEMPLATE pgn_template;
 static bool check_dependencies_only;
 static bool verbose;
 int get_verbosity()
@@ -50,22 +274,6 @@ int cprintf( const char *fmt, ... )
     va_end(args);
     return ret;
 }
-
-
-/* Perhaps return to this concept at a later date,
-   for now accept that we have some copy-pasted coded
-   without a smooth mechanism for adding extra extensions */
-/*
-struct Extension
-{
-    bool ready = false;
-    bool just_copy = false;
-    std::string ext;
-    std::string filename;
-    std::vector<std::string> file_contents;
-};
-
-static std::vector<Extension> extensions; */
 
 static bool probe()
 {
@@ -99,7 +307,7 @@ static bool probe()
     if( !ok )
     {
         printf( "%s", help );
-        return ok;
+        return false;
     }
     std::string assets = BASE_OUT;
     assets += PATH_SEPARATOR_STR;
@@ -117,67 +325,22 @@ static bool probe()
         }
     }
 
-    // Copy all template files, except .txt files, to output. The idea is that runtime
+    // Copy all template files, except template .txt files, to output. The idea is that runtime
     //  files defined in the templates (eg javascript and css files) can be conveniently
     //  put in the template directory and will be copied (once) to the output directory
-    recursive_file_copy( std::string(BASE_TEMPLATE), std::string(BASE_OUT), true );
-    /*
+    ok = recursive_file_copy( std::string(BASE_TEMPLATE), std::string(BASE_OUT), true );
+    if( !ok )
+        return false;
 
-    for( const auto & entry : fs::directory_iterator(template_path) )
-    {
-        std::string s( entry.path().string() );
-        bool is_dir = is_directory(entry);
-        bool is_file = !is_dir;
-        if( is_file )
-        {
-            size_t offset = s.find_last_of('.');
-            bool is_txt_file = (offset != std::string::npos  &&  util::tolower(s.substr(offset)) == ".txt");
-            if( is_txt_file )
-                continue;
-            std::string out = BASE_OUT;
-            out += "/";
-            out += s.substr(strlen("template")+1);
-            fs::path pout(out);
-            bool copy=false;
-            if( !fs::exists(pout) )
-            {
-                copy = true;
-                printf( "Info: Copying %s to output directory\n", s.c_str() );
-            }
-            else
-            {
-                fs::file_time_type time_in  = last_write_time(entry);    
-                fs::file_time_type time_out = last_write_time(pout);
-                if( time_in > time_out )
-                {
-                    copy = true;
-                    printf( "Info: Copying %s over %s because it post-dates it\n", s.c_str(), out.c_str() );
-                }
-            }
-            if( copy )
-            {
-                bool ok2 = false;
-                std::string err;
-                try {
-                    ok2 = fs::copy_file( entry, pout, fs::copy_options::overwrite_existing );
-                } catch(fs::filesystem_error& e) {
-                    ok = false;
-                    err = " (";
-                    err += e.what();
-                    err += ")";
-                }
-                if( !ok2 )
-                {
-                    printf( "Error: Copying %s to %s failed%s\n", s.c_str(), out.c_str(), err.c_str() );
-                    ok = false;
-                }
-            }
-        }
-    }
-    */
-    return true;
+    // Read the markdown template, once
+    ok = md_template.read_template( std::string(BASE_TEMPLATE) + "/template-md.txt" );
+    if( !ok )
+        return false;
+
+    // Read the pgn template, once
+    ok = pgn_template.read_template( std::string(BASE_TEMPLATE) + "/template-pgn.txt" );
+    return ok;
 }
-
 
 //
 // main()
@@ -224,31 +387,18 @@ int main( int argc, char *argv[] )
 
     // If all ok go for it
     if( ok )
-    {
-#if 0
-        test_builds();
-#else
         treebuilder( force_rebuild, check_dependencies_only );
-#endif
-    }
     return ok ? 0 : -1;
 }
 
 
-bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild )
+bool md_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild )
 {
     bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    std::string ftemplate = std::string(BASE_TEMPLATE)  + std::string(PATH_SEPARATOR_STR) + std::string("template-md.txt");
     fs::path pin(in); 
     fs::path pout(out);
-    fs::path ptemplate(ftemplate);
-    if( !fs::exists(ptemplate) )
-    {
-        printf( "Error: Cannot open template file %s\n", ftemplate.c_str() );
-        return false;
-    }
     if( force_rebuild  || !fs::exists(pout) )
         needs_rebuild = true;
     else
@@ -263,10 +413,9 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
                 needs_rebuild = true;
             }
         }
-        fs::file_time_type time_template = last_write_time(ptemplate);
-        if( time_template > time_out )
+        if( md_template.file_time > time_out )
         {
-            printf( "Info: %s post-dates %s\n", ftemplate.c_str(), out.c_str() );
+            printf( "Info: %s post-dates %s\n", md_template.filename.c_str(), out.c_str() );
             needs_rebuild = true;
         }
     }
@@ -282,7 +431,7 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
             macros['z'] = p->subheading;
             if( p->make_file_for_dir )
                 in = "";
-            template_md(in,ftemplate,out,macros,menu,menu_idx);
+            md_template.gen_html(in,out,macros,menu,menu_idx);
         }
     }
     return needs_rebuild;
@@ -294,15 +443,8 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     std::string pgn_asset =  std::string("assets") + std::string(PATH_SEPARATOR_STR) + p->target;
-    std::string ftemplate = std::string(BASE_TEMPLATE)  + std::string(PATH_SEPARATOR_STR) + std::string("template-pgn.txt");
     fs::path pin(in); 
     fs::path pout(out);
-    fs::path ptemplate(ftemplate);
-    if( !fs::exists(ptemplate) )
-    {
-        printf( "Error: Cannot open template file %s\n", ftemplate.c_str() );
-        return false;
-    }
     size_t offset = pgn_asset.find_last_of('.');
     if( offset != std::string::npos )
         pgn_asset = pgn_asset.substr(0,offset) + ".pgn";
@@ -318,10 +460,9 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
             printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
             needs_rebuild = true;
         }
-        fs::file_time_type time_template = last_write_time(ptemplate);
-        if( time_template > time_out )
+        if( pgn_template.file_time > time_out )
         {
-            printf( "Info: %s post-dates %s\n", ftemplate.c_str(), out.c_str() );
+            printf( "Info: %s post-dates %s\n", pgn_template.filename.c_str(), out.c_str() );
             needs_rebuild = true;
         }
     }
@@ -332,14 +473,12 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
         else
         {
             printf( "Info: Rebuilding %s\n", out.c_str() );
-            GamesCache gc;
             std::map<char,std::string> macros;
             macros['T'] = p->heading;
             macros['S'] = p->heading;
             macros['Z'] = p->subheading;
             macros['G'] = pgn_asset;
-            gc.Load(in,pgn_asset_full);
-            gc.Publish(ftemplate,out,macros,menu,menu_idx);
+            pgn_template.gen_html(in,out,pgn_asset_full,macros,menu,menu_idx);
         }
     }
     return needs_rebuild;
@@ -396,87 +535,6 @@ bool html_gen( Page *p, bool force_rebuild )
     return needs_rebuild;
 }
 
-//
-// Test builds
-//
-
-// While we are getting this up to speed with some basic reconstruction of some existing functionality
-//  in this new context define one of these or the other
-//#define BUILD_HOME
-//#define BUILD_RESULTS
-#define BUILD_MIGRATE
-//#define BUILD_TOURNAMENT
-//#define BUILD_PGN
-//#define BUILD_TRY_MD4C
-
-void test_builds()
-{
-#ifdef BUILD_PGN
-    #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Bulletins/October 2020/Magic in the Basement.pgn";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-pgn.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/bulletins-october-2020-magic-in-the-basement.html";
-#endif
-#ifdef BUILD_HOME
-    #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Home.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-md.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/index.html";
-#endif
-#ifdef BUILD_MIGRATE
-    #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "input2/Results.md3";
-    std::string fin2 = "template/template-md.txt";
-    std::string fout = "output2/Results2.html";
-#endif
-#ifdef BUILD_RESULTS
-#define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Results/Results.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-results-results.html";
-#endif
-#ifdef BUILD_TOURNAMENT
-#define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Archives/Tournaments/2020.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-older.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/archives-tournaments-2020.html";
-#endif
-#ifdef BUILD_TRY_MD4C
-    #define DEBUG_JUST_ONE_FILE
-    std::string fin1 = "/Users/Bill/Documents/Github/winged-spider/base/Bulletins/February 2019/February 2019.md";
-    std::string fin2 = "/Users/Bill/Documents/Github/winged-spider/template-md.txt";
-    std::string fout = "/Users/Bill/Documents/Github/winged-spider/output/bulletins-february-2019-february-2019.html";
-#endif
-#ifdef DEBUG_JUST_ONE_FILE
-    std::vector<std::pair<std::string,std::string>> menu;
-    std::pair<std::string,std::string> menu_item1("index.html","Home");
-    std::pair<std::string,std::string> menu_item2("archives-archives.html","Archives");
-    std::pair<std::string,std::string> menu_item3("archives-tournaments.html","Tournaments");
-    std::pair<std::string,std::string> menu_item4("archives-tournaments-2021.html","2021");
-    std::pair<std::string,std::string> menu_item5("archives-tournaments-2021.html","2022");
-    menu.push_back(menu_item1);
-    menu.push_back(menu_item2);
-    menu.push_back(menu_item3);
-    menu.push_back(menu_item4);
-    menu.push_back(menu_item5);
-    std::map<char,std::string> macros;
-    macros['S'] = "Heading";
-    macros['Z'] = "Subheading";
-    macros['T'] = "Testing 1, 2, 3";
-    #ifdef BUILD_PGN
-    std::pair<std::string,std::string> menu_item6("history-trusts-best-games.html","Trusts Best Games");
-    menu.push_back(menu_item6);
-    GamesCache gc;
-    gc.Load(fin1);
-    gc.Publish(fin2,fout,macros,menu,menu.size()-1);
-    #else
-void template_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
-    std::map<char,std::string> &macros,
-    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
-    template_md(fin1,fin2,fout,macros,menu,menu.size()-1);
-    #endif
-#endif
-}
 
 //
 // A much improved templating system, now using a real markdown processor, and recognising patterns in the
@@ -583,30 +641,81 @@ std::string md( const std::string &in )
     return out;
 }
 
-void template_md( const std::string &md_file, const std::string &template_file, const std::string &html_out_file,
-    std::map<char,std::string> &macros,
-    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
+bool recursive_file_copy( const std::string &src, const std::string &dst, bool root )
 {
-    //if( html_out_file == "output\\archives-tournaments-tournaments.html" )
-    //    printf( "Debug\n" );
+    bool ok = true;
+    try {
+        fs::create_directory(dst);
+        for( const auto & entry : fs::directory_iterator(src) )
+        {
+            std::string in( entry.path().string() );
+            if( is_directory(entry) )
+            {
+                std::string src_subdir = entry.path().string();
+                std::string _subdir = src_subdir.substr(src.length());
+                std::string dst_subdir = dst + _subdir;
+                recursive_file_copy( src_subdir, dst_subdir, false );
+            }
+            else
+            {
+                std::string filename = entry.path().filename().string();
+                std::string out = dst + std::string("/") + filename;
+                fs::path pout(out);
+                if( root && (filename=="template-md.txt" || filename=="template-pgn.txt") )
+                    continue;
+                bool copy=false;
+                if( !fs::exists(pout) )
+                {
+                    copy = true;
+                    printf( "Info: Copying %s to new file %s\n", in.c_str(), out.c_str() );
+                }
+                else
+                {
+                    fs::file_time_type time_in  = last_write_time(entry);    
+                    fs::file_time_type time_out = last_write_time(pout);
+                    if( time_in > time_out )
+                    {
+                        copy = true;
+                        printf( "Info: Copying %s over %s because it post-dates it\n", in.c_str(), out.c_str() );
+                    }
+                }
+                if( copy )
+                {
+                    ok = fs::copy_file( entry, pout, fs::copy_options::overwrite_existing );
+                    if( !ok )
+                    {
+                        printf( "Error: Copying template file %s to %s failed\n", in.c_str(), out.c_str() );
+                        break;
+                    }
+                }
+            }
+        }
+    } catch( fs::filesystem_error& e ) {
+        std::string err = " (";
+        err += e.what();
+        err += ")";
+        printf( "Error: Copying template files %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
+        ok = false;
+    }
+    return ok;
+}
+
+void MD_TEMPLATE::gen_html(  const std::string &in_file,
+                             const std::string &html_out_file,
+                             std::map<char,std::string> &macros,
+                             const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
+{
     bool have_input_file = false;
-    std::ifstream fin1;
-    if( md_file != "" )
+    std::ifstream fin;
+    if( in_file != "" )
     {
         have_input_file = true;
-        fin1.open( md_file );
-        if( !fin1.is_open() )
+        fin.open( in_file );
+        if( !fin.is_open() )
         {
-            printf( "Error: Could not open input file %s\n", md_file.c_str() );
+            printf( "Error: Could not open input file %s\n", in_file.c_str() );
             return;
         }
-    }
-
-    std::ifstream fin2( template_file );
-    if( !fin2 )
-    {
-        printf( "Error: Could not open template file %s\n", template_file.c_str() );
-        return;
     }
 
     std::ofstream fout( html_out_file );
@@ -616,108 +725,6 @@ void template_md( const std::string &md_file, const std::string &template_file, 
         return;
     }
 
-    std::string header;
-    std::string footer;
-    std::string grid_1of3;
-    std::string grid_2of3;
-    std::string triple;
-    std::string pair;
-    std::string single;
-    std::string solo;
-    std::string panel;
-
-    // Read the template file
-    bool in_section = false;
-    enum { s_header, s_footer, s_1of3, s_2of3, s_triple, s_pair, s_single, s_solo, s_panel } section;
-    for(;;)
-    {
-        std::string s;
-        if( !std::getline(fin2,s) )
-            break;
-        util::rtrim(s);
-        if( !in_section )
-        {
-            in_section = true;
-            if( s == "" )
-                in_section = false;
-            else if( s == "@header" )
-                section = s_header;
-            else if( s == "@footer" )
-                section = s_footer;
-            else if( s == "@1of3" )
-                section = s_1of3;
-            else if( s == "@2of3" )
-                section = s_2of3;
-            else if( s == "@single" )
-                section = s_single;
-            else if( s == "@pair" )
-                section = s_pair;
-            else if( s == "@triple" )
-                section = s_triple;
-            else if( s == "@solo" )
-                section = s_solo;
-            else if( s == "@panel" )
-                section = s_panel;
-            else
-            {
-                if( s[0] == '@' )
-                    printf( "Error: Template file has unknown section [%s] (not @header,\n@footer, @solo, @panel, @single, @pair, @1of3, @2of3 or @triple)\n", s.c_str() );
-                else
-                    printf( "Error: Template file has section starting without a section identifier (eg @header,\n@footer, @solo, @panel, @single, @pair, @1of3, @2of3 or @triple)\n" );
-                return;
-            }
-        }
-        else
-        {
-            if( s.length() == 0 )
-            {
-                in_section = false;
-            }
-            else
-            {
-                switch( section )
-                {
-                    case s_header:
-                        header += s;
-                        header += '\n';
-                        break;
-                    case s_1of3:
-                        grid_1of3 += s;
-                        grid_1of3 += '\n';
-                        break;
-                    case s_2of3:
-                        grid_2of3 += s;
-                        grid_2of3 += '\n';
-                        break;
-                    case s_triple:
-                        triple += s;
-                        triple += '\n';
-                        break;
-                    case s_pair:
-                        pair += s;
-                        pair += '\n';
-                        break;
-                    case s_single:
-                        single += s;
-                        single += '\n';
-                        break;
-                    case s_footer:
-                        footer += s;
-                        footer += '\n';
-                        break;
-                    case s_solo:
-                        solo += s;
-                        solo += '\n';
-                        break;
-                    case s_panel:
-                        panel += s;
-                        panel += '\n';
-                        break;
-                }
-            }
-        }
-    }
-
     // Read macros from the input file
     std::string first_non_macro_line;
     bool first_non_macro_line_flag=false;
@@ -725,7 +732,7 @@ void template_md( const std::string &md_file, const std::string &template_file, 
     while( have_input_file )
     {
         std::string s;
-        if( !std::getline(fin1,s) )
+        if( !std::getline(fin,s) )
             break;
         util::rtrim(s);
         if( s.length()<3 || s[0]!='@' || s[2]!=' ' )
@@ -796,63 +803,63 @@ txt if starts with alphanum
 something else otherwise
 
 idle
- -> heading         (on heading)              idle->heading->heading_img->solo->solo_idle->solo->solo_idle->[idle/heading/panel/img/echo]
- or panel           (on (panel)heading)       idle->panel->panel_solo->panel_solo_idle->panel_solo->panel_solo_idle->[idle/heading/panel/img/echo]
- or grid            (on img)                  idle->grid[->grid]->idle
- or echo            (on not blank)
+    -> heading         (on heading)              idle->heading->heading_img->solo->solo_idle->solo->solo_idle->[idle/heading/panel/img/echo]
+    or panel           (on (panel)heading)       idle->panel->panel_solo->panel_solo_idle->panel_solo->panel_solo_idle->[idle/heading/panel/img/echo]
+    or grid            (on img)                  idle->grid[->grid]->idle
+    or echo            (on not blank)
 heading
- -> idle            (on blank)
- or heading_img     (on img)
- or echo            (on something else)
+    -> idle            (on blank)
+    or heading_img     (on img)
+    or echo            (on something else)
 heading_img
- -> idle            (on blank)
- or solo            (on text)
- or echo            otherwise
+    -> idle            (on blank)
+    or solo            (on text)
+    or echo            otherwise
 solo
- -> solo            (on text)
- or solo_idle       (on blank)
- or echo            (on anything else)
+    -> solo            (on text)
+    or solo_idle       (on blank)
+    or echo            (on anything else)
 panel
- -> idle            (on blank)
- or panel_solo      (on text)
- or echo            (on something else)
+    -> idle            (on blank)
+    or panel_solo      (on text)
+    or echo            (on something else)
 solo_idle
- -> solo            (on text)
- or idle            (on blank)
- or heading         (on heading)
- or panel           (on (panel)heading)
- or img             (on img)
- or echo            (on anything else)
+    -> solo            (on text)
+    or idle            (on blank)
+    or heading         (on heading)
+    or panel           (on (panel)heading)
+    or img             (on img)
+    or echo            (on anything else)
 panel_solo
- -> panel_solo      (on text)
- or panel_solo_idle (on blank)
- or echo            (on anything else)
+    -> panel_solo      (on text)
+    or panel_solo_idle (on blank)
+    or echo            (on anything else)
 panel_solo_idle
- -> panel_solo      (on text)
- or idle            (on blank)
- or heading         (on heading)
- or panel           (on (panel)heading)
- or img             (on img)
- or echo            (on anything else)
+    -> panel_solo      (on text)
+    or idle            (on blank)
+    or heading         (on heading)
+    or panel           (on (panel)heading)
+    or img             (on img)
+    or echo            (on anything else)
 grid
- -> idle            (on blank)
- or grid            (on img)
- or echo            (on something else)
+    -> idle            (on blank)
+    or grid            (on img)
+    or echo            (on something else)
 echo
- -> idle            (on blank)
+    -> idle            (on blank)
 
- Generate grid/solo/panel
- idle->heading->heading_img->solo->solo_idle->solo->solo_idle->[idle/heading/panel/img/echo]
- idle->panel->panel_solo->panel_solo_idle->panel_solo->panel_solo_idle->[idle/heading/panel/img/echo]
- idle->grid[->grid]->idle
+    Generate grid/solo/panel
+    idle->heading->heading_img->solo->solo_idle->solo->solo_idle->[idle/heading/panel/img/echo]
+    idle->panel->panel_solo->panel_solo_idle->panel_solo->panel_solo_idle->[idle/heading/panel/img/echo]
+    idle->grid[->grid]->idle
 
- Bail out
- idle->heading->idle
- idle->heading->heading_img->idle
- idle->panel->idle
+    Bail out
+    idle->heading->idle
+    idle->heading->heading_img->idle
+    idle->panel->idle
 
- Accumulate until leave idle, immediately begin accumulating again
- Flush accumulation without writing it only on generation of grid/solo/panel
+    Accumulate until leave idle, immediately begin accumulating again
+    Flush accumulation without writing it only on generation of grid/solo/panel
 
 */
 
@@ -903,7 +910,7 @@ echo
                 s = first_non_macro_line;
                 first_non_macro_line_flag = false;
             }
-            else if( !std::getline(fin1,s) )
+            else if( !std::getline(fin,s) )
             {
                 s = "";
                 running = 1;    // process the last line like a ev_blank followed by ev_other
@@ -1381,53 +1388,3 @@ echo
     std::string f = macro_substitution( footer, macros, menu, menu_idx );
     util::putline(fout,f);
 }
-
-void recursive_file_copy( const std::string &src, const std::string &dst, bool init )
-{
-    try {
-        fs::create_directory(dst);
-        for( const auto & entry : fs::directory_iterator(src) )
-        {
-            std::string in( entry.path().string() );
-            if( is_directory(entry) )
-            {
-                std::string src_subdir = entry.path().string();
-                std::string _subdir = src_subdir.substr(src.length());
-                std::string dst_subdir = dst + _subdir;
-                recursive_file_copy( src_subdir, dst_subdir, false );
-            }
-            else
-            {
-                std::string filename = entry.path().filename().string();
-                std::string out = dst + std::string("/") + filename;
-                fs::path pout(out);
-                if( init && (filename=="template-md.txt" || filename=="template-pgn.txt") )
-                    continue;
-                bool copy=false;
-                if( !fs::exists(pout) )
-                {
-                    copy = true;
-                    printf( "Info: Copying %s to new file %s\n", in.c_str(), out.c_str() );
-                }
-                else
-                {
-                    fs::file_time_type time_in  = last_write_time(entry);    
-                    fs::file_time_type time_out = last_write_time(pout);
-                    if( time_in > time_out )
-                    {
-                        copy = true;
-                        printf( "Info: Copying %s over %s because it post-dates it\n", in.c_str(), out.c_str() );
-                    }
-                }
-                if( copy )
-                    fs::copy_file( entry, pout, fs::copy_options::overwrite_existing );
-            }
-        }
-    } catch(fs::filesystem_error& e) {
-        std::string err = " (";
-        err += e.what();
-        err += ")";
-        printf( "Error: Copying template files %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
-    }
-}
-

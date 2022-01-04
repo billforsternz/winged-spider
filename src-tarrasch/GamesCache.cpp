@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include "../src/misc.h"
 #include "../src/util.h"
-#include "../src/md4c-html.h"
 #include "thc.h"
 #include "PgnFiles.h"
 #include "Lang.h"
@@ -33,7 +32,7 @@ PgnFiles gbl_pgn_files;
 #define nbrof(x) (sizeof(x)/sizeof((x)[0]))
 bool PgnStateMachine( FILE *pgn_file, int &typ, char *buf, int buflen );
 
-bool GamesCache::Load(std::string &filename, std::string &asset_filename )
+bool GamesCache::Load( const std::string &filename, const std::string &asset_filename )
 {
     file_irrevocably_modified = false;
     loaded = false;
@@ -798,83 +797,17 @@ void GamesCache::Eco(  GamesCache *gc_clipboard )
 }
 #endif
 
-
-static void md_callback2( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string )
-{
-    std::string *ps = (std::string *)addr_std_string;
-    std::string s(txt,len);
-    *ps += s;
-}
-
-void GamesCache::Publish( const std::string &template_file, const std::string &html_out_file,
+void GamesCache::Publish( const std::string &html_out_file,
+                          const std::string &header,  
+                          const std::string &footer,  
                           std::map<char,std::string> &macros,
                           const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
-    std::ifstream fin( template_file );
-    if( !fin )
-    {
-        printf( "Error: Could not open template file %s\n", template_file.c_str() );
-        return;
-    }
-
     std::ofstream fout( html_out_file );
     if( !fout )
     {
         printf( "Error: Could not create output file %s\n", html_out_file.c_str() );
         return;
-    }
-
-    std::string header;
-    std::string footer;
-
-    // Read the template file
-    bool in_section = false;
-    enum { s_header, s_footer } section;
-    for(;;)
-    {
-        std::string s;
-        if( !std::getline(fin,s) )
-            break;
-        util::rtrim(s);
-        if( !in_section )
-        {
-            in_section = true;
-            if( s == "" )
-                in_section = false;
-            else if( s == "@header" )
-                section = s_header;
-            else if( s == "@footer" )
-                section = s_footer;
-            else
-            {
-                if( s[0] == '@' )
-                    printf( "Error: Template file has unknown section [%s] (not @header or @footer)\n", s.c_str() );
-                else
-                    printf( "Error: Template file has section starting without a section identifier (eg @header or @footer)\n" );
-                return;
-            }
-        }
-        else
-        {
-            if( s.length() == 0 )
-            {
-                in_section = false;
-            }
-            else
-            {
-                switch( section )
-                {
-                    case s_header:
-                        header += s;
-                        header += '\n';
-                        break;
-                    case s_footer:
-                        footer += s;
-                        footer += '\n';
-                        break;
-                }
-            }
-        }
     }
 
     // Write out the the html
@@ -979,64 +912,9 @@ void GamesCache::Publish( const std::string &template_file, const std::string &h
 				}
 			}
 		}
-#if 1
         std::string out;
-        md_html( s.c_str(), s.length(),
-            md_callback2,
-            &out,                           // userdata
-            MD_FLAG_PERMISSIVEATXHEADERS,   // parser_flags, (allow "#Heading" as well as "# Heading")
-            0                               // unsigned renderer_flags
-        );
+        out = md(s);
 		util::puts(fout,out);
-#else
-		int len2 = s.length();
-		if (len2 > 0)
-		{
-            size_t offset=0;
-            bool last = false;
-            while(!last)
-            {
-                last = true;
-
-                // find beginning of a paragraph
-                size_t offset1 = s.find_first_not_of("\n\r\t ", offset );
-                if( offset1 == std::string::npos )
-                {
-                    offset1 = 0;
-                    break;  // nothing at all to write
-                }
-
-                // find potential end of a paragraph
-                size_t offset2 = s.find_first_of("\n", offset1 );
-                while( offset2 != std::string::npos )
-                {
-                    size_t offset3 = s.find_first_of("\n", offset2+1 );
-                    size_t offset4 = s.find_first_not_of("\n\r\t ", offset2+1);
-                    if( offset3 == std::string::npos )
-                        break;  // definitely final para - ends without newline
-                    if( offset4 == std::string::npos )
-                        break;  // definitely final para - nothing beyond newline
-                    if( offset3 < offset4 )
-                    {
-                        // At least 2 \n chars in whitespace, so it's a para
-                        last = false;       // only thus do we continue for another para
-                        offset = offset2+1; // start looking for another para here
-                        break;
-                    }
-                    offset2 = s.find_first_of("\n", offset4 ); // keep looking for 2 \n chars
-                }
-                std::string para = last ? s.substr(offset1) : s.substr(offset1,offset2-offset1);
-                int hn = 0;
-                while( para.length()>hn && para[hn]=='#' )
-                    hn++;
-                std::string pre = hn>0 ? util::sprintf("<h%c>",'0'+hn) : "<p>";
-                std::string post = hn>0 ? util::sprintf("</h%c>",'0'+hn) : "</p>";
-		        util::putline(fout,pre);
-		        util::puts(fout,para.substr(hn));
-		        util::putline(fout,post);
-            }
-		}
-#endif
 		if (!skip_game)
 		{
 

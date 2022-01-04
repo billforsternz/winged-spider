@@ -23,7 +23,7 @@ public:
     GamesCache() { state=PREFIX; loaded=false;
                     file_irrevocably_modified=false; pgn_handle=0; }
     void Debug( const char *intro_message );
-    bool Load( std::string &filename,  std::string &asset_filename );
+    bool Load( const std::string &filename,  const std::string &asset_filename );
     //bool Reload() { return Load(pgn_filename); }
     bool Load( FILE *pgn_file, FILE *asset_file );
     void FileCreate( std::string &filename );
@@ -32,9 +32,11 @@ public:
     //void FileSaveGameAs( std::string &filename, GamesCache *gc_clipboard );
     void FileSaveAllAsAFile( std::string &filename );
     void FileSaveInner( FILE *pgn_out );
-    void Publish( const std::string &template_file, const std::string &html_out_file,
-                    std::map<char,std::string> &macros,
-                    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
+    void Publish( const std::string &html_out_file,
+                  const std::string &header,
+                  const std::string &footer,
+                  std::map<char,std::string> &macros,
+                  const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
     void Eco( GamesCache *gc_clipboard );
     bool IsLoaded();
 	bool TestGameInCache( const GameDocument &gd );

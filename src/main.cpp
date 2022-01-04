@@ -484,8 +484,7 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     return needs_rebuild;
 }
 
-// Just copy the file - later check to see whether we need to copy it
-bool html_gen( Page *p, bool force_rebuild )
+bool html_to_html( Page *p, bool force_rebuild )
 {
     bool needs_rebuild = false;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
@@ -510,31 +509,14 @@ bool html_gen( Page *p, bool force_rebuild )
             printf( "Info: Check dependencies only, %s will be copied on normal run\n", out.c_str() );
         else
         {
-            printf( "Info: Copying %s\n", out.c_str() );
-            std::ifstream fin( in.c_str() );
-            if( !fin )
-            {
-                printf( "Error: Could not open file %s for reading\n", in.c_str() );
-                return false;
-            }
-            std::ofstream fout( out.c_str() );
-            if( !fout )
-            {
-                printf( "Error: Could not open file %s for writing\n", out.c_str() );
-                return false;
-            }
-            for(;;)
-            {
-                std::string line;
-                if( !std::getline(fin,line) )
-                    break;
-                util::putline(fout,line);
-            }
+            printf( "Info: Copying %s to %s\n", in.c_str(), out.c_str() );
+            bool ok = fs::copy_file( pin, pout, fs::copy_options::overwrite_existing );
+            if( !ok )
+                printf( "Error: Copying %s to %s failed\n", in.c_str(), out.c_str() );
         }
     }
     return needs_rebuild;
 }
-
 
 //
 // A much improved templating system, now using a real markdown processor, and recognising patterns in the
@@ -555,6 +537,18 @@ static void md_callback( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string 
     std::string *ps = (std::string *)addr_std_string;
     std::string s(txt,len);
     *ps += s;
+}
+
+std::string md( const std::string &in )
+{
+    std::string out;
+    md_html( in.c_str(), in.length(),
+        md_callback,
+        &out,                           // userdata
+        MD_FLAG_PERMISSIVEATXHEADERS,   // parser_flags, (allow "#Heading" as well as "# Heading")
+        0                               // unsigned renderer_flags
+    );
+    return out;
 }
 
 std::string macro_substitution( const std::string &input,
@@ -626,18 +620,6 @@ std::string macro_substitution( const std::string &input,
             }
         }
     }
-    return out;
-}
-
-std::string md( const std::string &in )
-{
-    std::string out;
-    md_html( in.c_str(), in.length(),
-        md_callback,
-        &out,                           // userdata
-        MD_FLAG_PERMISSIVEATXHEADERS,   // parser_flags, (allow "#Heading" as well as "# Heading")
-        0                               // unsigned renderer_flags
-    );
     return out;
 }
 

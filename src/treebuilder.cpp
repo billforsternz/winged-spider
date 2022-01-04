@@ -221,7 +221,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
         }
         else if( "html" == p->ext )
         {
-            if( html_gen( p, force_rebuild ) )
+            if( html_to_html( p, force_rebuild ) )
             {
                 count_html_gen++;
             }

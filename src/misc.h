@@ -25,10 +25,22 @@
 #define PATH_SEPARATOR_STR "/"
 #endif
 
-#define BASE_IN  "input"
-#define BASE_OUT "output"
+#ifdef _DEBUG
+#define GENERATED_PLAN_TXT  "example/generated-plan.txt"
+#define PLAN_TXT            "example/plan.txt"
+#define BASE_IN             "example/input"
+#define BASE_OUT            "example/output"
+#define BASE_TEMPLATE       "example/template"
+#else
+#define GENERATED_PLAN_TXT  "generated-plan.txt"
+#define PLAN_TXT            "plan.txt"
+#define BASE_IN             "input"
+#define BASE_OUT            "output"
+#define BASE_TEMPLATE       "template"
+#endif
 
 void recurse( const std::string &path, std::vector<Page> &results );
+void recursive_file_copy( const std::string &src, const std::string &dst, bool init );
 void parse( Page &p );
 bool read_file( const char *plan_file, std::vector<Page> &results );
 void write_file( const char *plan_file, const std::vector<Page> &results );

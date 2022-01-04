@@ -81,8 +81,8 @@ static bool probe()
     "Spider is distributed with a simple example to get you started.\n";
     
     //std::string path("template");
-    std::vector<std::string> prerequisites{BASE_IN,BASE_OUT,"template"};
-    for( std::string s: prerequisites )
+    std::vector<std::string> prerequisite_directories{BASE_IN,BASE_OUT,BASE_TEMPLATE};
+    for( std::string s: prerequisite_directories )
     {
         fs::path dir(s); 
         if( !fs::exists(dir) )
@@ -117,45 +117,12 @@ static bool probe()
         }
     }
 
-    // Set up each extension, HTML is simple copy to output
-    /*
-    Extension html;
-    html.ready = true;
-    html.just_copy = true;
-    extensions.push_back(html);
-
-    // Markdown is primary and compulsory
-    Extension md;
-    md.ext = "md";
-    md.filename = "template/template-md.txt";
-    if( !fs::exists(md.filename) )
-    {
-        printf( "Error: The markdown template file \"%s\" is not present\n", md.filename.c_str() );
-        return false;
-    }
-    md.ready = true;
-    extensions.push_back(md);
-
-    // PGN is optional
-    Extension pgn;
-    pgn.ext = "pgn";
-    pgn.filename = "template/template-pgn.txt";
-    if( fs::exists(pgn.filename) )
-        pgn.ready = true;
-    extensions.push_back(pgn);
-
-    // .md2 is temporary dev only
-    Extension md2;
-    md2.ext = "md2";
-    md2.filename = "template/template-md2.txt";
-    if( fs::exists(md2.filename) )
-        md2.ready = true;
-    extensions.push_back(md2); */
-
     // Copy all template files, except .txt files, to output. The idea is that runtime
     //  files defined in the templates (eg javascript and css files) can be conveniently
     //  put in the template directory and will be copied (once) to the output directory
-    std::string template_path("template");
+    recursive_file_copy( std::string(BASE_TEMPLATE), std::string(BASE_OUT), true );
+    /*
+
     for( const auto & entry : fs::directory_iterator(template_path) )
     {
         std::string s( entry.path().string() );
@@ -206,29 +173,9 @@ static bool probe()
                 }
             }
         }
-
-/*
-        fs::file_time_type time_out = last_write_time(pout);
-        if( !p->make_file_for_dir )
-        {
-            fs::file_time_type time_in = last_write_time(pin);    
-            if( time_in > time_out )
-            {
-                printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
-                needs_rebuild = true;
-            }
-        }
-        fs::file_time_type time_template = last_write_time(ptemplate);
-        if( time_template > time_out )
-        {
-            printf( "Info: %s post-dates %s\n", ftemplate.c_str(), out.c_str() );
-            needs_rebuild = true;
-        }
     }
-  */
-
-    }
-    return ok;
+    */
+    return true;
 }
 
 
@@ -272,7 +219,7 @@ int main( int argc, char *argv[] )
         printf( "-s option overrules -f option, -f option turned off\n" );
     }
 
-    // Check pre-requistites etc.
+    // Check pre-requisites etc.
     bool ok = probe();
 
     // If all ok go for it
@@ -293,7 +240,7 @@ bool markdown_gen( Page *p, const std::vector<std::pair<std::string,std::string>
     bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    std::string ftemplate = "template/template-md.txt";
+    std::string ftemplate = std::string(BASE_TEMPLATE)  + std::string(PATH_SEPARATOR_STR) + std::string("template-md.txt");
     fs::path pin(in); 
     fs::path pout(out);
     fs::path ptemplate(ftemplate);
@@ -347,7 +294,7 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     std::string pgn_asset =  std::string("assets") + std::string(PATH_SEPARATOR_STR) + p->target;
-    std::string ftemplate = "template/template-pgn.txt";
+    std::string ftemplate = std::string(BASE_TEMPLATE)  + std::string(PATH_SEPARATOR_STR) + std::string("template-pgn.txt");
     fs::path pin(in); 
     fs::path pout(out);
     fs::path ptemplate(ftemplate);
@@ -1433,5 +1380,54 @@ echo
     }
     std::string f = macro_substitution( footer, macros, menu, menu_idx );
     util::putline(fout,f);
+}
+
+void recursive_file_copy( const std::string &src, const std::string &dst, bool init )
+{
+    try {
+        fs::create_directory(dst);
+        for( const auto & entry : fs::directory_iterator(src) )
+        {
+            std::string in( entry.path().string() );
+            if( is_directory(entry) )
+            {
+                std::string src_subdir = entry.path().string();
+                std::string _subdir = src_subdir.substr(src.length());
+                std::string dst_subdir = dst + _subdir;
+                recursive_file_copy( src_subdir, dst_subdir, false );
+            }
+            else
+            {
+                std::string filename = entry.path().filename().string();
+                std::string out = dst + std::string("/") + filename;
+                fs::path pout(out);
+                if( init && (filename=="template-md.txt" || filename=="template-pgn.txt") )
+                    continue;
+                bool copy=false;
+                if( !fs::exists(pout) )
+                {
+                    copy = true;
+                    printf( "Info: Copying %s to new file %s\n", in.c_str(), out.c_str() );
+                }
+                else
+                {
+                    fs::file_time_type time_in  = last_write_time(entry);    
+                    fs::file_time_type time_out = last_write_time(pout);
+                    if( time_in > time_out )
+                    {
+                        copy = true;
+                        printf( "Info: Copying %s over %s because it post-dates it\n", in.c_str(), out.c_str() );
+                    }
+                }
+                if( copy )
+                    fs::copy_file( entry, pout, fs::copy_options::overwrite_existing );
+            }
+        }
+    } catch(fs::filesystem_error& e) {
+        std::string err = " (";
+        err += e.what();
+        err += ")";
+        printf( "Error: Copying template files %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
+    }
 }
 

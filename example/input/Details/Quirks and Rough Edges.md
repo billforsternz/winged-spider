@@ -12,7 +12,7 @@ extra processing. The user will not get the Winged Spider menu navigation when t
 html files like this, but they can still use the native browser features, in particular the back
 button to get back into the menu system.
 
-- BUG. Winged spider fails to copy the png directory (or any directory actually) needed for the chess
+- BUG (update - fixed 2022.01.04). Winged spider fails to copy the png directory (or any directory actually) needed for the chess
 extension from the 'template' directory to the 'output' directory automatically. For the moment it
 must be copied manually, once, after which it will sit happily forever.
 

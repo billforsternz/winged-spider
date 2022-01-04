@@ -212,13 +212,6 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
                 count_md_gen++;
             }
         }
-     /* else if( "md2" == p->ext )
-        {
-            if( bill_markdown_gen( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
-            {
-                count_md_gen++;
-            }
-        } */
         else if( "pgn" == p->ext )
         {
             if( pgn_to_html( p, menu, menu_idx, same_menu_as_last_run, force_rebuild ) )
@@ -518,13 +511,13 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
 
     // Build the menus for the previous run, to help us determine which pages need to be rebuilt
     std::vector<Page> pages;
-    const char *previous_plan_file = "generated-plan.txt";
+    const char *previous_plan_file = GENERATED_PLAN_TXT;
     bool previous_run_plan_found = read_file( previous_plan_file, pages );
     previous_time.run( pages );
 
     // Now do it for real    
     std::vector<Page> results;
-    const char *plan_file = "plan.txt";
+    const char *plan_file = PLAN_TXT;
     bool plan_found = read_file( plan_file, results );
     if( !plan_found )
     {
@@ -715,9 +708,9 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     if( rewrite || menu_changes || !plan_found || !previous_run_plan_found )
     {
         printf( "Info: %s generated-plan.txt\n", previous_run_plan_found?"Writing":"Rewriting" );
-        write_file( "generated-plan.txt", results );
+        write_file( GENERATED_PLAN_TXT, results );
         if( !plan_found )
-            write_file( "plan.txt", results );
+            write_file( PLAN_TXT, results );
     }
 }
 

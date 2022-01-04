@@ -46,12 +46,7 @@ chess files. This reflects Winged Spider's origins as a tool built to maintain a
 website. Winged Spider accepts .pgn [chess document] files as well as markdown files
 for generating output html files and when it does that it adds a modified form of the
 .pgn file to a predefined 'assets' subfolder of the 'output' folder. There's an example
-in the 'Details' submenu. Sadly as I put this
-tutorial together I noticed a small issue, as well as missing image files this experiment
-reveals that a png folder in the new output directory is also absent, and it's needed by the
-chess extension. Winged Spider should really copy it across from the 'template' folder
-along with the .js and .css files. I've
-made a note in [Quirks and Rough Edges](quirks-and-rough-edges.html) )
+in the 'Details' submenu. )
 
 At this stage please solve the missing image file problem we've just identified in
 by deleting the new output directory and renaming the temporary one back to 'output',

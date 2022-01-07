@@ -54,7 +54,6 @@ std::string macro_substitution( const std::string &input,
     const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
 int cprintf( const char *fmt, ... );
 int get_verbosity();
-void test_builds();
 std::string md( const std::string &in );
 
 #endif // MISC_H_INCLUDED

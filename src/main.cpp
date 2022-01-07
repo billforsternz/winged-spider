@@ -25,6 +25,62 @@ namespace fs = std::experimental::filesystem;
 #include "../src-tarrasch/GamesCache.h"
 #include "md4c-html.h"
 
+// Local Helpers and data
+static bool startup_and_sanity_checks();
+static bool recursive_file_copy( const std::string &src, const std::string &dst, bool root );
+static bool check_dependencies_only;
+static bool verbose;
+
+//
+// main()
+//
+
+int main( int argc, char *argv[] )
+{
+
+    // Process command line arguments
+    const char *usage =
+    "Winged Spider V0.9\n"
+    "Winged Spider is a simple static website builder\n"
+    "Winged Spider takes as input a directory hierarchy of markdown and PGN content\n"
+    "and generates from it a website users can navigate through using menus defined\n"
+    "by the folder hierarchy\n"
+    "Currently command line arguments are;\n"
+    " -v = verbose\n"
+    " -f = force rebuild\n"
+    " -s = status check, don't rebuild targets\n";
+    bool force_rebuild = false;
+    for( int i=1; i<argc; i++ )
+    {
+        std::string arg(argv[i]);
+        if( arg == "-v" || arg=="-verbose" )
+            verbose = true;
+        else if( arg == "-f" || arg=="-force" )
+            force_rebuild = true;
+        else if( arg == "-s" || arg=="-status" )
+            check_dependencies_only = true;
+        else
+        {
+            printf( "%s", usage );
+            return 0;
+        }
+    }
+    if( check_dependencies_only && force_rebuild )
+    {
+        force_rebuild = false;
+        printf( "-s option overrules -f option, -f option turned off\n" );
+    }
+
+    // Check pre-requisites etc.
+    bool ok = startup_and_sanity_checks();
+
+    // If all ok go for it
+    if( ok )
+        treebuilder( force_rebuild, check_dependencies_only );
+    return ok ? 0 : -1;
+}
+
+// Template for markdown -> html conversion
 struct MD_TEMPLATE
 {
     std::string         filename;
@@ -157,6 +213,7 @@ struct MD_TEMPLATE
                     const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
 };
 
+// Template for PGN -> html conversion
 struct PGN_TEMPLATE
 {
     std::string         filename;
@@ -247,35 +304,15 @@ struct PGN_TEMPLATE
     }
 };
 
-//
-// Helpers etc.
-//
-
+// Template instances
 static MD_TEMPLATE md_template;
 static PGN_TEMPLATE pgn_template;
-static bool check_dependencies_only;
-static bool verbose;
-int get_verbosity()
-{
-    return verbose ? 1 : 0;
-}
 
-int cprintf( const char *fmt, ... )
-{
-    if( !verbose )
-        return 0;
-    int ret=0;
-	va_list args;
-	va_start( args, fmt );
-    char buf[1000];
-    vsnprintf( buf, sizeof(buf)-2, fmt, args ); 
-    buf[sizeof(buf)-1] = '\0';
-    printf("%s",buf);
-    va_end(args);
-    return ret;
-}
+//
+//  Startup
+//
 
-static bool probe()
+static bool startup_and_sanity_checks()
 {
     bool ok = true;
     const char* help =
@@ -343,54 +380,8 @@ static bool probe()
 }
 
 //
-// main()
+//  Interface to templating system, convert [md or pgn] -> html (if needed)
 //
-
-int main( int argc, char *argv[] )
-{
-
-    // Process command line arguments
-    const char *usage =
-    "Winged Spider V0.9\n"
-    "Winged Spider is a simple static website builder\n"
-    "Winged Spider takes as input a directory hierarchy of markdown and PGN content\n"
-    "and generates from it a website users can navigate through using menus defined\n"
-    "by the folder hierarchy\n"
-    "Currently command line arguments are;\n"
-    " -v = verbose\n"
-    " -f = force rebuild\n"
-    " -s = status check, don't rebuild targets\n";
-    bool force_rebuild = false;
-    for( int i=1; i<argc; i++ )
-    {
-        std::string arg(argv[i]);
-        if( arg == "-v" || arg=="-verbose" )
-            verbose = true;
-        else if( arg == "-f" || arg=="-force" )
-            force_rebuild = true;
-        else if( arg == "-s" || arg=="-status" )
-            check_dependencies_only = true;
-        else
-        {
-            printf( "%s", usage );
-            return 0;
-        }
-    }
-    if( check_dependencies_only && force_rebuild )
-    {
-        force_rebuild = false;
-        printf( "-s option overrules -f option, -f option turned off\n" );
-    }
-
-    // Check pre-requisites etc.
-    bool ok = probe();
-
-    // If all ok go for it
-    if( ok )
-        treebuilder( force_rebuild, check_dependencies_only );
-    return ok ? 0 : -1;
-}
-
 
 bool md_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild )
 {
@@ -484,6 +475,7 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     return needs_rebuild;
 }
 
+// Also html -> html which is just copy (if needed)
 bool html_to_html( Page *p, bool force_rebuild )
 {
     bool needs_rebuild = false;
@@ -519,18 +511,8 @@ bool html_to_html( Page *p, bool force_rebuild )
 }
 
 //
-// A much improved templating system, now using a real markdown processor, and recognising patterns in the
-//  Markdown to implement our custom @solo, @grid and @panel features.
+// Helpers
 //
-
-struct PICTURE
-{
-    std::string typ;
-    std::string filename;
-    std::string alt_text;
-    std::string heading;
-    std::string caption;
-};
 
 static void md_callback( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string )
 {
@@ -550,6 +532,90 @@ std::string md( const std::string &in )
     );
     return out;
 }
+
+int get_verbosity() // later, might have more than two values, so int not bool
+{
+    return verbose ? 1 : 0;
+}
+
+int cprintf( const char *fmt, ... )
+{
+    if( !verbose )
+        return 0;
+    int ret=0;
+	va_list args;
+	va_start( args, fmt );
+    char buf[1000];
+    vsnprintf( buf, sizeof(buf)-2, fmt, args ); 
+    buf[sizeof(buf)-1] = '\0';
+    printf("%s",buf);
+    va_end(args);
+    return ret;
+}
+
+static bool recursive_file_copy( const std::string &src, const std::string &dst, bool root )
+{
+    bool ok = true;
+    try {
+        fs::create_directory(dst);
+        for( const auto & entry : fs::directory_iterator(src) )
+        {
+            std::string in( entry.path().string() );
+            if( is_directory(entry) )
+            {
+                std::string src_subdir = entry.path().string();
+                std::string _subdir = src_subdir.substr(src.length());
+                std::string dst_subdir = dst + _subdir;
+                recursive_file_copy( src_subdir, dst_subdir, false );
+            }
+            else
+            {
+                std::string filename = entry.path().filename().string();
+                std::string out = dst + std::string("/") + filename;
+                fs::path pout(out);
+                if( root && (filename=="template-md.txt" || filename=="template-pgn.txt") )
+                    continue;
+                bool copy=false;
+                if( !fs::exists(pout) )
+                {
+                    copy = true;
+                    printf( "Info: Copying %s to new file %s\n", in.c_str(), out.c_str() );
+                }
+                else
+                {
+                    fs::file_time_type time_in  = last_write_time(entry);    
+                    fs::file_time_type time_out = last_write_time(pout);
+                    if( time_in > time_out )
+                    {
+                        copy = true;
+                        printf( "Info: Copying %s over %s because it post-dates it\n", in.c_str(), out.c_str() );
+                    }
+                }
+                if( copy )
+                {
+                    ok = fs::copy_file( entry, pout, fs::copy_options::overwrite_existing );
+                    if( !ok )
+                    {
+                        printf( "Error: Copying template file %s to %s failed\n", in.c_str(), out.c_str() );
+                        break;
+                    }
+                }
+            }
+        }
+    } catch( fs::filesystem_error& e ) {
+        std::string err = " (";
+        err += e.what();
+        err += ")";
+        printf( "Error: Copying template files %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
+        ok = false;
+    }
+    return ok;
+}
+
+//
+// Simple Macro substitution implementation, all macros are @ plus one ascii character
+//   Special support for menu macros, which are @M plus a list of (@1,@2) pairs
+//
 
 std::string macro_substitution( const std::string &input,
     const std::map<char,std::string> &macros,
@@ -623,64 +689,20 @@ std::string macro_substitution( const std::string &input,
     return out;
 }
 
-bool recursive_file_copy( const std::string &src, const std::string &dst, bool root )
+//
+// MD_TEMPLATE html generation implementation, implements our markdown "extensions"
+//  panel, solo and grid. Not really very complicated features, but we use a
+//  state machince to make sure we get it right, and it makes it look a little
+//  complicated.
+//
+
+// Grids are grids of images
+struct PICTURE
 {
-    bool ok = true;
-    try {
-        fs::create_directory(dst);
-        for( const auto & entry : fs::directory_iterator(src) )
-        {
-            std::string in( entry.path().string() );
-            if( is_directory(entry) )
-            {
-                std::string src_subdir = entry.path().string();
-                std::string _subdir = src_subdir.substr(src.length());
-                std::string dst_subdir = dst + _subdir;
-                recursive_file_copy( src_subdir, dst_subdir, false );
-            }
-            else
-            {
-                std::string filename = entry.path().filename().string();
-                std::string out = dst + std::string("/") + filename;
-                fs::path pout(out);
-                if( root && (filename=="template-md.txt" || filename=="template-pgn.txt") )
-                    continue;
-                bool copy=false;
-                if( !fs::exists(pout) )
-                {
-                    copy = true;
-                    printf( "Info: Copying %s to new file %s\n", in.c_str(), out.c_str() );
-                }
-                else
-                {
-                    fs::file_time_type time_in  = last_write_time(entry);    
-                    fs::file_time_type time_out = last_write_time(pout);
-                    if( time_in > time_out )
-                    {
-                        copy = true;
-                        printf( "Info: Copying %s over %s because it post-dates it\n", in.c_str(), out.c_str() );
-                    }
-                }
-                if( copy )
-                {
-                    ok = fs::copy_file( entry, pout, fs::copy_options::overwrite_existing );
-                    if( !ok )
-                    {
-                        printf( "Error: Copying template file %s to %s failed\n", in.c_str(), out.c_str() );
-                        break;
-                    }
-                }
-            }
-        }
-    } catch( fs::filesystem_error& e ) {
-        std::string err = " (";
-        err += e.what();
-        err += ")";
-        printf( "Error: Copying template files %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
-        ok = false;
-    }
-    return ok;
-}
+    std::string filename;
+    std::string alt_text;
+    std::string caption;
+};
 
 void MD_TEMPLATE::gen_html(  const std::string &in_file,
                              const std::string &html_out_file,
@@ -1138,7 +1160,6 @@ echo
                 int filename_idx = 0;
                 int alt_text_idx = 0;
                 int caption_idx  = 0;
-                int heading_idx  = 0;
                 size_t next = 0;
                 std::string template_txt = s;
                 while( macro_substitution_required )
@@ -1181,18 +1202,6 @@ echo
                                 alt_text_idx--;
                             if( alt_text_idx > 2 )
                                 alt_text_idx = 2;
-                            break;
-                        }
-                        case 'H':
-                        {
-                            replacement = heading_idx==0 ? p->heading : (heading_idx==1?q->heading:r->heading);
-                            heading_idx++;
-                            if( heading_idx==1 && q==NULL )
-                                heading_idx--;
-                            else if( heading_idx==2 && r==NULL )
-                                heading_idx--;
-                            if( heading_idx > 2 )
-                                heading_idx = 2;
                             break;
                         }
                         case 'T':   // 'T'ext (or caption)
@@ -1242,10 +1251,6 @@ echo
             bool macro_substitution_required = true;
 
             // Replace @F, @A, @C, @T with filename, alt_text, caption and paragraph text
-            int filename_idx = 0;
-            int alt_text_idx = 0;
-            int caption_idx  = 0;
-            int heading_idx  = 0;
             size_t next = 0;
             while( macro_substitution_required )
             {
@@ -1319,7 +1324,7 @@ echo
             std::string s = panel;
             bool macro_substitution_required = true;
 
-            // Replace @T with text
+            // Replace @F, @T with text
             size_t next = 0;
             while( macro_substitution_required )
             {

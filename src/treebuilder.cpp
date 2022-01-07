@@ -14,6 +14,8 @@ namespace fs = std::experimental::filesystem;
 #include "page.h"
 #include "misc.h"
 
+static void sync_debug( const char *msg, const std::vector<Page> &results );
+
 // Returns bool more
 static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart );
 
@@ -513,12 +515,15 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     std::vector<Page> pages;
     const char *previous_plan_file = GENERATED_PLAN_TXT;
     bool previous_run_plan_found = read_file( previous_plan_file, pages );
+    sync_debug( "After reading previous run", pages );
     previous_time.run( pages );
+    sync_debug( "After previous_time.run()", pages );
 
     // Now do it for real    
     std::vector<Page> results;
     const char *plan_file = PLAN_TXT;
     bool plan_found = read_file( plan_file, results );
+    sync_debug( "Start with plan", results );
     if( !plan_found )
     {
         const char *msg = 
@@ -545,7 +550,10 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     // Sync the directory structure to the plan
     printf( "Info: Synching to directory structure, in case there are changes\n" );
     recurse(BASE_IN,results);
+    sync_debug( "Add directory structure", results );
+
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
+    sync_debug( "Sort to start sync", results );
     bool expecting_page_from_plan = true;
     bool rewrite = false;
     Page *plan_page=NULL;
@@ -557,6 +565,7 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
         for( Page &p: results )
             printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
     }
+    int idx=0;
     for( Page &p: results )
     {
         //printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
@@ -570,15 +579,34 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
             }
             else
             {
-                if( p.is_dir || p.ext=="md" || p.ext=="md2" || p.ext=="pgn" || p.ext=="html" )
+                if( p.is_dir || p.ext=="md" || p.ext=="pgn" || p.ext=="html" )
                 {
                     // Multiple pages in a row from directory structure = new files we don't know about
                     printf( "Info: new file or directory present: %s\n", p.path.c_str() );
 
-                    // Add this line to plan, immediately after this point in plan
-                    p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
+                    // Sorry this is a bit complicated (tag RefineNewFilePlanLocation)
+                    // We scan backwards through the group of pages preceding this one, looking for the
+                    // one with the greatest line number in the plan file. This new page is going to go
+                    // after that one. The group is defined as pages with the same dir.
+                    int idx2 = idx-1;
+                    unsigned long max_so_far = plan_page ? plan_page->plan_line_nbr : 0;
+                    bool triggered = false;
+                    while( plan_page && idx2 >= 0 )
+                    {
+                        const Page *q = &results[idx2--];
+                        if( q == plan_page )
+                            triggered = true;
+                        cprintf( "q->path=%s, q->from_plan_file=%s, q->dir=%s, plan_page->dir=%s, q->plan_line_nbr=%d, max_so_far=%d\n", 
+                            q->path.c_str(),
+                            q->from_plan_file?"true":"false", q->dir.c_str(), plan_page->dir.c_str(), q->plan_line_nbr, max_so_far );
+                        if( q->from_plan_file && q->dir==plan_page->dir && q->plan_line_nbr>max_so_far )
+                            max_so_far = q->plan_line_nbr;
+                        if( q->dir != plan_page->dir && triggered )
+                            break;                            
+                    }
+                    cprintf( "> max_so_far=%lu\n", max_so_far );
+                    p.plan_line_nbr = max_so_far;
                     p.added_to_plan_line_nbr = sec_sort++;
-
                     p.from_plan_file = true;
                     rewrite = true;
                 }
@@ -621,11 +649,13 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
                 plan_page = &p;
             }
         }
+        idx++;
     }
 
     // Reorder with the pages from the plan file first, in their original order (possibly supplemented by
     //  new files discovered in the sync process)
     std::sort( results.begin(), results.end(), less_than_restore_order );
+    sync_debug( "After sync", results );
 
     // After the sort the pages from the (possibly updated plan file) are first, from checking the directory
     //  structure are second, remove the directory section it has served its purpose
@@ -636,6 +666,7 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
             break;
     }
     results.erase( it, results.end() );
+    sync_debug( "After removing directory entries", results );
 
     if( get_verbosity() > 1 )
     {
@@ -647,6 +678,7 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     // Temporarily revert to sync order, to identify duplicate leaf nodes, eg Results.md *and* Results.html
     //  both generate same target
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
+    sync_debug( "After temporarily reverting to sync order", results );
     Page *previous = NULL;
     for( Page &p: results )
     {
@@ -675,8 +707,10 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
         previous = &p;
     }
     std::sort( results.begin(), results.end(), less_than_restore_order ); // restore to plan file order
+    sync_debug( "After restoring plan file order", results );
 
     bool menu_changes = this_time.run( results, force_rebuild );
+    sync_debug( "After this_time.run()", results );
 
     // Report results
     if( check_dependencies_only )
@@ -742,3 +776,14 @@ void recurse( const std::string &path, std::vector<Page> &results )
     level--;
 }
 
+static void sync_debug( const char *msg, const std::vector<Page> &results )
+{
+    if( get_verbosity() == 0 )
+        return;
+    cprintf( "** Sync debug: %s\n", msg );
+    for( const Page &p: results )
+    {
+        //cprintf( " %d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
+        cprintf( " %d: %s%s (%d,%d)\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str(), p.plan_line_nbr, p.added_to_plan_line_nbr );
+    }
+}

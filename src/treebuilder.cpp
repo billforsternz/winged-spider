@@ -15,6 +15,149 @@ namespace fs = std::experimental::filesystem;
 #include "page.h"
 #include "misc.h"
 
+/*
+
+    How Winged Spider syncs between the plan file and the input directory
+
+    (This is a fairly deep dive into how Winged Spider manages perhaps its most difficult
+    task - fortunately by tranforming complicated trees to simple lists, it's not too
+    hard)
+
+    Winged Spider builds a website to reflect the structure of the input directory hierarchy.
+
+    It keeps a copy of this hierarchy in the so called "plan file".
+
+    Why do we even need a plan file? The only reason is so that we can order the pages in
+    the menu in a sensible way. For example suppose our plan file looks like this;
+
+    Home.md
+    Animals/
+    Plants/
+    Animals/Introduction.md
+    Animals/Zebra.md
+    Animals/Armadillo.md
+    Plants/Introduction.md
+    Plants/Banana.md
+    Plants/Apple.md
+
+    If we just had a directory hierarchy and no plan file, then when Winged Spider went
+    to build an "Animals" menu, it wouldn't know to put the "Introduction" page first,
+    in fact the menu would probably be pretty random. Basically the plan file lets us
+    lock down the menu order.
+
+    The plan file format and structure is pretty obvious, it's just a list of directories
+    and files within those directories. Programmatically handling trees can get confusing,
+    and the implemenation approach used by Winged Spider simplifies things and makes life
+    easier by transforming (directory) trees to simple lists just like this plan file
+    format. The C++ objects in the list are 'Page's. A Page is a page in the ultimate
+    website, and corresponds to directory or file in the input hierarchy. Pages also
+    correspond to lines from the plan file. To sync between the plan file and the input
+    directory hierarchy, Winged Spider does a recursive scan of the entire input
+    directory and creates a Page object for every directory and file it finds. Pages
+    from both the plan file and the directory hierarchy are put in one big file and sorted
+    to establish syncronisation. The sort criteria in order are;
+    hierarchy level, directory name, file name and source. In this source, the last
+    tiebreaker is a 1 bit value only - it's either from the plan file ("F>") or the
+    directory hierarchy ("D>"). The verbose -v option prints out the sync process, and
+    when everything is in sync it will show something like this;
+
+     1: F> Animals (2,0)
+     1: D> Animals (-1,0)
+     1: F> Home.md (1,0)
+     1: D> Home.md (-1,0)
+     1: F> Plants (3,0)
+     1: D> Plants (-1,0)
+     2: F> Animals\Armadillo.md (6,0)
+     2: D> Animals\Armadillo.md (-1,0)
+     2: F> Animals\Introduction.md (4,0)
+     2: D> Animals\Introduction.md (-1,0)
+     2: F> Animals\Zebra.md (5,0)
+     2: D> Animals\Zebra.md (-1,0)
+     2: F> Plants\Apple.md (9,0)
+     2: D> Plants\Apple.md (-1,0)
+     2: F> Plants\Banana.md (8,0)
+     2: D> Plants\Banana.md (-1,0)
+     2: F> Plants\Introduction.md (7,0)
+     2: D> Plants\Introduction.md (-1,0)
+
+     The hierarchy level is the integer at the left margin, it is the first sort
+     criteria. The F> or D> source is the last criteria (the final tiebreak) which
+     means that equivalent Page representations from the plan file (i.e. "F>" and
+     from the directory hierarchy (i.e. "D>") will naturally alternate like this.
+
+     Violations of this pattern indicate "out of sync" conditions. For example; some
+     new content is written, a new "Minerals" directory with a sole "Rocks.md" file.
+
+     1: F> Animals (2,0)
+     1: D> Animals (-1,0)
+     1: F> Home.md (1,0)
+     1: D> Home.md (-1,0)
+     1: D> Minerals (-1,0)  <-- violation
+     1: F> Plants (3,0)
+     1: D> Plants (-1,0)
+     2: F> Animals/Armadillo.md (6,0)
+     2: D> Animals/Armadillo.md (-1,0)
+     2: F> Animals/Introduction.md (4,0)
+     2: D> Animals/Introduction.md (-1,0)
+     2: F> Animals/Zebra.md (5,0)
+     2: D> Animals/Zebra.md (-1,0)
+     2: D> Minerals/Rocks.md (-1,0)  <-- violation
+     2: F> Plants/Apple.md (9,0)
+     2: D> Plants/Apple.md (-1,0)
+     2: F> Plants/Banana.md (8,0)
+     2: D> Plants/Banana.md (-1,0)
+     2: F> Plants/Introduction.md (7,0)
+     2: D> Plants/Introduction.md (-1,0)
+
+    The violations to the alternating F> / D> pattern are shown, Two or more D>
+    Pages in a row are new Pages not yet represented in the plan file. Winged
+    Spider actually changes the status of these new pages to F>, this is an
+    implementation detail, the D> pages are discarded after serving their
+    sync purpose - the F> pages live on longer, first to generate html files
+    and then to be stored as a plan file - actually as generated-plan.txt.
+
+    Winged Spider does not modifiy an existing plan.txt file. Instead it saves
+    generated-plan.txt representing the most recent Winged Spider build. The
+    generated-plan.txt allows Winged Spider to check its most recent build to
+    detect possible menu changes that will force html rebuild. If plan.txt
+    and generated-plan.txt are different it's a signal to the user that they
+    should migrate changes into plan.txt, even if that means just copying the
+    file. But it's best to check the order of new entries, Winged Spider tries
+    to place new Pages sensibly, but it doesn't know your preferred menu order!
+
+    The ultimate location of the new entries in the generated-plan file relies
+    on some tricky and complicated code (sorry) which I have tagged with the
+    identifier RefineNewFilePlanLocation so you can avoid it :-) Basically
+    a new Page is going to be adjacent to its neigbour in the sort. So
+    Minerals/Rocks will go after Animals/Zebra.md. Well almost! (this is why
+    it's tricky). We actually want it to go after all the Animals/ pages, but
+    Animals/Zebra.md is actually just the last alphabetical Animals/ page, if
+    you look at the plan file Animals/Armadillo.md is the last Animals page
+    on line 6 of the plan file, and our RefineNewFilePlanLocation algorithm
+    does a quick search to identify that as the final spot for Minerals/Rocks.md
+    in the generated plan file. Using the -verbose debug output you can see
+    the final result;
+
+     1: F> Home.md (1,0)
+     1: F> Animals (2,0)
+     1: F> Minerals (2,1)
+     1: F> Plants (3,0)
+     2: F> Animals/Introduction.md (4,0)
+     2: F> Animals/Zebra.md (5,0)
+     2: F> Animals/Armadillo.md (6,0)
+     2: F> Minerals/Rocks.md (6,2)
+     2: F> Plants/Introduction.md (7,0)
+     2: F> Plants/Banana.md (8,0)
+     2: F> Plants/Apple.md (9,0)
+
+    The parenthesised pair are file line numbers and a sort tiebreaker for when
+    new Pages share an existing line number, the new pages get a non-zero
+    (incrementing) tie-breaker. The net result of all this is that Rocks goes
+    neatly after the Animals pages and before the Plants pages not disrupting
+    either group, phew!
+
+*/
+
 // Local Helpers and data
 static void parse( Page &p );
 static bool read_file( const char *plan_file, std::vector<Page> &results );
@@ -80,7 +223,6 @@ void Builder::construct_dir_target( std::vector<Page*> ptrs )
         return;
     }
 }
-
 
 // Construct all the pages in a directory. Build the whole menu for that directory
 // first, because each page will have the same menu (but a different idx into the
@@ -205,11 +347,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
     {
         printf("\nMenu>\n");
         for(std::pair<std::string,std::string> menu_item: menu )
-        {
             printf("%s %s\n", menu_item.first.c_str(), menu_item.second.c_str() );
-            //if( menu_item.second == "Tournaments" )
-            //    printf("Debug break 1\n");
-        }
     }
 
     // If we are making an html file for an empty directory, do it now with
@@ -260,16 +398,16 @@ bool Builder::run( std::vector<Page> &results, bool force_rebuild )
         std::vector<Page*> ptrs;
         more = get_next_page_group( results, ptrs, first );
         first = false;
-        //-------------
-        cprintf( "Debug: ------ Page group begin\n" );
-        for( const Page *p: ptrs )
+        if( get_verbosity() > 0 )
         {
-            std::string status = p->is_file ? "is_file" : (p->is_link ? "is_link" : (p->is_dir?"is_dir":"is_??") );
-            cprintf( "status:%s dir:\"%s\" path:\"%s\"\n", status.c_str(), p->dir.c_str(), p->path.c_str() );
+            printf( "Page group begin\n" );
+            for( const Page *p: ptrs )
+            {
+                std::string status = p->is_file ? "is_file" : (p->is_link ? "is_link" : (p->is_dir?"is_dir":"is_??") );
+                printf( "status:%s dir:\"%s\" path:\"%s\"\n", status.c_str(), p->dir.c_str(), p->path.c_str() );
+            }
+            printf( "Page group end\n" );
         }
-        cprintf( "Debug: ------ Page group end\n" );
-        //-------------
-        cprintf( "Debug: construct_dir_target()\n" );
         construct_dir_target(ptrs);
     }
 
@@ -280,7 +418,6 @@ bool Builder::run( std::vector<Page> &results, bool force_rebuild )
         std::vector<Page*> ptrs;
         more = get_next_page_group( results, ptrs, first );
         first = false;
-        cprintf( "Debug: construct_page_group()\n" );
         if( construct_page_group(ptrs,force_rebuild) )
             any = true;
     }
@@ -326,15 +463,14 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     std::vector<Page> pages;
     const char *previous_plan_file = GENERATED_PLAN_TXT;
     bool previous_run_plan_found = read_file( previous_plan_file, pages );
-    sync_debug( "After reading previous run", pages );
+    sync_debug( "Previous Winged Spider run on this directory", pages );
     previous_time.run( pages );
-    sync_debug( "After previous_time.run()", pages );
 
     // Now do it for real    
     std::vector<Page> results;
     const char *plan_file = PLAN_TXT;
     bool plan_found = read_file( plan_file, results );
-    sync_debug( "Start with plan", results );
+    sync_debug( "Pages marked as F> are read from plan.txt *F*ile", results );
     if( !plan_found )
     {
         const char *msg = 
@@ -361,25 +497,17 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     // Sync the directory structure to the plan
     printf( "Info: Synching to directory structure, in case there are changes\n" );
     recurse(BASE_IN,results);
-    sync_debug( "Add directory structure", results );
-
+    sync_debug( "Add in unsorted pages (filenames) marked as D> read by recursive scan of input *D*irectory", results );
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
-    sync_debug( "Sort to start sync", results );
+    sync_debug( "After sorting to start sync process", results );
     bool expecting_page_from_plan = true;
     bool rewrite = false;
     Page *plan_page=NULL;
     unsigned long sec_sort = 1;      // Used to insert new plan lines at an appropriate point
 
-    if( get_verbosity() > 1 )
-    {
-        printf( "Before syncing\n" );
-        for( Page &p: results )
-            printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
-    }
     int idx=0;
     for( Page &p: results )
     {
-        //printf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
         if( expecting_page_from_plan )
         {
             if( p.from_plan_file )
@@ -407,15 +535,15 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
                         const Page *q = &results[idx2--];
                         if( q == plan_page )
                             triggered = true;
-                        cprintf( "q->path=%s, q->from_plan_file=%s, q->dir=%s, plan_page->dir=%s, q->plan_line_nbr=%d, max_so_far=%d\n", 
-                            q->path.c_str(),
-                            q->from_plan_file?"true":"false", q->dir.c_str(), plan_page->dir.c_str(), q->plan_line_nbr, max_so_far );
+                        //printf( "q->path=%s, q->from_plan_file=%s, q->dir=%s, plan_page->dir=%s, q->plan_line_nbr=%d, max_so_far=%d\n", 
+                        //    q->path.c_str(),
+                        //    q->from_plan_file?"true":"false", q->dir.c_str(), plan_page->dir.c_str(), q->plan_line_nbr, max_so_far );
                         if( q->from_plan_file && q->dir==plan_page->dir && q->plan_line_nbr>max_so_far )
                             max_so_far = q->plan_line_nbr;
                         if( q->dir != plan_page->dir && triggered )
                             break;                            
                     }
-                    cprintf( "> max_so_far=%lu\n", max_so_far );
+                    //printf( "> max_so_far=%lu\n", max_so_far );
                     p.plan_line_nbr = max_so_far;
                     p.added_to_plan_line_nbr = sec_sort++;
                     p.from_plan_file = true;
@@ -466,7 +594,7 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     // Reorder with the pages from the plan file first, in their original order (possibly supplemented by
     //  new files discovered in the sync process)
     std::sort( results.begin(), results.end(), less_than_restore_order );
-    sync_debug( "After sync", results );
+    sync_debug( "After sync, includes new pages changed from D> to F> because they're to be added to plan", results );
 
     // After the sort the pages from the (possibly updated plan file) are first, from checking the directory
     //  structure are second, remove the directory section it has served its purpose
@@ -477,25 +605,18 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
             break;
     }
     results.erase( it, results.end() );
-    sync_debug( "After removing directory entries", results );
-
-    if( get_verbosity() > 1 )
-    {
-        printf( "Syncing complete\n" );
-        for( Page &p: results )
-            cprintf( "%d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
-    }
+    sync_debug( "After removing D> entries", results );
 
     // Temporarily revert to sync order, to identify duplicate leaf nodes, eg Results.md *and* Results.html
     //  both generate same target
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
-    sync_debug( "After temporarily reverting to sync order", results );
+    sync_debug( "After temporarily reverting to sync (alphabetical) order", results );
     Page *previous = NULL;
     for( Page &p: results )
     {
         if( p.is_file )
         {
-            if( p.ext != "md" && p.ext != "md2" && p.ext != "html" && p.ext != "pgn")
+            if( p.ext != "md" && p.ext != "html" && p.ext != "pgn")
             {
                 p.disabled = true;
                 printf( "Info: Page %s has unsupported extension (not .md or .pgn or .html), disabled\n", p.path.c_str() );
@@ -518,10 +639,10 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
         previous = &p;
     }
     std::sort( results.begin(), results.end(), less_than_restore_order ); // restore to plan file order
-    sync_debug( "After restoring plan file order", results );
+    sync_debug( "After restoring plan file order, ready to build pages", results );
 
+    // Build the project
     bool menu_changes = this_time.run( results, force_rebuild );
-    sync_debug( "After this_time.run()", results );
 
     // Report results
     if( check_dependencies_only )
@@ -813,10 +934,9 @@ static void sync_debug( const char *msg, const std::vector<Page> &results )
 {
     if( get_verbosity() == 0 )
         return;
-    cprintf( "** Sync debug: %s\n", msg );
+    cprintf( "Sync debug: %s\n", msg );
     for( const Page &p: results )
     {
-        //cprintf( " %d: %s%s\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str() );
         cprintf( " %d: %s%s (%d,%d)\n", p.level, p.from_plan_file? "F> " : "D> ", p.path.c_str(), p.plan_line_nbr, p.added_to_plan_line_nbr );
     }
 }

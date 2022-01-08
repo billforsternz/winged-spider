@@ -198,10 +198,10 @@
     <ClInclude Include="src-tarrasch\ProgressBar.h" />
     <ClInclude Include="src-tarrasch\Roster.h" />
     <ClInclude Include="src-tarrasch\thc.h" />
+    <ClInclude Include="src\defs.h" />
     <ClInclude Include="src\entity.h" />
     <ClInclude Include="src\md4c-html.h" />
     <ClInclude Include="src\md4c.h" />
-    <ClInclude Include="src\misc.h" />
     <ClInclude Include="src\page.h" />
     <ClInclude Include="src\util.h" />
   </ItemGroup>

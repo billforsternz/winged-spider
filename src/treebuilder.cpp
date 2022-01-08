@@ -9,11 +9,9 @@
 #include <vector>
 #include <map>
 #include <algorithm>
-#include <filesystem>
-namespace fs = std::experimental::filesystem;
+#include "defs.h"
 #include "util.h"
 #include "page.h"
-#include "misc.h"
 
 /*
 
@@ -50,16 +48,16 @@ namespace fs = std::experimental::filesystem;
     and the implemenation approach used by Winged Spider simplifies things and makes life
     easier by transforming (directory) trees to simple lists just like this plan file
     format. The C++ objects in the list are 'Page's. A Page is a page in the ultimate
-    website, and corresponds to directory or file in the input hierarchy. Pages also
+    website, and corresponds to a directory or file in the input hierarchy. Pages also
     correspond to lines from the plan file. To sync between the plan file and the input
     directory hierarchy, Winged Spider does a recursive scan of the entire input
     directory and creates a Page object for every directory and file it finds. Pages
     from both the plan file and the directory hierarchy are put in one big file and sorted
     to establish syncronisation. The sort criteria in order are;
-    hierarchy level, directory name, file name and source. In this source, the last
-    tiebreaker is a 1 bit value only - it's either from the plan file ("F>") or the
+    hierarchy level, directory name, file name and source. In this source is the last
+    tiebreaker and is a 1 bit value only - it's either from the plan file ("F>") or the
     directory hierarchy ("D>"). The verbose -v option prints out the sync process, and
-    when everything is in sync it will show something like this;
+    when everything is in sync it will show something sorted like this;
 
      1: F> Animals (2,0)
      1: D> Animals (-1,0)
@@ -110,10 +108,12 @@ namespace fs = std::experimental::filesystem;
      2: D> Plants/Introduction.md (-1,0)
 
     The violations to the alternating F> / D> pattern are shown, Two or more D>
-    Pages in a row are new Pages not yet represented in the plan file. Winged
-    Spider actually changes the status of these new pages to F>, this is an
-    implementation detail, the D> pages are discarded after serving their
-    sync purpose - the F> pages live on longer, first to generate html files
+    Pages in a row are new Pages not yet represented in the plan file.
+    
+    After recognising these violations as new pages Winged Spider actually
+    changes the status of these new pages to F>.  This is an implementation
+    detail, the D> pages are discarded after serving their sync purpose - 
+    but the F> pages live on longer, first to generate html files
     and then to be stored as a plan file - actually as generated-plan.txt.
 
     Winged Spider does not modifiy an existing plan.txt file. Instead it saves
@@ -136,7 +136,8 @@ namespace fs = std::experimental::filesystem;
     on line 6 of the plan file, and our RefineNewFilePlanLocation algorithm
     does a quick search to identify that as the final spot for Minerals/Rocks.md
     in the generated plan file. Using the -verbose debug output you can see
-    the final result;
+    the final result after discarding D> entries and resorting to restore the
+    order to match as much as possible the plan file at the start of the run;
 
      1: F> Home.md (1,0)
      1: F> Animals (2,0)
@@ -160,8 +161,8 @@ namespace fs = std::experimental::filesystem;
 
 // Local Helpers and data
 static void parse( Page &p );
-static bool read_file( const char *plan_file, std::vector<Page> &results );
-static void write_file( const char *plan_file, const std::vector<Page> &results );
+static bool read_plan_file( const char *plan_file, std::vector<Page> &results );
+static void write_plan_file( const char *plan_file, const std::vector<Page> &results );
 static void recursive_dir_read( const std::string &path, std::vector<Page> &results );
 static void sync_debug( const char *msg, const std::vector<Page> &results );
 static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart );
@@ -196,12 +197,11 @@ public:
 };
 
 // Each directory comprises a group of pages
-// If the directory is selected from a parent menu, it needs to resolve
-//  to a target. The target is the first page in the directory if
-//  that page is a leaf (a html file). If the directory is has no
-//  files, it is an empty intermediate directory. A simple .html
-//  file is constructed to represent the directory in the menu
-//  system, using the make_file_for_dir flag.
+// If the directory is selected from a parent menu, it needs to resolve to
+//  a target. The target is the first page in the directory if that page is
+//  a leaf (a html file). If the directory is has no files, it is an empty
+//  intermediate directory. A simple .html file is constructed to represent
+//  the directory in the menu system, using the make_file_for_dir flag.
 void Builder::construct_dir_target( std::vector<Page*> ptrs )
 {
     // Look for a file the parent directory can point to 
@@ -287,6 +287,9 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
     bool first = true;
     for( Page *p: ptrs )
     {
+        if( p->make_file_for_dir )
+            make_file_for_dir = p;      // Make an html file with a menu but otherwise empty, as a target
+                                        //  for the parent directory (which otherwise had no target)
         bool skip = false;
         std::pair<std::string,std::string> menu_item;
         if( p->is_dir )
@@ -300,8 +303,6 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
             else
             {
                 menu_item = std::pair<std::string,std::string> ( q->second->target, p->base );
-                if( p->make_file_for_dir )
-                    make_file_for_dir = p;
             }
         }
         else if( p->is_link )
@@ -462,14 +463,14 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     // Build the menus for the previous run, to help us determine which pages need to be rebuilt
     std::vector<Page> pages;
     const char *previous_plan_file = GENERATED_PLAN_TXT;
-    bool previous_run_plan_found = read_file( previous_plan_file, pages );
+    bool previous_run_plan_found = read_plan_file( previous_plan_file, pages );
     sync_debug( "Previous Winged Spider run on this directory", pages );
     previous_time.run( pages );
 
     // Now do it for real    
     std::vector<Page> results;
     const char *plan_file = PLAN_TXT;
-    bool plan_found = read_file( plan_file, results );
+    bool plan_found = read_plan_file( plan_file, results );
     sync_debug( "Pages marked as F> are read from plan.txt *F*ile", results );
     if( !plan_found )
     {
@@ -567,6 +568,10 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
                     printf( "Info: A new file not present in plan file added: %s\n", p.path.c_str() );
 
                     // Add this line to plan, immediately after this point in plan
+                    // (It might look as if we need the whole RefineNewFilePlanLocation stuff from above,
+                    //  but actually straightforward new page violations are never detected here - this
+                    //  will only happen if an old page has also been deleted as well - all bets are off
+                    //  then, the generated-plan will is much more likely to need manual attention)
                     p.from_plan_file = true;
                     p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
                     p.added_to_plan_line_nbr = sec_sort++;
@@ -674,9 +679,12 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     if( rewrite || menu_changes || !plan_found || !previous_run_plan_found )
     {
         printf( "Info: %s generated-plan.txt\n", previous_run_plan_found?"Writing":"Rewriting" );
-        write_file( GENERATED_PLAN_TXT, results );
+        write_plan_file( GENERATED_PLAN_TXT, results );
         if( !plan_found )
-            write_file( PLAN_TXT, results );
+        {
+            printf( "Info: Creatine new plan.txt\n" );
+            write_plan_file( PLAN_TXT, results );
+        }
     }
 }
 
@@ -823,7 +831,7 @@ static void parse( Page &p )
 }
 
 // Read a plan file into a vector of Pages
-static bool read_file( const char *plan_file, std::vector<Page> &results )
+static bool read_plan_file( const char *plan_file, std::vector<Page> &results )
 {
     std::ifstream fin( plan_file );
     unsigned long line_nbr=0;
@@ -852,8 +860,10 @@ static bool read_file( const char *plan_file, std::vector<Page> &results )
                 len = line.length();
             }
             int level = 1;
-            for( char c: line )
+            for( char &c: line )
             {
+                if( c == '\\' )
+                    c = PATH_SEPARATOR; // for compatibility with old plan files, now use Unix convention
                 if( c == PATH_SEPARATOR )
                     level++;
             }
@@ -877,7 +887,7 @@ static bool read_file( const char *plan_file, std::vector<Page> &results )
 }
 
 // Write a vector of Pages into a plan file
-static void write_file( const char *plan_file, const std::vector<Page> &results )
+static void write_plan_file( const char *plan_file, const std::vector<Page> &results )
 {
     std::ofstream fout( plan_file );
     if( !fout )

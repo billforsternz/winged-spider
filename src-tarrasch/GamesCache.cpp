@@ -10,7 +10,7 @@
 #include <set>
 #include <time.h>
 #include <stdio.h>
-#include "../src/misc.h"
+#include "../src/defs.h"
 #include "../src/util.h"
 #include "thc.h"
 #include "PgnFiles.h"

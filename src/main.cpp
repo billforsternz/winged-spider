@@ -17,17 +17,16 @@
 #include <vector>
 #include <map>
 #include <set>
-#include <filesystem>
-namespace fs = std::experimental::filesystem;
+#include "defs.h"
 #include "util.h"
 #include "page.h"
-#include "misc.h"
 #include "../src-tarrasch/GamesCache.h"
 #include "md4c-html.h"
 
 // Local Helpers and data
 static bool startup_and_sanity_checks();
 static bool recursive_file_copy( const std::string &src, const std::string &dst, bool root );
+static void md_callback( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string );
 static bool check_dependencies_only;
 static bool verbose;
 
@@ -37,7 +36,6 @@ static bool verbose;
 
 int main( int argc, char *argv[] )
 {
-
     // Process command line arguments
     const char *usage =
     "Winged Spider V0.99\n"
@@ -514,13 +512,7 @@ bool html_to_html( Page *p, bool force_rebuild )
 // Helpers
 //
 
-static void md_callback( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string )
-{
-    std::string *ps = (std::string *)addr_std_string;
-    std::string s(txt,len);
-    *ps += s;
-}
-
+// Markdown in -> html out. A convenient C++ interface function for MD4C 3rd party C library 
 std::string md( const std::string &in )
 {
     std::string out;
@@ -531,6 +523,13 @@ std::string md( const std::string &in )
         0                               // unsigned renderer_flags
     );
     return out;
+}
+
+static void md_callback( const MD_CHAR* txt, MD_SIZE len, void *addr_std_string )
+{
+    std::string *ps = (std::string *)addr_std_string;
+    std::string s(txt,len);
+    *ps += s;
 }
 
 int get_verbosity() // later, might have more than two values, so int not bool
@@ -1288,6 +1287,9 @@ echo
                     case 'C':
                     {
                         replacement = md(solo_caption);
+                        size_t len = replacement.length();  // "<p>text</p>" -> "text"
+                        if( len >= 7 && replacement.substr(0,3)=="<p>" && replacement.substr(len-4,4)=="</p>" )
+                            replacement = replacement.substr(3,len-7);
                         break;
                     }
                     case 'T':

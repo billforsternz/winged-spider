@@ -67,18 +67,18 @@ namespace fs = std::experimental::filesystem;
      1: D> Home.md (-1,0)
      1: F> Plants (3,0)
      1: D> Plants (-1,0)
-     2: F> Animals\Armadillo.md (6,0)
-     2: D> Animals\Armadillo.md (-1,0)
-     2: F> Animals\Introduction.md (4,0)
-     2: D> Animals\Introduction.md (-1,0)
-     2: F> Animals\Zebra.md (5,0)
-     2: D> Animals\Zebra.md (-1,0)
-     2: F> Plants\Apple.md (9,0)
-     2: D> Plants\Apple.md (-1,0)
-     2: F> Plants\Banana.md (8,0)
-     2: D> Plants\Banana.md (-1,0)
-     2: F> Plants\Introduction.md (7,0)
-     2: D> Plants\Introduction.md (-1,0)
+     2: F> Animals/Armadillo.md (6,0)
+     2: D> Animals/Armadillo.md (-1,0)
+     2: F> Animals/Introduction.md (4,0)
+     2: D> Animals/Introduction.md (-1,0)
+     2: F> Animals/Zebra.md (5,0)
+     2: D> Animals/Zebra.md (-1,0)
+     2: F> Plants/Apple.md (9,0)
+     2: D> Plants/Apple.md (-1,0)
+     2: F> Plants/Banana.md (8,0)
+     2: D> Plants/Banana.md (-1,0)
+     2: F> Plants/Introduction.md (7,0)
+     2: D> Plants/Introduction.md (-1,0)
 
      The hierarchy level is the integer at the left margin, it is the first sort
      criteria. The F> or D> source is the last criteria (the final tiebreak) which
@@ -162,7 +162,7 @@ namespace fs = std::experimental::filesystem;
 static void parse( Page &p );
 static bool read_file( const char *plan_file, std::vector<Page> &results );
 static void write_file( const char *plan_file, const std::vector<Page> &results );
-static void recurse( const std::string &path, std::vector<Page> &results );
+static void recursive_dir_read( const std::string &path, std::vector<Page> &results );
 static void sync_debug( const char *msg, const std::vector<Page> &results );
 static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart );
 static unsigned count_md_gen;
@@ -246,7 +246,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
         menu.push_back( menu_item );
     }
 
-    // Each level of subdirectory gets a menu item, eg "Archives\Tournaments" gets "Archives", then "Tournaments"
+    // Each level of subdirectory gets a menu item, eg "Archives/Tournaments" gets "Archives", then "Tournaments"
     size_t offset1=0, offset2;
     while( offset1 < p->path.length() )
     {
@@ -255,7 +255,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
         {
             if( p->is_dir )  // final element of directory is not terminated by PATH_SEPARATOR
             {
-                std::string subdir = p->path;                    // eg "Archives\Tournaments"
+                std::string subdir = p->path;                    // eg "Archives/Tournaments"
                 std::string name   = p->path.substr(offset1);    // eg "Tournaments"
                 auto q = directory_to_target.find(subdir);
                 if( q == directory_to_target.end() )
@@ -268,7 +268,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
             }
             break;
         }
-        std::string subdir = p->path.substr( 0, offset2 );              // eg "Archives", then "Archives\Tournaments"
+        std::string subdir = p->path.substr( 0, offset2 );              // eg "Archives", then "Archives/Tournaments"
         std::string name   = p->path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
         auto q = directory_to_target.find(subdir);
         if( q == directory_to_target.end() )
@@ -341,7 +341,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
     same_menu_as_last_run = (it != menus.end() && it->second==menu);
     if( !same_menu_as_last_run )
     {
-        printf( "Info: Menu changed for all pages in directory %s\n", p0->dir.c_str() );
+        printf( "Info: Menu changed for all pages in directory %s\n", p0->dir=="" ? "(root)" : p0->dir.c_str() );
     }
     if( get_verbosity() > 0 )
     {
@@ -496,7 +496,7 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
 
     // Sync the directory structure to the plan
     printf( "Info: Synching to directory structure, in case there are changes\n" );
-    recurse(BASE_IN,results);
+    recursive_dir_read(BASE_IN,results);
     sync_debug( "Add in unsorted pages (filenames) marked as D> read by recursive scan of input *D*irectory", results );
     std::sort( results.begin(), results.end(), less_than_sync_plan_to_directory_structure );
     sync_debug( "After sorting to start sync process", results );
@@ -686,7 +686,7 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
 
 // Recursively read the contents of the input directory, identifying every file in every subdirectory
 //  and storing them as a list of pages
-static void recurse( const std::string &path, std::vector<Page> &results )
+static void recursive_dir_read( const std::string &path, std::vector<Page> &results )
 {
     static int level;
     level++;
@@ -696,6 +696,13 @@ static void recurse( const std::string &path, std::vector<Page> &results )
         Page p;
         p.level = level;
         std::string s( entry.path().string() );
+
+        // Use / instead of \ as a path separator. Windows doesn't mind, Unix cares a lot!
+        for( char &c: s )
+        {
+            if( c=='\\' )
+                c = '/';
+        }
         std::string t;
         if( s.length() >= (base_in_len+1) )
             t = s.substr((base_in_len+1));
@@ -706,7 +713,7 @@ static void recurse( const std::string &path, std::vector<Page> &results )
         if( p.is_dir )
         {
             results.push_back( p );
-            recurse( s, results );
+            recursive_dir_read( s, results );
         }
         else
             results.push_back( p );

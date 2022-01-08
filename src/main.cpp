@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
 
     // Process command line arguments
     const char *usage =
-    "Winged Spider V0.9\n"
+    "Winged Spider V0.99\n"
     "Winged Spider is a simple static website builder\n"
     "Winged Spider takes as input a directory hierarchy of markdown and PGN content\n"
     "and generates from it a website users can navigate through using menus defined\n"

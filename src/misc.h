@@ -12,18 +12,8 @@
 #include <vector>
 #include "Page.h"
 
-#ifdef _WIN64
-#define PATH_SEPARATOR '\\'
-#define PATH_SEPARATOR_STR "\\"
-#endif
-#ifdef _WIN32
-#define PATH_SEPARATOR '\\'
-#define PATH_SEPARATOR_STR "\\"
-#endif
-#ifndef PATH_SEPARATOR
 #define PATH_SEPARATOR '/'
 #define PATH_SEPARATOR_STR "/"
-#endif
 
 #ifdef _DEBUG
 #define GENERATED_PLAN_TXT  "example/generated-plan.txt"

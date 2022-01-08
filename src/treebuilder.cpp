@@ -1,4 +1,5 @@
-// Directory traversal to build and maintain a 'plan' or sitemap - the core idea of Winged Spider
+//
+//  Directory traversal to build and maintain a 'plan' or sitemap - the core idea of Winged Spider
 //
 
 #include <stdio.h>
@@ -14,19 +15,31 @@ namespace fs = std::experimental::filesystem;
 #include "page.h"
 #include "misc.h"
 
+// Local Helpers and data
+static void parse( Page &p );
+static bool read_file( const char *plan_file, std::vector<Page> &results );
+static void write_file( const char *plan_file, const std::vector<Page> &results );
+static void recurse( const std::string &path, std::vector<Page> &results );
 static void sync_debug( const char *msg, const std::vector<Page> &results );
-
-// Returns bool more
 static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart );
+static unsigned count_md_gen;
+static unsigned count_pgn_gen;
+static unsigned count_html_gen;
 
 // Build a map of the menus for each directory for the previous run, and use this
 //  to help determine if a file needs to be rebuilt
 static std::map< std::string, std::vector< std::pair<std::string,std::string> > >  menus;
 
-static unsigned count_md_gen;
-static unsigned count_pgn_gen;
-static unsigned count_html_gen;
-
+//
+// Identify groups of pages (pages with the same dir) in the plan. It's easy
+//  because the pages can be sorted so they 'group' together. Construct menus
+//  from these groups. Finally build the individual pages in each group.
+//  These operations are gathered into a Builder class so we can do the whole
+//  thing twice - the first time is a dummy run using the generated-plan.txt
+//  file from the most recent invocation of Winged Spider on this work directory.
+//  The second time is the actual run, if the menu generated for a group of
+//  pages in the dummy run differs from the actual run - then those pages need
+//  to be rebuilt even if their source files don't post-date their html files.
 class Builder
 {
     bool previous_run;
@@ -39,9 +52,8 @@ public:
     bool run( std::vector<Page> &results, bool force_rebuild=false );
 };
 
-
 // Each directory comprises a group of pages
-// If directory is selected from a parent menu, it needs to resolve
+// If the directory is selected from a parent menu, it needs to resolve
 //  to a target. The target is the first page in the directory if
 //  that page is a leaf (a html file). If the directory is has no
 //  files, it is an empty intermediate directory. A simple .html
@@ -171,20 +183,23 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
         first = false;
     }
     Page *p0 = ptrs[0];
-    bool same_menu_as_last_run = false;
+
+    // If this is the previous run of Winged Spider on this input directory, save the menu of this
+    //  page group and stop.
     if( previous_run )
     {
         menus[p0->dir] = menu;
         return false;
     }
-    else
+
+    // This is not the previous run of Winged Spider on this input directory, - check if the menu
+    //  for this page group has changed since that previous run
+    bool same_menu_as_last_run = false;
+    auto it = menus.find(p0->dir);
+    same_menu_as_last_run = (it != menus.end() && it->second==menu);
+    if( !same_menu_as_last_run )
     {
-        auto it = menus.find(p0->dir);
-        same_menu_as_last_run = (it != menus.end() && it->second==menu);
-        if( !same_menu_as_last_run )
-        {
-            printf( "Info: Menu changed for all pages in directory %s\n", p0->dir.c_str() );
-        }
+        printf( "Info: Menu changed for all pages in directory %s\n", p0->dir.c_str() );
     }
     if( get_verbosity() > 0 )
     {
@@ -274,7 +289,7 @@ bool Builder::run( std::vector<Page> &results, bool force_rebuild )
 
 // Predicate for sorting when we are comparing the plan file and the actual directory
 //  structure
-bool less_than_sync_plan_to_directory_structure( const Page &lhs,  const Page &rhs )
+static bool less_than_sync_plan_to_directory_structure( const Page &lhs,  const Page &rhs )
 {
     if( lhs.level != rhs.level )
         return lhs.level < rhs.level;
@@ -290,221 +305,17 @@ bool less_than_sync_plan_to_directory_structure( const Page &lhs,  const Page &r
 }
 
 // Predicate for sorting when we are restoring original plan file order
-bool less_than_restore_order( const Page &lhs,  const Page &rhs )
+static bool less_than_restore_order( const Page &lhs,  const Page &rhs )
 {
     if( lhs.plan_line_nbr != rhs.plan_line_nbr )
         return lhs.plan_line_nbr < rhs.plan_line_nbr;
     return lhs.added_to_plan_line_nbr < rhs.added_to_plan_line_nbr;
 }
 
-void parse( Page &p )
-{
-    size_t offset = p.path.find_last_of( PATH_SEPARATOR );
-    if( offset == std::string::npos )
-    {
-        p.dir  = "";
-        p.filename = p.path;
-    }
-    else
-    {
-        p.dir  = p.path.substr(0,offset);
-        p.filename = p.path.substr(offset+1);
-    }
-    offset = p.filename.find_last_of( '.' );
-    if( offset == std::string::npos )
-        p.base = p.filename;
-    else
-    {
-        p.base = p.filename.substr(0,offset);
-        p.ext  = util::tolower(p.filename.substr(offset+1));
-    }
-    if( p.is_dir )
-        p.target = p.dir + ".html";
-    else
-    {
-        if( p.dir.length() == 0 )
-            p.target = p.base + ".html";
-        else
-        {
-            p.target = p.dir + '-' + p.base + ".html";
-
-            // A refinement, if filename is same as folder name, remove that duplication from the
-            //  target; eg archives/tournaments/tournaments.md -> archives-tournaments.html not archives-tournaments-tournaments.html
-            std::string final_folder = p.dir;
-            size_t offset = p.dir.find_last_of( PATH_SEPARATOR );
-            if( offset != std::string::npos )
-                final_folder = p.dir.substr(offset+1);
-            if( util::tolower(final_folder) == util::tolower(p.base) )
-                p.target = p.dir + ".html"; // eg archives/archives.md -> archives.html not archives-archives.html   
-        }
-    }
-    for( char &c: p.target )
-    {
-        if( isascii(c) && isalnum(c) )
-            c = tolower(c);
-        else if( c != '.' )
-            c = '-';
-    }
-    if( p.target == "home.html" )
-        p.target = "index.html";
-
-    // Split path into component names, // eg "Archives/Tournaments/2020.md" -> "Archives", "Tournaments", "2020"
-    size_t offset1=0, offset2;
-    std::vector<std::string> components;
-    while( offset1 < p.path.length() )
-    {
-        offset2 = p.path.find( PATH_SEPARATOR, offset1 );
-        if( offset2 == std::string::npos )
-        {
-            offset2 = p.path.find( '.', offset1 );
-            if( offset2 != std::string::npos )
-            {
-                std::string name = p.path.substr(offset1,offset2-offset1);   // eg 
-                components.push_back( name );
-            }
-            break;
-        }
-        std::string name = p.path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
-        components.push_back( name );
-        offset1 = offset2+1;
-    }
-
-    // Auto generate Heading, subheading
-    // std::string heading;    // Eg "Archives Tournaments" (@S for historical reasons)
-    // std::string subheading; // Eg "2021" (@Z for historical reasons)
-    size_t len = components.size();
-    if( len >=2 && components[len-1] == components[len-2] )
-    {
-        components.pop_back();
-        len--;
-    }
-    if( len == 1 )
-    {
-        p.subheading = "";
-        p.heading = components[0];
-    }
-    else if( len > 1 )
-    {
-        p.subheading = components[len-1];
-        p.heading = "";
-        for( size_t i=0; i<len-1; i++ )
-        {
-            p.heading += components[i];
-            if( i+1 < len-1 )
-                p.heading += " ";
-        }
-    }
-}
-
-bool read_file( const char *plan_file, std::vector<Page> &results )
-{
-    std::ifstream fin( plan_file );
-    unsigned long line_nbr=0;
-    if( !fin )
-        return false;
-    for(;;)
-    {
-        std::string line;
-        if( !std::getline(fin,line) )
-            break;
-        line_nbr++;
-        util::rtrim(line);
-        size_t len = line.length();
-        if( len > 0 && line[0]>=' ' )
-        {
-            Page p;
-            size_t offset = line.find("->");
-            if( offset != std::string::npos )
-            {
-                p.link = line.substr(offset+2);
-                line = line.substr(0,offset);
-                util::rtrim(line);
-                util::ltrim(p.link);
-                util::rtrim(p.link);
-                p.is_link = (p.link.length()>1);
-                len = line.length();
-            }
-            int level = 1;
-            for( char c: line )
-            {
-                if( c == PATH_SEPARATOR )
-                    level++;
-            }
-            if( line[len-1] == PATH_SEPARATOR && !p.is_link)
-            {
-                p.is_dir = true;
-                line = line.substr(0,len-1);
-                level--;
-            }
-            if( !p.is_dir && !p.is_link)
-                p.is_file = true;
-            p.path = line;
-            p.plan_line_nbr = line_nbr;
-            p.from_plan_file = true;
-            p.level = level;
-            parse(p);
-            results.push_back( p );
-        }
-    }
-    return true;
-}
-
-void write_file( const char *plan_file, const std::vector<Page> &results )
-{
-    std::ofstream fout( plan_file );
-    if( !fout )
-    {
-        printf( "Error: Could not update plan file %s\n", plan_file );
-        return;
-    }
-    for( Page p: results )
-    {
-        std::string s = p.path;
-        if( p.is_dir )
-            s += PATH_SEPARATOR_STR;
-        else if( p.is_link )
-        {
-            s += " -> ";
-            s += p.link;
-        }
-        util::putline( fout, s );
-    }
-}
-
-// Returns bool more
-static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart )
-{
-    static size_t idx;
-    if( restart )
-        idx = 0;
-    ptrs.clear();
-    bool first = true;
-    std::string group;
-    while( idx < results.size() )
-    {
-        Page &p = results[idx++];
-        if( !p.disabled )
-        {
-            if( first )
-            {
-                ptrs.push_back(&p);
-                group = p.dir;
-                first = false;
-            }
-            else
-            {
-                if( p.dir == group )
-                    ptrs.push_back(&p);
-                else
-                {
-                    idx--;
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
+//
+// main() does some startup work, then calls this to sync the directory structure to the
+//  plan file and build the project
+//
 
 void treebuilder( bool force_rebuild, bool check_dependencies_only )
 {
@@ -748,7 +559,13 @@ void treebuilder( bool force_rebuild, bool check_dependencies_only )
     }
 }
 
-void recurse( const std::string &path, std::vector<Page> &results )
+//
+// Helpers
+//
+
+// Recursively read the contents of the input directory, identifying every file in every subdirectory
+//  and storing them as a list of pages
+static void recurse( const std::string &path, std::vector<Page> &results )
 {
     static int level;
     level++;
@@ -776,6 +593,222 @@ void recurse( const std::string &path, std::vector<Page> &results )
     level--;
 }
 
+// Parse the path (i.e. fully qualified filename) from a page to find all the
+//  other attributes of that page
+static void parse( Page &p )
+{
+    size_t offset = p.path.find_last_of( PATH_SEPARATOR );
+    if( offset == std::string::npos )
+    {
+        p.dir  = "";
+        p.filename = p.path;
+    }
+    else
+    {
+        p.dir  = p.path.substr(0,offset);
+        p.filename = p.path.substr(offset+1);
+    }
+    offset = p.filename.find_last_of( '.' );
+    if( offset == std::string::npos )
+        p.base = p.filename;
+    else
+    {
+        p.base = p.filename.substr(0,offset);
+        p.ext  = util::tolower(p.filename.substr(offset+1));
+    }
+    if( p.is_dir )
+        p.target = p.dir + ".html";
+    else
+    {
+        if( p.dir.length() == 0 )
+            p.target = p.base + ".html";
+        else
+        {
+            p.target = p.dir + '-' + p.base + ".html";
+
+            // A refinement, if filename is same as folder name, remove that duplication from the
+            //  target; eg archives/tournaments/tournaments.md -> archives-tournaments.html not archives-tournaments-tournaments.html
+            std::string final_folder = p.dir;
+            size_t offset = p.dir.find_last_of( PATH_SEPARATOR );
+            if( offset != std::string::npos )
+                final_folder = p.dir.substr(offset+1);
+            if( util::tolower(final_folder) == util::tolower(p.base) )
+                p.target = p.dir + ".html"; // eg archives/archives.md -> archives.html not archives-archives.html   
+        }
+    }
+    for( char &c: p.target )
+    {
+        if( isascii(c) && isalnum(c) )
+            c = tolower(c);
+        else if( c != '.' )
+            c = '-';
+    }
+    if( p.target == "home.html" )
+        p.target = "index.html";
+
+    // Split path into component names, // eg "Archives/Tournaments/2020.md" -> "Archives", "Tournaments", "2020"
+    size_t offset1=0, offset2;
+    std::vector<std::string> components;
+    while( offset1 < p.path.length() )
+    {
+        offset2 = p.path.find( PATH_SEPARATOR, offset1 );
+        if( offset2 == std::string::npos )
+        {
+            offset2 = p.path.find( '.', offset1 );
+            if( offset2 != std::string::npos )
+            {
+                std::string name = p.path.substr(offset1,offset2-offset1);   // eg 
+                components.push_back( name );
+            }
+            break;
+        }
+        std::string name = p.path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
+        components.push_back( name );
+        offset1 = offset2+1;
+    }
+
+    // Auto generate Heading, subheading
+    // std::string heading;    // Eg "Archives Tournaments" (@S for historical reasons)
+    // std::string subheading; // Eg "2021" (@Z for historical reasons)
+    size_t len = components.size();
+    if( len >=2 && components[len-1] == components[len-2] )
+    {
+        components.pop_back();
+        len--;
+    }
+    if( len == 1 )
+    {
+        p.subheading = "";
+        p.heading = components[0];
+    }
+    else if( len > 1 )
+    {
+        p.subheading = components[len-1];
+        p.heading = "";
+        for( size_t i=0; i<len-1; i++ )
+        {
+            p.heading += components[i];
+            if( i+1 < len-1 )
+                p.heading += " ";
+        }
+    }
+}
+
+// Read a plan file into a vector of Pages
+static bool read_file( const char *plan_file, std::vector<Page> &results )
+{
+    std::ifstream fin( plan_file );
+    unsigned long line_nbr=0;
+    if( !fin )
+        return false;
+    for(;;)
+    {
+        std::string line;
+        if( !std::getline(fin,line) )
+            break;
+        line_nbr++;
+        util::rtrim(line);
+        size_t len = line.length();
+        if( len > 0 && line[0]>=' ' )
+        {
+            Page p;
+            size_t offset = line.find("->");
+            if( offset != std::string::npos )
+            {
+                p.link = line.substr(offset+2);
+                line = line.substr(0,offset);
+                util::rtrim(line);
+                util::ltrim(p.link);
+                util::rtrim(p.link);
+                p.is_link = (p.link.length()>1);
+                len = line.length();
+            }
+            int level = 1;
+            for( char c: line )
+            {
+                if( c == PATH_SEPARATOR )
+                    level++;
+            }
+            if( line[len-1] == PATH_SEPARATOR && !p.is_link)
+            {
+                p.is_dir = true;
+                line = line.substr(0,len-1);
+                level--;
+            }
+            if( !p.is_dir && !p.is_link)
+                p.is_file = true;
+            p.path = line;
+            p.plan_line_nbr = line_nbr;
+            p.from_plan_file = true;
+            p.level = level;
+            parse(p);
+            results.push_back( p );
+        }
+    }
+    return true;
+}
+
+// Write a vector of Pages into a plan file
+static void write_file( const char *plan_file, const std::vector<Page> &results )
+{
+    std::ofstream fout( plan_file );
+    if( !fout )
+    {
+        printf( "Error: Could not update plan file %s\n", plan_file );
+        return;
+    }
+    for( Page p: results )
+    {
+        std::string s = p.path;
+        if( p.is_dir )
+            s += PATH_SEPARATOR_STR;
+        else if( p.is_link )
+        {
+            s += " -> ";
+            s += p.link;
+        }
+        util::putline( fout, s );
+    }
+}
+
+// Identify a groups of pages (pages with the same dir) from a plan. It's easy
+//  because the pages are sorted so they 'group' together.
+static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart )
+{
+    static size_t idx;
+    if( restart )
+        idx = 0;
+    ptrs.clear();
+    bool first = true;
+    std::string group;
+    while( idx < results.size() )
+    {
+        Page &p = results[idx++];
+        if( !p.disabled )
+        {
+            if( first )
+            {
+                ptrs.push_back(&p);
+                group = p.dir;
+                first = false;
+            }
+            else
+            {
+                if( p.dir == group )
+                    ptrs.push_back(&p);
+                else
+                {
+                    idx--;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+// For troubleshooting sync, it helps to look at the list of pages as they are sorted and
+//  filtered
 static void sync_debug( const char *msg, const std::vector<Page> &results )
 {
     if( get_verbosity() == 0 )

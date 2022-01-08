@@ -39,13 +39,7 @@
 #define BASE_TEMPLATE       "template"
 #endif
 
-void recurse( const std::string &path, std::vector<Page> &results );
-bool recursive_file_copy( const std::string &src, const std::string &dst, bool root );
-void parse( Page &p );
-bool read_file( const char *plan_file, std::vector<Page> &results );
-void write_file( const char *plan_file, const std::vector<Page> &results );
 void treebuilder( bool force_rebuild, bool check_dependencies_only );
-void recurse( const std::string &path, std::vector<Page> &results );
 bool md_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
 bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
 bool html_to_html( Page *p, bool force_rebuild );

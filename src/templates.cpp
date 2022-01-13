@@ -154,7 +154,8 @@ void MD_TEMPLATE::gen_html(  const std::string &in_file,
         }
     }
 
-    std::ofstream fout( html_out_file );
+    // Write HTML files in Unix eol mode ('\n' only), even on Windows systems
+    std::ofstream fout( html_out_file, std::ios_base::out|std::ios_base::binary );
     if( !fout )
     {
         printf( "Error: Could not create output file %s\n", html_out_file.c_str() );

@@ -800,7 +800,8 @@ void GamesCache::Publish( const std::string &html_out_file,
                           std::map<char,std::string> &macros,
                           const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
-    std::ofstream fout( html_out_file );
+    // Write HTML files in Unix eol mode ('\n' only), even on Windows systems
+    std::ofstream fout( html_out_file, std::ios_base::out|std::ios_base::binary );
     if( !fout )
     {
         printf( "Error: Could not create output file %s\n", html_out_file.c_str() );

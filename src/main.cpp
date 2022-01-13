@@ -140,12 +140,9 @@ static bool startup_and_sanity_checks()
     // Copy all template files, except template .txt files, to output. The idea is that runtime
     //  files defined in the templates (eg javascript and css files) can be conveniently
     //  put in the template directory and will be copied (once) to the output directory
-    if( !check_dependencies_only )
-    {
-        ok = recursive_file_copy( std::string(BASE_TEMPLATE), std::string(BASE_OUT), true );
-        if( !ok )
-            return false;
-    }
+    ok = recursive_file_copy( std::string(BASE_TEMPLATE), std::string(BASE_OUT), true );
+    if( !ok )
+        return false;
 
     // Read the markdown template, once
     ok = md_template.read_template( std::string(BASE_TEMPLATE) + "/template-md.txt" );
@@ -357,8 +354,13 @@ static bool recursive_file_copy( const std::string &src, const std::string &dst,
                 bool copy=false;
                 if( !fs::exists(pout) )
                 {
-                    copy = true;
-                    printf( "Info: Copying %s to new file %s\n", in.c_str(), out.c_str() );
+                    if( check_dependencies_only )
+                        printf( "Info: Check dependencies only, %s will be copied to new file %s on normal run\n", in.c_str(), out.c_str() );
+                    else
+                    {
+                        copy = true;
+                        printf( "Info: Copying %s to new file %s\n", in.c_str(), out.c_str() );
+                    }
                 }
                 else
                 {
@@ -366,8 +368,13 @@ static bool recursive_file_copy( const std::string &src, const std::string &dst,
                     fs::file_time_type time_out = last_write_time(pout);
                     if( time_in > time_out )
                     {
-                        copy = true;
-                        printf( "Info: Copying %s over %s because it post-dates it\n", in.c_str(), out.c_str() );
+                        if( check_dependencies_only )
+                            printf( "Info: Check dependencies only, %s will be copied over %s because it post-dates it on normal run\n", in.c_str(), out.c_str() );
+                        else
+                        {
+                            copy = true;
+                            printf( "Info: Copying %s over %s because it post-dates it\n", in.c_str(), out.c_str() );
+                        }
                     }
                 }
                 if( copy )
@@ -385,7 +392,10 @@ static bool recursive_file_copy( const std::string &src, const std::string &dst,
         std::string err = " (";
         err += e.what();
         err += ")";
-        printf( "Error: Copying template files %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
+        if( check_dependencies_only )
+            printf( "Error: Checking need to copy template files from %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
+        else
+            printf( "Error: Copying template files from %s to %s failed %s\n", src.c_str(), dst.c_str(), err.c_str() );
         ok = false;
     }
     return ok;

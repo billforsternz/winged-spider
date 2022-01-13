@@ -43,16 +43,18 @@ namespace fs = std::experimental::filesystem;
 #define BASE_TEMPLATE       "template"
 #endif
 
-// Functions shared between main.cpp and treebuilder.cpp
-void treebuilder( bool force_rebuild, bool check_dependencies_only );
+// Functions main.cpp
 bool md_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
 bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx, bool same_menu_as_last_run, bool force_rebuild );
 bool html_to_html( Page *p, bool force_rebuild );
 std::string macro_substitution( const std::string &input,
-    const std::map<char,std::string> &macros,
-    const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
+                                const std::map<char,std::string> &macros,
+                                const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
 int cprintf( const char *fmt, ... );
 int get_verbosity();
 std::string md( const std::string &in );
+
+// Functions traversal.cpp
+void traversal( bool force_rebuild, bool check_dependencies_only );
 
 #endif // DEFS_H_INCLUDED

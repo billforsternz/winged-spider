@@ -171,8 +171,9 @@
     <ClCompile Include="src\PackedGame.cpp" />
     <ClCompile Include="src\PgnFiles.cpp" />
     <ClCompile Include="src\PgnRead.cpp" />
+    <ClCompile Include="src\templates.cpp" />
     <ClCompile Include="src\thc.cpp" />
-    <ClCompile Include="src\treebuilder.cpp" />
+    <ClCompile Include="src\traversal.cpp" />
     <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +203,7 @@
     <ClInclude Include="src\Portability.h" />
     <ClInclude Include="src\ProgressBar.h" />
     <ClInclude Include="src\Roster.h" />
+    <ClInclude Include="src\templates.h" />
     <ClInclude Include="src\thc.h" />
     <ClInclude Include="src\util.h" />
   </ItemGroup>

@@ -460,7 +460,7 @@ static bool less_than_restore_order( const Page &lhs,  const Page &rhs )
 //  plan file and build the project
 //
 
-void treebuilder( bool force_rebuild, bool check_dependencies_only )
+void traversal( bool force_rebuild, bool check_dependencies_only )
 {
     Builder previous_time(true);
     Builder this_time(false);

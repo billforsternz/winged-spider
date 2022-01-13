@@ -7,6 +7,18 @@
 
     Winged Spider is currently approaching V1.0 release status
 
+    Source code structure;
+
+        main.cpp            Start up, glue everything together
+        traversal.cpp       Directory traversal and synchronisation, heart of Winged Spider
+        templates.cpp       Controls conversion of markdown and PGN to html
+        util.cpp            (Mainly) simple std::string utilities
+
+        md4c, md4c-html,    3rd party Markdown processor
+        entity     
+
+        everything else     Minimal subset of Tarrasch for dynamic chess html pages
+
 */
 
 #include <iostream>
@@ -49,9 +61,9 @@ int main( int argc, char *argv[] )
     "and generates from it a website users can navigate through using menus defined\n"
     "by the folder hierarchy\n"
     "Currently command line arguments are;\n"
-    " -v = verbose\n"
+    " -s = status check, don't rebuild targets\n"
     " -f = force rebuild\n"
-    " -s = status check, don't rebuild targets\n";
+    " -v = verbose (mainly for debugging)\n";
     bool force_rebuild = false;
     for( int i=1; i<argc; i++ )
     {
@@ -477,4 +489,3 @@ std::string macro_substitution( const std::string &input,
     }
     return out;
 }
-

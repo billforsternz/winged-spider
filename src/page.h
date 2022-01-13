@@ -11,7 +11,10 @@
 #include <string>
 #include <vector>
 
-// The plan.txt file defines the structure of the content. Each line corresponds to
+// Note that there is now a big introductory comment in traversal.cpp which explains
+// the role of the Page object (at the heart of Winged Spider) better than the short
+// discussion below:
+//  The plan.txt file defines the structure of the content. Each line corresponds to
 //  a page of content, or a ptr to a page of content, or a directory which starts
 //  a folder of content (the pages in the directory).
 //  An automatically generated plan from each run is saved as  generated-plan.txt, it

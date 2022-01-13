@@ -45,7 +45,7 @@
 
     The plan file format and structure is pretty obvious, it's just a list of directories
     and files within those directories. Programmatically handling trees can get confusing,
-    and the implemenation approach used by Winged Spider simplifies things and makes life
+    and the implementation approach used by Winged Spider simplifies things and makes life
     easier by transforming (directory) trees to simple lists just like this plan file
     format. The C++ objects in the list are 'Page's. A Page is a page in the ultimate
     website, and corresponds to a directory or file in the input hierarchy. Pages also
@@ -164,6 +164,7 @@ static void parse( Page &p );
 static bool read_plan_file( const char *plan_file, std::vector<Page> &results );
 static void write_plan_file( const char *plan_file, const std::vector<Page> &results );
 static void recursive_dir_read( const std::string &path, std::vector<Page> &results );
+static unsigned long find_last_line_in_preceding_group( const std::vector<Page> &results, int idx );
 static void sync_debug( const char *msg, const std::vector<Page> &results );
 static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> &ptrs, bool restart );
 static unsigned count_md_gen;
@@ -312,7 +313,7 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
             menu_item = std::pair<std::string,std::string> ( p->link, p->base );
         else if( p->is_file )
         {
-            if( p->ext=="md" || p->ext=="md2" || p->ext=="pgn" || p->ext=="html" )
+            if( p->ext=="md" || p->ext=="pgn" || p->ext=="html" )
                 menu_item = std::pair<std::string,std::string>( p->target, p->base );
             else
                 skip = true;
@@ -529,28 +530,10 @@ void traversal( bool force_rebuild, bool check_dependencies_only )
                     // Multiple pages in a row from directory structure = new files we don't know about
                     printf( "Info: new file or directory present: %s\n", p.path.c_str() );
 
-                    // Sorry this is a bit complicated (tag RefineNewFilePlanLocation)
-                    // We scan backwards through the group of pages preceding this one, looking for the
-                    // one with the greatest line number in the plan file. This new page is going to go
-                    // after that one. The group is defined as pages with the same dir.
-                    int idx2 = idx-1;
-                    unsigned long max_so_far = plan_page ? plan_page->plan_line_nbr : 0;
-                    bool triggered = false;
-                    while( plan_page && idx2 >= 0 )
-                    {
-                        const Page *q = &results[idx2--];
-                        if( q == plan_page )
-                            triggered = true;
-                        //printf( "q->path=%s, q->from_plan_file=%s, q->dir=%s, plan_page->dir=%s, q->plan_line_nbr=%d, max_so_far=%d\n", 
-                        //    q->path.c_str(),
-                        //    q->from_plan_file?"true":"false", q->dir.c_str(), plan_page->dir.c_str(), q->plan_line_nbr, max_so_far );
-                        if( q->from_plan_file && q->dir==plan_page->dir && q->plan_line_nbr>max_so_far )
-                            max_so_far = q->plan_line_nbr;
-                        if( q->dir != plan_page->dir && triggered )
-                            break;                            
-                    }
-                    //printf( "> max_so_far=%lu\n", max_so_far );
-                    p.plan_line_nbr = max_so_far;
+                    // Find the line nbr of the last Page in the group of pages immediately before this point
+                    // (tagged earlier as RefineNewFilePlanLocation)
+                    unsigned long line_nbr = find_last_line_in_preceding_group( results, idx );
+                    p.plan_line_nbr = line_nbr;
                     p.added_to_plan_line_nbr = sec_sort++;
                     p.from_plan_file = true;
                     rewrite = true;
@@ -572,15 +555,13 @@ void traversal( bool force_rebuild, bool check_dependencies_only )
                     // Unknown pages from directory structure = new files we don't know about
                     printf( "Info: A new file not present in plan file added: %s\n", p.path.c_str() );
 
-                    // Add this line to plan, immediately after this point in plan
-                    // (It might look as if we need the whole RefineNewFilePlanLocation stuff from above,
-                    //  but actually straightforward new page violations are never detected here - this
-                    //  will only happen if an old page has also been deleted as well - all bets are off
-                    //  then, the generated-plan will is much more likely to need manual attention)
-                    p.from_plan_file = true;
-                    p.plan_line_nbr = plan_page ? plan_page->plan_line_nbr : 0;
-                    p.added_to_plan_line_nbr = sec_sort++;
+                    // Find the line nbr of the last Page in the group of pages immediately before this point
+                    // (tagged earlier as RefineNewFilePlanLocation)
+                    unsigned long line_nbr = find_last_line_in_preceding_group( results, idx );
 
+                    // Add this line to plan, immediately after this point in plan
+                    p.plan_line_nbr = line_nbr;
+                    p.added_to_plan_line_nbr = sec_sort++;
                     p.from_plan_file = true;
                     rewrite = true;
                 }
@@ -679,16 +660,24 @@ void traversal( bool force_rebuild, bool check_dependencies_only )
     }
 
     // Rewrite the plan file. For the moment at least we use a temporary file name and don't overwrite the actual plan file
-    if( check_dependencies_only )
-        return;
     if( rewrite || menu_changes || !plan_found || !previous_run_plan_found )
     {
-        printf( "Info: %s generated-plan.txt\n", previous_run_plan_found?"Writing":"Rewriting" );
-        write_plan_file( GENERATED_PLAN_TXT, results );
+        if( check_dependencies_only )
+            printf( "Info: Check dependencies only, will %s generated-plan.txt on normal run\n", previous_run_plan_found?"write":"rewrite" );
+        else
+        {
+            printf( "Info: %s generated-plan.txt\n", previous_run_plan_found?"Writing":"Rewriting" );
+            write_plan_file( GENERATED_PLAN_TXT, results );
+        }
         if( !plan_found )
         {
-            printf( "Info: Creatine new plan.txt\n" );
-            write_plan_file( PLAN_TXT, results );
+            if( check_dependencies_only )
+                printf( "Info: Check dependencies only, will create plan.txt on normal run\n" );
+            else
+            {
+                printf( "Info: Creating new plan.txt\n" );
+                write_plan_file( PLAN_TXT, results );
+            }
         }
     }
 }
@@ -948,6 +937,38 @@ static bool get_next_page_group( std::vector<Page> &results, std::vector<Page*> 
         }
     }
     return false;
+}
+
+// Scan backwards through the group of pages preceding this one, looking for the
+// one with the greatest line number in the plan file.
+// The group is defined as pages with the same dir.
+// The "complex code here" tag RefineNewFilePlanLocation now resolves to this
+// function, and actually it's not too bad is it?
+static unsigned long find_last_line_in_preceding_group( const std::vector<Page> &results, int idx )
+{
+    unsigned long max_so_far = 0;
+    std::string group;
+    int idx_group_begin = 0;
+    int idx_group_end   = idx;
+    for( int i=idx-1; i>=0; i-- )
+    {
+        const Page *q = &results[i];
+        if( i == idx-1 )
+            group = q->dir;
+        else
+        {
+            if( group != q->dir )
+                break;
+        }
+        idx_group_begin = i;
+    }
+    for( int i=idx_group_begin; i<idx_group_end; i++ )
+    {
+        const Page *q = &results[i];
+        if( q->from_plan_file && q->plan_line_nbr>max_so_far )
+            max_so_far = q->plan_line_nbr;
+    }
+    return max_so_far;
 }
 
 // For troubleshooting sync, it helps to look at the list of pages as they are sorted and

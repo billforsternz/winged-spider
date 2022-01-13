@@ -129,13 +129,14 @@ bool MD_TEMPLATE::read_template( const std::string &template_file )
 }
 
 // Grids are grids of images
-struct PICTURE
+struct IMAGE
 {
     std::string filename;
     std::string alt_text;
     std::string caption;
 };
 
+// Generate html file from a markdown file, using this template
 void MD_TEMPLATE::gen_html(  const std::string &in_file,
                              const std::string &html_out_file,
                              std::map<char,std::string> &macros,
@@ -331,7 +332,7 @@ echo
     std::string solo_imgfile;
     std::string solo_caption;
     std::string solo_header_txt;
-    std::vector<PICTURE> pictures;
+    std::vector<IMAGE> images;
     int running=2;
     int flush_count=0;
     while( running > 0 )
@@ -537,13 +538,13 @@ echo
         // Enter/continue Grid
         if( state == st_grid )
         {
-            PICTURE picture;
+            IMAGE image;
             if( old_state == st_idle )
-                pictures.clear();
-            picture.alt_text = alt;
-            picture.caption  = caption;
-            picture.filename = imgfile;
-            pictures.push_back(picture);
+                images.clear();
+            image.alt_text = alt;
+            image.caption  = caption;
+            image.filename = imgfile;
+            images.push_back(image);
         }
 
         // Complete grid
@@ -551,14 +552,14 @@ echo
         {
             accum.clear(); //  Flush accumulation without writing it only on generation of grid/solo/panel
 
-            // Loop through the pictures
-            size_t len = pictures.size();
+            // Loop through the images
+            size_t len = images.size();
             bool in_grid=false;
             for( size_t i=0; i<len; i++ )
             {
-                PICTURE *p = &pictures[i];
-                PICTURE *q = NULL;
-                PICTURE *r = NULL;
+                IMAGE *p = &images[i];
+                IMAGE *q = NULL;
+                IMAGE *r = NULL;
                 std::string s = solo;
                 bool macro_substitution_required = true;
                 int grid_count = len-i;
@@ -573,7 +574,7 @@ echo
                     {
                         s = in_grid? grid_2of3 : pair;
                         i++;
-                        q = &pictures[i];
+                        q = &images[i];
                         break;
                     }
                     default:
@@ -581,15 +582,15 @@ echo
                     {
                         s = triple;
                         i++;
-                        q = &pictures[i];
+                        q = &images[i];
                         i++;
-                        r = &pictures[i];
+                        r = &images[i];
                         break;
                     }
                 }
 
                 // Replace @F, @A, @C with filename, alt_text and caption repeatedly
-                //  Use the first picture (i.e. p) for the first instance of each
+                //  Use the first image (i.e. p) for the first instance of each
                 int filename_idx = 0;
                 int alt_text_idx = 0;
                 int caption_idx  = 0;

@@ -193,8 +193,8 @@ bool md_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> 
         {
             printf( "Info: Rebuilding %s\n", out.c_str() );
             std::map<char,std::string> macros;
-            macros['s'] = p->heading;       // lower case 's' and 'z' mean auto-generated
-            macros['z'] = p->subheading;
+            macros['s'] = p->subheading;       // lower case 's' and 'z' mean auto-generated
+            macros['z'] = p->subsubheading;
             if( p->make_file_for_dir )
                 in = "";
             md_template.gen_html(in,out,macros,menu,menu_idx);
@@ -240,9 +240,9 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
         {
             printf( "Info: Rebuilding %s\n", out.c_str() );
             std::map<char,std::string> macros;
-            macros['T'] = p->heading;
-            macros['S'] = p->heading;
-            macros['Z'] = p->subheading;
+            macros['T'] = p->subheading;
+            macros['S'] = p->subheading;
+            macros['Z'] = p->subsubheading;
             macros['G'] = pgn_asset;
             pgn_template.gen_html(in,out,pgn_asset_full,macros,menu,menu_idx);
         }

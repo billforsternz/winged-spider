@@ -12,12 +12,15 @@
 #include <vector>
 
 // The plan.txt file defines the structure of the content. Each line corresponds to
-//  a page of content, or a ptr to a page of content. The plan is created automatically
-//  from the input directory structure. The plan from each run is saved as plan.txt
-//  and it can be edited, for example to reorder pages
+//  a page of content, or a ptr to a page of content, or a directory which starts
+//  a folder of content (the pages in the directory).
+//  An automatically generated plan from each run is saved as  generated-plan.txt, it
+//  can be used as plan.txt, normally some edits (eg ordering items) are desirable.
+//  If there is no plan.txt file, generated-plan.txt is created from the input directory
+//  structure alone.
 struct Page
 {
-    int level=0;
+    int level=0;    // depth in hierarchy
 
     // One and only one of the following three
     bool is_file = false; 
@@ -34,15 +37,15 @@ struct Page
     std::string link;       // if is_link is true
 
     // Misc
-    bool from_plan_file=false;
+    bool from_plan_file=false;      // (from plan file, or from directory hierarchy)
     unsigned long plan_line_nbr = ULONG_MAX;
     unsigned long added_to_plan_line_nbr=0;
     bool disabled = false;
     bool make_file_for_dir = false;
 
     // Auto generated summary text
-    std::string heading;    // Eg "Archives Tournaments" (@S for historical reasons)
-    std::string subheading; // Eg "2021" (@Z for historical reasons)
+    std::string subheading;    // Eg "Archives Tournaments" (by convention @S)
+    std::string subsubheading; // Eg "2021" (by convention @Z)
 
     // Features to be added later to support more user annotation for files
     bool empty_line_prefix = false;

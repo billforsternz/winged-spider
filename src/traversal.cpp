@@ -808,9 +808,9 @@ static void parse( Page &p )
         offset1 = offset2+1;
     }
 
-    // Auto generate Heading, subheading
-    // std::string heading;    // Eg "Archives Tournaments" (@S for historical reasons)
-    // std::string subheading; // Eg "2021" (@Z for historical reasons)
+    // Auto generate subheading, subsubheading
+    // std::string subheading;    // Eg "Archives Tournaments" (by convention @S)
+    // std::string subsubheading; // Eg "2021" (by convention @Z)
     size_t len = components.size();
     if( len >=2 && components[len-1] == components[len-2] )
     {
@@ -819,18 +819,18 @@ static void parse( Page &p )
     }
     if( len == 1 )
     {
-        p.subheading = "";
-        p.heading = components[0];
+        p.subsubheading = "";
+        p.subheading = components[0];
     }
     else if( len > 1 )
     {
-        p.subheading = components[len-1];
-        p.heading = "";
+        p.subsubheading = components[len-1];
+        p.subheading = "";
         for( size_t i=0; i<len-1; i++ )
         {
-            p.heading += components[i];
+            p.subheading += components[i];
             if( i+1 < len-1 )
-                p.heading += " ";
+                p.subheading += " ";
         }
     }
 }

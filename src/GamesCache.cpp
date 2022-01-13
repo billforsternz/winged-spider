@@ -20,11 +20,8 @@
 #include "Eco.h"
 #include "GamesCache.h"
 
-#ifdef _WINDOWS
+// Write PGN files with Windows convention, even on Unix systems
 #define EOL "\r\n"
-#else
-#define EOL "\n"
-#endif
 
 using namespace std;
 

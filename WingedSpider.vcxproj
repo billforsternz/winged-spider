@@ -200,7 +200,6 @@
     <ClInclude Include="src\page.h" />
     <ClInclude Include="src\PgnFiles.h" />
     <ClInclude Include="src\PgnRead.h" />
-    <ClInclude Include="src\Portability.h" />
     <ClInclude Include="src\ProgressBar.h" />
     <ClInclude Include="src\Roster.h" />
     <ClInclude Include="src\templates.h" />

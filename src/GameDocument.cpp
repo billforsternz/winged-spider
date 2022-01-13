@@ -2069,11 +2069,9 @@ bool GameDocument::IsAtEnd()
 
 void GameDocument::ToFileTxtGameDetails( std::string &str )
 {
-    #ifdef _WINDOWS
+    // Write PGN files with Windows convention, even on Unix systems
     #define EOL "\r\n"
-    #else
-    #define EOL "\n"
-    #endif
+
     std::string str1;
     str1 += "[Event \"";
     str1 += (r.event=="" ? "?" : r.event);

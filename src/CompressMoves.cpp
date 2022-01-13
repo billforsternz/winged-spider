@@ -27,11 +27,11 @@ static unsigned long nbr_rook_moves;
 static unsigned long nbr_rook_swaps;
 static unsigned long nbr_rook_swaps_alt;
 static unsigned long nbr_queen_swaps;
-int max_nbr_slow_moves_other;
-int max_nbr_slow_moves_queen;
-int nbr_games_with_promotions;
-int nbr_games_with_slow_mode;
-int nbr_games_with_two_queens;
+static unsigned long max_nbr_slow_moves_other;
+static unsigned long max_nbr_slow_moves_queen;
+static unsigned long nbr_games_with_promotions;
+static unsigned long nbr_games_with_slow_mode;
+static unsigned long nbr_games_with_two_queens;
 
 void CompressMovesDiagBegin()
 {

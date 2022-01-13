@@ -1738,7 +1738,7 @@ void GameDocument::UseGame( const thc::ChessPosition &cp, const std::vector<thc:
         }
         if( position_found )
         {
-            printf( "Full move count initially=%d, %d further moves, then pick up from offset %d\n",
+            printf( "Full move count initially=%d, %lu further moves, then pick up from offset %d\n",
                 cp.full_move_count,
                 moves_from_base_position.size(),
                 offset_of_rest_of_game );
@@ -1798,7 +1798,7 @@ void GameDocument::UseGame( const thc::ChessPosition &cp, const std::vector<thc:
                 bool append_not_branch = offset_last_common_move >= (variation_size-1);
                 if( append_not_branch )
                 {
-                    printf( "Append, nbr_common_moves=%d, combined.size()=%d\n", nbr_common_moves, combined.size() );
+                    printf( "Append, nbr_common_moves=%d, combined.size()=%lu\n", nbr_common_moves, combined.size() );
                     MoveTree &branch_point = *(variation.begin() + offset_last_common_move);
                     branch_point.game_move.comment += description;
                     branch_point.game_move.comment += " continued";
@@ -1812,7 +1812,7 @@ void GameDocument::UseGame( const thc::ChessPosition &cp, const std::vector<thc:
                 }
                 else
                 {
-                    printf( "Branch, nbr_common_moves=%d, combined.size()=%d\n", nbr_common_moves, combined.size() );
+                    printf( "Branch, nbr_common_moves=%d, combined.size()=%lu\n", nbr_common_moves, combined.size() );
                     MoveTree &branch_point = *(variation.begin() + offset_last_common_move + (at_move0?0:1));
                     std::vector<MoveTree> sub_variation;
                     bool first=true;

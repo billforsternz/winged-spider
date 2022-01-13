@@ -20,7 +20,7 @@
 #include "defs.h"
 #include "util.h"
 #include "page.h"
-#include "../src-tarrasch/GamesCache.h"
+#include "GamesCache.h"
 #include "md4c-html.h"
 
 // Local Helpers and data
@@ -36,6 +36,7 @@ static bool verbose;
 
 int main( int argc, char *argv[] )
 {
+
     // Process command line arguments
     const char *usage =
     "Winged Spider V0.99\n"

@@ -47,7 +47,7 @@ PgnRead::PgnRead( char callback_code )
     error_ptr = 0;
     debug_ptr = 0;
     stack_idx = 0;
-    memset( stack_array, 0, sizeof(stack_array) );
+    memset( (char *)stack_array, 0, sizeof(stack_array) );
 }
 
 const char *PgnRead::ShowState( STATE state )

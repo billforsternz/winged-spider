@@ -2182,7 +2182,7 @@ entity_lookup(const char* name, size_t name_size)
 {
     struct entity_key key = { name, name_size };
 
-    return bsearch(&key,
+    return (const struct entity*)bsearch(&key,
                    entity_table,
                    sizeof(entity_table) / sizeof(entity_table[0]),
                    sizeof(struct entity),

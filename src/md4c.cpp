@@ -393,7 +393,7 @@ md_text_with_null_replacement(MD_CTX* ctx, MD_TEXTTYPE type, const CHAR* str, SZ
             CHAR* new_buffer;                                               \
             SZ new_size = ((sz) + (sz) / 2 + 128) & ~127;                   \
                                                                             \
-            new_buffer = realloc(ctx->buffer, new_size);                    \
+            new_buffer = (CHAR *)realloc(ctx->buffer, new_size);                    \
             if(new_buffer == NULL) {                                        \
                 MD_LOG("realloc() failed.");                                \
                 ret = -1;                                                   \
@@ -1668,7 +1668,7 @@ md_build_ref_def_hashtable(MD_CTX* ctx)
         return 0;
 
     ctx->ref_def_hashtable_size = (ctx->n_ref_defs * 5) / 4;
-    ctx->ref_def_hashtable = malloc(ctx->ref_def_hashtable_size * sizeof(void*));
+    ctx->ref_def_hashtable = (void **)malloc(ctx->ref_def_hashtable_size * sizeof(void*));
     if(ctx->ref_def_hashtable == NULL) {
         MD_LOG("malloc() failed.");
         goto abort;
@@ -2505,7 +2505,7 @@ md_push_mark(MD_CTX* ctx)
         ctx->alloc_marks = (ctx->alloc_marks > 0
                 ? ctx->alloc_marks + ctx->alloc_marks / 2
                 : 64);
-        new_marks = realloc(ctx->marks, ctx->alloc_marks * sizeof(MD_MARK));
+        new_marks = (MD_MARK *)realloc(ctx->marks, ctx->alloc_marks * sizeof(MD_MARK));
         if(new_marks == NULL) {
             MD_LOG("realloc() failed.");
             return NULL;
@@ -4262,11 +4262,13 @@ md_process_inlines(MD_CTX* ctx, const MD_LINE* lines, int n_lines)
                     title_mark = opener+2;
                     MD_ASSERT(title_mark->ch == 'D');
 
-                    MD_CHECK(md_enter_leave_span_a(ctx, (mark->ch != ']'),
+                    auto ret = md_enter_leave_span_a(ctx, (mark->ch != ']'),
                                 (opener->ch == '!' ? MD_SPAN_IMG : MD_SPAN_A),
                                 STR(dest_mark->beg), dest_mark->end - dest_mark->beg, FALSE,
-                                md_mark_get_ptr(ctx, (int)(title_mark - ctx->marks)),
-								title_mark->prev));
+                                (const CHAR* )md_mark_get_ptr(ctx, (int)(title_mark - ctx->marks)),
+								title_mark->prev);
+                    if( ret < 0 )
+                        goto abort;
 
                     /* link/image closer may span multiple lines. */
                     if(mark->ch == ']') {
@@ -4531,7 +4533,7 @@ md_process_table_block_contents(MD_CTX* ctx, int col_count, const MD_LINE* lines
      * with the underlines. */
     MD_ASSERT(n_lines >= 2);
 
-    align = malloc(col_count * sizeof(MD_ALIGN));
+    align = (MD_ALIGN *)malloc(col_count * sizeof(MD_ALIGN));
     if(align == NULL) {
         MD_LOG("malloc() failed.");
         ret = -1;
@@ -5540,7 +5542,7 @@ md_push_container(MD_CTX* ctx, const MD_CONTAINER* container)
         ctx->alloc_containers = (ctx->alloc_containers > 0
                 ? ctx->alloc_containers + ctx->alloc_containers / 2
                 : 16);
-        new_containers = realloc(ctx->containers, ctx->alloc_containers * sizeof(MD_CONTAINER));
+        new_containers = (MD_CONTAINER *)realloc(ctx->containers, ctx->alloc_containers * sizeof(MD_CONTAINER));
         if(new_containers == NULL) {
             MD_LOG("realloc() failed.");
             return -1;

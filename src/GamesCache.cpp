@@ -10,8 +10,8 @@
 #include <set>
 #include <time.h>
 #include <stdio.h>
-#include "../src/defs.h"
-#include "../src/util.h"
+#include "defs.h"
+#include "util.h"
 #include "thc.h"
 #include "PgnFiles.h"
 #include "Lang.h"

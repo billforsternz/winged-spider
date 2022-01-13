@@ -8,6 +8,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <climits>
+#include <cstring>
 #include <filesystem>
 
 // For Visual Studio 17 and earlier, <filesystem> is experimental

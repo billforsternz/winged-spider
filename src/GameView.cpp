@@ -1747,7 +1747,7 @@ void GameView::Debug()
             case END_OF_GAME:			s="END_OF_GAME";			break;
             case NEWLINE:				s="NEWLINE";				break;
         }
-		printf( "%s level=%d, offset1=%d, offset2=%d, str=%s\n", s,
+		printf( "%s level=%d, offset1=%lu, offset2=%lu, str=%s\n", s,
 			gve.level,
 			gve.offset1,
 			gve.offset2,

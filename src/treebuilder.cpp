@@ -228,6 +228,7 @@ void Builder::construct_dir_target( std::vector<Page*> ptrs )
 // first, because each page will have the same menu (but a different idx into the
 // menu to be highlighted)
 // Return true if changed menu detected
+
 bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild )
 {
     if( ptrs.size() == 0 )
@@ -272,7 +273,9 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
         std::string name   = p->path.substr(offset1,offset2-offset1);   // eg "Archives", then "Tournaments"
         auto q = directory_to_target.find(subdir);
         if( q == directory_to_target.end() )
+        {
             printf( "Warning: %s target not found\n", subdir.c_str() );
+        }
         else
         {
             std::pair<std::string,std::string> menu_item( q->second->target, name );
@@ -331,18 +334,18 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
     //  page group and stop.
     if( previous_run )
     {
-        menus[p0->dir] = menu;
+        menus[p0->dir==""?".":p0->dir] = menu;
         return false;
     }
 
     // This is not the previous run of Winged Spider on this input directory, - check if the menu
     //  for this page group has changed since that previous run
     bool same_menu_as_last_run = false;
-    auto it = menus.find(p0->dir);
+    auto it = menus.find(p0->dir==""?".":p0->dir);
     same_menu_as_last_run = (it != menus.end() && it->second==menu);
     if( !same_menu_as_last_run )
     {
-        printf( "Info: Menu changed for all pages in directory %s\n", p0->dir=="" ? "(root)" : p0->dir.c_str() );
+        printf( "Info: Menu changed for all pages in directory %s\n", p0->dir=="" ? "." : p0->dir.c_str() );
     }
     if( get_verbosity() > 0 )
     {
@@ -354,7 +357,9 @@ bool Builder::construct_page_group( std::vector<Page*> ptrs, bool force_rebuild 
     // If we are making an html file for an empty directory, do it now with
     //  index set to the last element of the split path
     if( make_file_for_dir )
+    {
         md_to_html( make_file_for_dir, menu, menu_idx-1, same_menu_as_last_run, force_rebuild );
+    }
 
     // Build each page in turn
     for( Page *p: ptrs )

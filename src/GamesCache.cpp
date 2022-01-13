@@ -17,7 +17,6 @@
 #include "Lang.h"
 #include "ListableGamePgn.h"
 #include "PgnRead.h"
-#include "Eco.h"
 #include "GamesCache.h"
 
 // Write PGN files with Windows convention, even on Unix systems
@@ -723,7 +722,9 @@ void GamesCache::Eco(  GamesCache *UNUSED(gc_clipboard) )
         mptr->GetCompactGame( pact );
         if( pact.r.fen == "" && pact.r.eco == "" )
         {
-            pact.r.eco = eco_calculate( pact.moves );
+            // pact.r.eco = eco_calculate( pact.moves );
+            pact.r.eco = "A00"; // Fake out for Winged Spider so we can eliminate eco.cpp eco.h
+                                //  this function not called at all in Winged Spider
             //PgnNameCommaGroom( pact.r.black );
             //PgnNameCommaGroom( pact.r.white );
             if( mptr->IsGameDocument() )

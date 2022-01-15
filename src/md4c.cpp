@@ -4266,7 +4266,7 @@ md_process_inlines(MD_CTX* ctx, const MD_LINE* lines, int n_lines)
                                 (opener->ch == '!' ? MD_SPAN_IMG : MD_SPAN_A),
                                 STR(dest_mark->beg), dest_mark->end - dest_mark->beg, FALSE,
                                 (const CHAR* )md_mark_get_ptr(ctx, (int)(title_mark - ctx->marks)),
-								title_mark->prev);
+                                title_mark->prev);
                     if( ret < 0 )
                         goto abort;
 

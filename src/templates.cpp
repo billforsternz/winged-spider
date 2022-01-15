@@ -194,7 +194,7 @@ void MD_TEMPLATE::gen_html(  const std::string &in_file,
     // Write out the the html header
     std::string h = macro_substitution( header, macros, menu, menu_idx );
     util::putline(fout,h);
- 
+
 /*
 
 @snippet = normal markdown, nothing special needed
@@ -418,9 +418,9 @@ echo
                 {
                     case ev_heading:        state = st_heading;        break;
                     case ev_panel_heading:  state = st_panel;          break;
-                    case ev_img:            state = st_grid;           break;  
-                    case ev_blank:                                     break; 
-                    default:                state = st_echo;           break;         
+                    case ev_img:            state = st_grid;           break;
+                    case ev_blank:                                     break;
+                    default:                state = st_echo;           break;
                 }
                 break;
             }
@@ -428,9 +428,9 @@ echo
             {
                 switch( ev )
                 {
-                    case ev_blank:          state = st_idle;           break;         
-                    case ev_img:            state = st_heading_img;    break;  
-                    default:                state = st_echo;           break;         
+                    case ev_blank:          state = st_idle;           break;
+                    case ev_img:            state = st_heading_img;    break;
+                    default:                state = st_echo;           break;
                 }
                 break;
             }
@@ -438,9 +438,9 @@ echo
             {
                 switch( ev )
                 {
-                    case ev_blank:          state = st_idle;           break; 
-                    case ev_txt:            state = st_solo;           break; 
-                    default:                state = st_echo;           break; 
+                    case ev_blank:          state = st_idle;           break;
+                    case ev_txt:            state = st_solo;           break;
+                    default:                state = st_echo;           break;
                 }
                 break;
             }
@@ -448,9 +448,9 @@ echo
             {
                 switch( ev )
                 {
-                    case ev_blank:          state = st_idle;           break;         
-                    case ev_txt:            state = st_panel_solo;     break;   
-                    default:                state = st_echo;           break;         
+                    case ev_blank:          state = st_idle;           break;
+                    case ev_txt:            state = st_panel_solo;     break;
+                    default:                state = st_echo;           break;
                 }
                 break;
             }
@@ -458,9 +458,9 @@ echo
             {
                 switch( ev )
                 {
-                    case ev_txt:            state = st_solo;           break;        
-                    case ev_blank:          state = st_solo_idle;      break;   
-                    default:                state = st_echo;           break;        
+                    case ev_txt:            state = st_solo;           break;
+                    case ev_blank:          state = st_solo_idle;      break;
+                    default:                state = st_echo;           break;
                 }
                 break;
             }
@@ -468,12 +468,12 @@ echo
             {
                 switch( ev )
                 {
-                    case ev_txt:            state = st_solo;           break;   
-                    case ev_blank:          state = st_idle;           break;   
+                    case ev_txt:            state = st_solo;           break;
+                    case ev_blank:          state = st_idle;           break;
                     case ev_heading:        state = st_heading;        break;
-                    case ev_panel_heading:  state = st_panel;          break;  
-                    case ev_img:            state = st_grid;           break;    
-                    default:                state = st_echo;           break;   
+                    case ev_panel_heading:  state = st_panel;          break;
+                    case ev_img:            state = st_grid;           break;
+                    default:                state = st_echo;           break;
                 }
                 break;
             }
@@ -481,9 +481,9 @@ echo
             {
                 switch( ev )
                 {
-                    case ev_txt:            state = st_panel_solo;     break;     
+                    case ev_txt:            state = st_panel_solo;     break;
                     case ev_blank:          state = st_panel_solo_idle;break;
-                    default:                state = st_echo;           break;           
+                    default:                state = st_echo;           break;
                 }
                 break;
             }
@@ -491,12 +491,12 @@ echo
             {
                 switch( ev )
                 {
-                    case ev_txt:            state = st_panel_solo;     break;   
-                    case ev_blank:          state = st_idle;           break;         
-                    case ev_heading:        state = st_heading;        break;      
-                    case ev_panel_heading:  state = st_panel;          break;        
-                    case ev_img:            state = st_grid;           break;          
-                    default:                state = st_echo;           break;         
+                    case ev_txt:            state = st_panel_solo;     break;
+                    case ev_blank:          state = st_idle;           break;
+                    case ev_heading:        state = st_heading;        break;
+                    case ev_panel_heading:  state = st_panel;          break;
+                    case ev_img:            state = st_grid;           break;
+                    default:                state = st_echo;           break;
                 }
                 break;
             }

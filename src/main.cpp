@@ -15,7 +15,7 @@
         util.cpp            (Mainly) simple std::string utilities
 
         md4c, md4c-html,    3rd party Markdown processor
-        entity     
+        entity
 
         everything else     Minimal subset of Tarrasch for dynamic chess html pages
 
@@ -111,12 +111,12 @@ static bool startup_and_sanity_checks()
     "Normally the input files are in markdown format, and the template-md.txt\n"
     "file in the \"template\" directory guides the conversion process. Winged\n"
     "Spider is distributed with a simple example to get you started.\n";
-    
+
     //std::string path("template");
     std::vector<std::string> prerequisite_directories{BASE_IN,BASE_OUT,BASE_TEMPLATE};
     for( std::string s: prerequisite_directories )
     {
-        fs::path dir(s); 
+        fs::path dir(s);
         if( !fs::exists(dir) )
         {
             printf( "Error: Required directory \"%s\" doesn't exist\n", s.c_str() );
@@ -136,7 +136,7 @@ static bool startup_and_sanity_checks()
     std::string assets = BASE_OUT;
     assets += PATH_SEPARATOR_STR;
     assets += "assets";
-    fs::path dir(assets); 
+    fs::path dir(assets);
     if( !fs::exists(dir) || !fs::is_directory(dir) )
     {
         bool ok2 = fs::create_directory(dir);
@@ -175,7 +175,7 @@ bool md_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> 
     bool needs_rebuild = !same_menu_as_last_run;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    fs::path pin(in); 
+    fs::path pin(in);
     fs::path pout(out);
     if( force_rebuild  || !fs::exists(pout) )
         needs_rebuild = true;
@@ -184,7 +184,7 @@ bool md_to_html( Page *p, const std::vector<std::pair<std::string,std::string>> 
         fs::file_time_type time_out = last_write_time(pout);
         if( !p->make_file_for_dir )
         {
-            fs::file_time_type time_in = last_write_time(pin);    
+            fs::file_time_type time_in = last_write_time(pin);
             if( time_in > time_out )
             {
                 printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
@@ -221,7 +221,7 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
     std::string pgn_asset =  std::string("assets") + std::string(PATH_SEPARATOR_STR) + p->target;
-    fs::path pin(in); 
+    fs::path pin(in);
     fs::path pout(out);
     size_t offset = pgn_asset.find_last_of('.');
     if( offset != std::string::npos )
@@ -232,7 +232,7 @@ bool pgn_to_html( Page *p, const std::vector<std::pair<std::string,std::string>>
     else
     {
         fs::file_time_type time_out = last_write_time(pout);
-        fs::file_time_type time_in = last_write_time(pin);    
+        fs::file_time_type time_in = last_write_time(pin);
         if( time_in > time_out )
         {
             printf( "Info: %s post-dates %s\n", in.c_str(), out.c_str() );
@@ -268,14 +268,14 @@ bool html_to_html( Page *p, bool force_rebuild )
     bool needs_rebuild = false;
     std::string in  = std::string(BASE_IN) + std::string(PATH_SEPARATOR_STR) + p->path;
     std::string out = std::string(BASE_OUT) + std::string(PATH_SEPARATOR_STR) + p->target;
-    fs::path pin(in); 
+    fs::path pin(in);
     fs::path pout(out);
     if( force_rebuild || !fs::exists(pout) )
         needs_rebuild = true;
     else
     {
         fs::file_time_type time_out = last_write_time(pout);
-        fs::file_time_type time_in = last_write_time(pin);    
+        fs::file_time_type time_in = last_write_time(pin);
         if( time_in > time_out )
         {
             printf( "Info: %s succeeds %s\n", in.c_str(), out.c_str() );
@@ -301,7 +301,7 @@ bool html_to_html( Page *p, bool force_rebuild )
 // Helpers
 //
 
-// Markdown in -> html out. A convenient C++ interface function for MD4C 3rd party C library 
+// Markdown in -> html out. A convenient C++ interface function for MD4C 3rd party C library
 std::string md( const std::string &in )
 {
     std::string out;
@@ -331,10 +331,10 @@ int cprintf( const char *fmt, ... )
     if( !verbose )
         return 0;
     int ret=0;
-	va_list args;
-	va_start( args, fmt );
+    va_list args;
+    va_start( args, fmt );
     char buf[1000];
-    vsnprintf( buf, sizeof(buf)-2, fmt, args ); 
+    vsnprintf( buf, sizeof(buf)-2, fmt, args );
     buf[sizeof(buf)-1] = '\0';
     printf("%s",buf);
     va_end(args);
@@ -376,7 +376,7 @@ static bool recursive_file_copy( const std::string &src, const std::string &dst,
                 }
                 else
                 {
-                    fs::file_time_type time_in  = last_write_time(entry);    
+                    fs::file_time_type time_in  = last_write_time(entry);
                     fs::file_time_type time_out = last_write_time(pout);
                     if( time_in > time_out )
                     {

@@ -85,14 +85,14 @@ bool PgnStateMachine( FILE *pgn_file, int &typ, char *buf, int buflen )
             if( tagline )
             {
                 tagline = false;  // unless all checks pass
-                
+
                 // Skip '['
                 p++;
-                
+
                 // Skip whitespace
                 while( *p==' ' || *p=='\t' )
                     p++;
-                
+
                 // Is there a tag before a leading " ?
                 bool tag=false;
                 while( *p && *p!=']' && *p!=' ' && *p!='\t' && *p!='\"' )
@@ -102,7 +102,7 @@ bool PgnStateMachine( FILE *pgn_file, int &typ, char *buf, int buflen )
                 }
                 if( tag )
                 {
-                    
+
                     // Make sure there is whitespace, but skip it
                     tag = false;
                     while( *p==' ' || *p=='\t' )
@@ -111,16 +111,16 @@ bool PgnStateMachine( FILE *pgn_file, int &typ, char *buf, int buflen )
                         p++;
                     }
                 }
-                
+
                 // If there is a tag, then whitespace, then a leading "
                 if( tag && *p=='\"')
                 {
                     p++;
-                    
+
                     // Skip to 2nd " or end of string
                     while( *p && *p!='\"' )
                         p++;
-                    
+
                     // If we have a 2nd " then we have a tag and a val, i.e. a header
                     if( *p == '\"' )
                     {
@@ -285,17 +285,17 @@ void pgn_read_hook( const char *fen, const char *white, const char *black, const
 
 void *ReadGameFromPgnInLoop( int pgn_handle, long fposn, CompactGame &pact, void *context, bool end )
 {
-	static int new_count;
+    static int new_count;
     static FILE *pgn_file;
     static int save_pgn_handle;
     PgnRead *pgn;
     if( context )
         pgn = static_cast<PgnRead*>( context );
     else
-	{
-        pgn = new PgnRead('R'); 
-		printf( "new count = %d\n", ++new_count );
-	}
+    {
+        pgn = new PgnRead('R');
+        printf( "new count = %d\n", ++new_count );
+    }
     if( pgn_file && pgn_handle!=save_pgn_handle )
     {
         gbl_pgn_files.Close();
@@ -325,7 +325,7 @@ void *ReadGameFromPgnInLoop( int pgn_handle, long fposn, CompactGame &pact, void
         pgn_file = NULL;
         save_pgn_handle = 0;
         delete pgn;
-		printf( "new count = %d\n", --new_count );
+        printf( "new count = %d\n", --new_count );
         pgn = 0;
     }
     //printf( "ReadGameFromPgnInLoop(%d,%s) %ld (%s-%s)\n", pgn_handle, end?"true":"false", fposn, pact.r.white.c_str(), pact.r.black.c_str() );
@@ -375,7 +375,7 @@ void ReadGameFromPgn( int pgn_handle, long fposn, GameDocument &new_doc )
                 size_t len    = line.length();
                 if( offset!=std::string::npos && offset==len-2 && line[offset+1]=='\n' )
                     line = line.substr(0,offset) + "\n";
-				gd.prefix_txt += line;
+                gd.prefix_txt += line;
                 break;
             }
             case 'M':
@@ -448,7 +448,7 @@ bool GamesCache::Tagline( GameDocument &gd,  const char *s )
             s++;
 
         // If we have a 2nd " then we have a tag and a val, i.e. a header
-        if( *s == '\"' )        
+        if( *s == '\"' )
         {
             is_header = true;
             val_end = s;
@@ -541,13 +541,13 @@ bool GamesCache::TestGameInCache( const GameDocument &gd )
 void GamesCache::FileSaveInner( FILE *pgn_out )
 {
     char *buf;
-	GameDocument gd_temp;
+    GameDocument gd_temp;
     int buflen=100;
     file_irrevocably_modified = false;
     buf = new char [buflen];
     int gds_nbr = gds.size();
     long write_posn=0;
-	bool saving_work_file = false;
+    bool saving_work_file = false;
     int nbr_locked=0, nbr_game_documents=0, nbr_emergency_games_written=0;
     int nbr_unavailable_games=0, nbr_unavailable_files=0;
     std::set<int> handles;
@@ -559,8 +559,8 @@ void GamesCache::FileSaveInner( FILE *pgn_out )
             nbr_locked++;
         if( mptr->IsGameDocument() && !mptr->IsGameDocument()->IsEmpty() )
             nbr_game_documents++;
-		int pgn_handle2;
-		bool is_pgn = mptr->GetPgnHandle(pgn_handle2);
+        int pgn_handle2;
+        bool is_pgn = mptr->GetPgnHandle(pgn_handle2);
         if( is_pgn )
             handles.insert(pgn_handle2);
     }
@@ -583,9 +583,9 @@ void GamesCache::FileSaveInner( FILE *pgn_out )
         ListableGame *mptr = gds[i].get();
         count_to_expected_total_games++;
         mptr->saved = true;
-		int pgn_handle2;
-		bool is_pgn = mptr->GetPgnHandle(pgn_handle2);
-		long game_len = 0;
+        int pgn_handle2;
+        bool is_pgn = mptr->GetPgnHandle(pgn_handle2);
+        long game_len = 0;
         if( is_pgn )
         {
 
@@ -622,14 +622,14 @@ void GamesCache::FileSaveInner( FILE *pgn_out )
                 }
             }
         }
-		else
-		{
-			GameDocument *ptr = mptr->IsGameDocument();
+        else
+        {
+            GameDocument *ptr = mptr->IsGameDocument();
             if( !ptr )
-			{
-				mptr->ConvertToGameDocument(gd_temp);
-				ptr = &gd_temp;
-			}
+            {
+                mptr->ConvertToGameDocument(gd_temp);
+                ptr = &gd_temp;
+            }
 
             ptr->modified = false;
             ptr->game_prefix_edited = false;
@@ -697,7 +697,7 @@ static void PgnNameCommaGroom( std::string &name )
                 lower_surname.push_back(c);
             }
             if( lower_surname.substr(0,3) != "van" )
-            { 
+            {
                 size_t last_space = name.find_last_of(" ");
                 if( last_space != std::string::npos )
                 {
@@ -731,11 +731,11 @@ void GamesCache::Eco(  GamesCache *UNUSED(gc_clipboard) )
                 mptr->SetRoster(pact.r);
             else
             {
-        		GameDocument temp;
-		        mptr->ConvertToGameDocument(temp);
+                GameDocument temp;
+                mptr->ConvertToGameDocument(temp);
                 temp.SetRoster(pact.r);
-			    make_smart_ptr(GameDocument, new_smart_ptr, temp);
-			    gds[i] = std::move(new_smart_ptr);
+                make_smart_ptr(GameDocument, new_smart_ptr, temp);
+                gds[i] = std::move(new_smart_ptr);
             }
         }
     }
@@ -796,8 +796,8 @@ void GamesCache::Eco(  GamesCache *gc_clipboard )
 #endif
 
 void GamesCache::Publish( const std::string &html_out_file,
-                          const std::string &header,  
-                          const std::string &footer,  
+                          const std::string &header,
+                          const std::string &footer,
                           std::map<char,std::string> &macros,
                           const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx )
 {
@@ -814,148 +814,148 @@ void GamesCache::Publish( const std::string &html_out_file,
     util::putline(fout,h);
 
     int gds_nbr = gds.size();
-          
+
     // For each game
     int diagram_base = 0;
     int mv_base = 0;
     int neg_base = -2;
-	for( int i=0; i<gds_nbr; i++ )
-	{
-		GameDocument gd;
-		gds[i]->ConvertToGameDocument(gd);
-		thc::ChessPosition tmp;
-        
-		int publish_options = 0;
-		bool skip_intro = false;
-		bool skip_game = false;
-		std::string white = gd.r.white;
-		std::string black = gd.r.black;
-		std::string t = black;
-		std::string options = "";
-		bool white_only = (white != "" && white != "?") && (black == "" || black == "?");
-		if (!white_only && t[0] == '@')
-		{
-			size_t at2;
-			at2 = t.substr(1).find('@');
-			if (at2 != std::string::npos)
-			{
-			    options = t.substr(0, at2 + 1);
-			    black = t.substr(at2 + 2);
-			}
-		}
-        
-		bool heading_1 = (std::string::npos != options.find('1'));
-		bool heading_2 = (std::string::npos != options.find('2'));
-		bool suppress_move = (std::string::npos != options.find('N'));
-		bool heading = (heading_1 || heading_2 || white_only);
-		bool join = (std::string::npos != options.find('J'));
-		if (join)
-		{
-			white = white + " " + black;
-			black = "";
-		}
-        
-		// Write prefix
-		std::string s = gd.prefix_txt;
+    for( int i=0; i<gds_nbr; i++ )
+    {
+        GameDocument gd;
+        gds[i]->ConvertToGameDocument(gd);
+        thc::ChessPosition tmp;
+
+        int publish_options = 0;
+        bool skip_intro = false;
+        bool skip_game = false;
+        std::string white = gd.r.white;
+        std::string black = gd.r.black;
+        std::string t = black;
+        std::string options = "";
+        bool white_only = (white != "" && white != "?") && (black == "" || black == "?");
+        if (!white_only && t[0] == '@')
+        {
+            size_t at2;
+            at2 = t.substr(1).find('@');
+            if (at2 != std::string::npos)
+            {
+                options = t.substr(0, at2 + 1);
+                black = t.substr(at2 + 2);
+            }
+        }
+
+        bool heading_1 = (std::string::npos != options.find('1'));
+        bool heading_2 = (std::string::npos != options.find('2'));
+        bool suppress_move = (std::string::npos != options.find('N'));
+        bool heading = (heading_1 || heading_2 || white_only);
+        bool join = (std::string::npos != options.find('J'));
+        if (join)
+        {
+            white = white + " " + black;
+            black = "";
+        }
+
+        // Write prefix
+        std::string s = gd.prefix_txt;
         size_t offset = s.find_last_of('\n');
         size_t len    = s.length();
         if( offset!=std::string::npos && offset==len-1 && s[offset-1]=='\n' )
             s = s.substr(0,len-1);  // crude transformation, end of prefix "\n\n" -> "\n"
-		if (heading)
-		{
-			skip_intro = true;
-			if (heading_1)
-				s = "#" + white;
-			else
-				s = "##" + white;
-			s += "\r";
-			publish_options |= GameView::SUPPRESS_NULL_MOVE;
-			publish_options |= GameView::SUPPRESS_VARIATION_PARENS;
-		}
-		if (suppress_move)
-			publish_options |= GameView::SUPPRESS_MOVE;
-		const char *tags[] =
-		{
-			"#SkipToDiagram",
-			"#SkipIntro",
-			"#SkipGame"
-		};
-		for (int j = 0; j < nbrof(tags); j++)
-		{
-			for (int k = 0; k < 4; k++)
-			{
-				char buf[80];
-				strcpy(buf, tags[j]);
-				switch (k)
-				{
-				    case 0: strcat(buf, ", "); break;
-				    case 1: strcat(buf, ",");  break;
-				    case 2: strcat(buf, " ");  break;
-				    default:
-				    case 3: break;
-				}
-				const char *pattern;
-				size_t found;
-				pattern = buf;
-				found = s.find(pattern);
-				if (found != std::string::npos)
-				{
-					s = s.substr(0, found) + s.substr(found + strlen(pattern));
-					switch (j)
-					{
-					    case 0: publish_options |= GameView::SKIP_TO_FIRST_DIAGRAM; break;
-					    case 1: skip_intro = true;   break;
-					    case 2: skip_game = true;   break;
-					}
-					break;
-				}
-			}
-		}
+        if (heading)
+        {
+            skip_intro = true;
+            if (heading_1)
+                s = "#" + white;
+            else
+                s = "##" + white;
+            s += "\r";
+            publish_options |= GameView::SUPPRESS_NULL_MOVE;
+            publish_options |= GameView::SUPPRESS_VARIATION_PARENS;
+        }
+        if (suppress_move)
+            publish_options |= GameView::SUPPRESS_MOVE;
+        const char *tags[] =
+        {
+            "#SkipToDiagram",
+            "#SkipIntro",
+            "#SkipGame"
+        };
+        for (int j = 0; j < nbrof(tags); j++)
+        {
+            for (int k = 0; k < 4; k++)
+            {
+                char buf[80];
+                strcpy(buf, tags[j]);
+                switch (k)
+                {
+                    case 0: strcat(buf, ", "); break;
+                    case 1: strcat(buf, ",");  break;
+                    case 2: strcat(buf, " ");  break;
+                    default:
+                    case 3: break;
+                }
+                const char *pattern;
+                size_t found;
+                pattern = buf;
+                found = s.find(pattern);
+                if (found != std::string::npos)
+                {
+                    s = s.substr(0, found) + s.substr(found + strlen(pattern));
+                    switch (j)
+                    {
+                        case 0: publish_options |= GameView::SKIP_TO_FIRST_DIAGRAM; break;
+                        case 1: skip_intro = true;   break;
+                        case 2: skip_game = true;   break;
+                    }
+                    break;
+                }
+            }
+        }
         std::string out;
         out = md(s);
-		util::puts(fout,out);
-		if (!skip_game)
-		{
+        util::puts(fout,out);
+        if (!skip_game)
+        {
 
-			if (!skip_intro)
-			{
-				// Write header
-				//gd->ToFileTxtGameDetails( s );
+            if (!skip_intro)
+            {
+                // Write header
+                //gd->ToFileTxtGameDetails( s );
 
-				s = "<h2>";
-				s += white;
-				s += " - ";
-				s += black;
-				s += "</h2>";
+                s = "<h2>";
+                s += white;
+                s += " - ";
+                s += black;
+                s += "</h2>";
                 std::string t;
-				if (gd.r.event.find('?') == std::string::npos)
-				{
-					t = gd.r.event;
-				}
-				std::string year = gd.r.date.substr(0, 4);
-				if (year.find('?') == std::string::npos)
-				{
+                if (gd.r.event.find('?') == std::string::npos)
+                {
+                    t = gd.r.event;
+                }
+                std::string year = gd.r.date.substr(0, 4);
+                if (year.find('?') == std::string::npos)
+                {
                     if( t.find(year) == std::string::npos ) // in case event includes year!
                     {
-					    t += " ";
-					    t += year;
+                        t += " ";
+                        t += year;
                     }
-				}
+                }
                 if( t.length() > 0 )
                 {
-				    s += '\n';
-				    s += "<h3>";
-				    s += t;
-				    s += "</h3>";
+                    s += '\n';
+                    s += "<h3>";
+                    s += t;
+                    s += "</h3>";
                 }
-				util::putline(fout, s);
-			}
+                util::putline(fout, s);
+            }
 
-			// Write Game body
-			gd.ToPublishTxtGameBody(s, diagram_base, mv_base, neg_base, publish_options);
+            // Write Game body
+            gd.ToPublishTxtGameBody(s, diagram_base, mv_base, neg_base, publish_options);
             util::putline(fout,s);
-		}
-	}
+        }
+    }
     std::string f = macro_substitution( footer, macros, menu, menu_idx );
     util::putline(fout,f);
 }

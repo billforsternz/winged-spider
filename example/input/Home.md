@@ -3,7 +3,7 @@ Winged Spider is intended to be a innovative (I hope), spectactularly easy to us
 website builder. The idea is that Winged Spider will take as input content organised
 nicely in a well named directory hierarchy, and generate as output web ready content
 with the same structure. The directory and file names from the input are reflected
-directly in the menu structure that is presented to the web consumer for navigation.
+directly in the menu structure presented to the end user for navigating the content.
 
 This is the Winged Spider example project from the project's reference repository
 at [Github](https://github.com/billforsternz/winged-spider). It does double

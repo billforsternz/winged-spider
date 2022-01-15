@@ -1,7 +1,7 @@
 /*
 
     Utility functions
-    
+
 */
 
 #ifndef UTIL_H_INCLUDED

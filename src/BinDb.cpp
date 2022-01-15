@@ -13,7 +13,7 @@
 //  This was severely chopped to get just a few pieces needed to let WingedSpider link
 //
 
-static uint32_t game_id_bottom = 1;	// reserve 0 as a special value
+static uint32_t game_id_bottom = 1; // reserve 0 as a special value
 static uint32_t game_id_top    = GAME_ID_SENTINEL-1;
 
 // Database game ids are allocated from the top
@@ -31,14 +31,14 @@ uint32_t GameIdAllocateTop( uint32_t count )
 // Other game ids are allocated from the bottom
 uint32_t GameIdAllocateBottom(uint32_t count)
 {
-	if (game_id_bottom + count >= game_id_top)
-	{
-		game_id_bottom = 1;
-		game_id_top = GAME_ID_SENTINEL - 1;
-	}
-	uint32_t temp = game_id_bottom;
-	game_id_bottom += count;
-	return temp;
+    if (game_id_bottom + count >= game_id_top)
+    {
+        game_id_bottom = 1;
+        game_id_top = GAME_ID_SENTINEL - 1;
+    }
+    uint32_t temp = game_id_bottom;
+    game_id_bottom += count;
+    return temp;
 }
 
 // Use 19 bits with format yyyyyyyyyymmmmddddd
@@ -259,10 +259,10 @@ void Bin2Elo( uint32_t bin, std::string &elo )
         bin = 4095;
     else if( bin < 0 )
         bin = 0;
-	if( bin )
-		sprintf( buf, "%d", bin );
-	else
-		buf[0] = '\0';
+    if( bin )
+        sprintf( buf, "%d", bin );
+    else
+        buf[0] = '\0';
     elo = buf;
 }
 

@@ -1,7 +1,7 @@
 /*
 
     Each page in the directory structure
-    
+
 */
 
 #ifndef PAGE_H_INCLUDED
@@ -26,7 +26,7 @@ struct Page
     int level=0;    // depth in hierarchy
 
     // One and only one of the following three
-    bool is_file = false; 
+    bool is_file = false;
     bool is_dir  = false;
     bool is_link = false;
 

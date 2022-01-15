@@ -46,7 +46,7 @@ private:
     char white_elo[ FIELD_BUFLEN + 10];
     char black_elo[ FIELD_BUFLEN + 10];
     char round    [ FIELD_BUFLEN + 10];
- 
+
     char move_order_type[FIELD_BUFLEN + 10];
 
     // Misc

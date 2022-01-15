@@ -82,13 +82,13 @@ except for generating html files (and, as we have seen, bringing in builerplate 
 from the 'template' directory). This has the advantage that other types of assets can
 sit forever in the 'output' directory, under manual control. The image files in the
 example project are a good example.</p>
-<p>( For the sake of completeness there is another exception to the 'nothing but generating
+<p>(For the sake of completeness there is another exception to the 'nothing but generating
 html files rule' above - Winged Spider supports one special type of media as an extension;
 chess files. This reflects Winged Spider's origins as a tool built to maintain a chess
 website. Winged Spider accepts .pgn [chess document] files as well as markdown files
 for generating output html files and when it does that it adds a modified form of the
 .pgn file to a predefined 'assets' subfolder of the 'output' folder. There's an example
-in the 'Details' submenu. )</p>
+in the 'Details' submenu.)</p>
 <p>At this stage please solve the missing image file problem we've just identified in
 by deleting the new output directory and renaming the temporary one back to 'output',
 or simply start again from scratch.</p>
@@ -106,12 +106,12 @@ generated-plan.txt (or by looking at the project in a browser).</p>
 Home.md
 Getting Started.md
 Experiments.md
-Details\
-Details\Details.md
-Details\Markdown Extensions.md
-Details\Template System.md
-Details\Chess.pgn
-Details\Quirks and Rough Edges.md
+Details/
+Details/Details.md
+Details/Markdown Extensions.md
+Details/Template System.md
+Details/Chess.pgn
+Details/Quirks and Rough Edges.md
 </pre>
 <p>This is generated-plan.txt</p>
 <pre>
@@ -119,12 +119,12 @@ About.md
 Home.md
 Getting Started.md
 Experiments.md
-Details\
-Details\Details.md
-Details\Markdown Extensions.md
-Details\Template System.md
-Details\Chess.pgn
-Details\Quirks and Rough Edges.md
+Details/
+Details/Details.md
+Details/Markdown Extensions.md
+Details/Template System.md
+Details/Chess.pgn
+Details/Quirks and Rough Edges.md
 </pre>
 <p>The problem is that Winged Spider is only a stupid computer program and it can't possibly
 know the best place to put the new page, it just puts it in its alphabetical place, which
@@ -137,16 +137,16 @@ Home.md
 Getting Started.md
 Experiments.md
 About.md
-Details\
-Details\Details.md
-Details\Markdown Extensions.md
-Details\Template System.md
-Details\Chess.pgn
-Details\Quirks and Rough Edges.md
+Details/
+Details/Details.md
+Details/Markdown Extensions.md
+Details/Template System.md
+Details/Chess.pgn
+Details/Quirks and Rough Edges.md
 </pre>
 <p>Now when you run Winged Spider again it will note that the plan and the generated plan are
-out of sync and it will use the differences to intelligently rebuild the Home, Folders,
-Getting Started and About pages. These pages need to be rebuilt because their menu has
+out of sync and it will use the differences to intelligently rebuild the Home, Getting
+Started, Experiments and About pages. These pages need to be rebuilt because their menu has
 been reordered. The Details pages are unaffected since the Details menu is unchanged, so
 they are not rebuilt.</p>
 <p>Winged Spider only writes to plan.txt if it doesn't exist at all, but it creates a new
@@ -154,6 +154,10 @@ generated-plan.txt on every run. If you start a project from scratch then Winged
 will not only create generated-plan.txt it will copy it to plan.txt to give you a starting
 point. As we have found, the main thing, perhaps the only thing, wrong with the auto generated
 plan.txt will be that the pages will probably not be in the best or even a sensible order.</p>
+<p>(Extra for experts - the plan.txt format uses the Unix convention of '/' rather than the
+Windows convention of '\' even in the Windows version. This made it easier to port from the
+original Windows implementation to Unix. Windows accepts '/' as an alternative to '\', but Unix
+[eg Linux, macOS] does not tolerate '\' at all!)</p>
 <h2>Other possible experiments</h2>
 <p>Of course the experiments above are far from exhaustive.</p>
 <p>Some other ideas.</p>

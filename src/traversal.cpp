@@ -109,10 +109,10 @@
 
     The violations to the alternating F> / D> pattern are shown, Two or more D>
     Pages in a row are new Pages not yet represented in the plan file.
-    
+
     After recognising these violations as new pages Winged Spider actually
     changes the status of these new pages to F>.  This is an implementation
-    detail, the D> pages are discarded after serving their sync purpose - 
+    detail, the D> pages are discarded after serving their sync purpose -
     but the F> pages live on longer, first to generate html files
     and then to be stored as a plan file - actually as generated-plan.txt.
 
@@ -205,7 +205,7 @@ public:
 //  the directory in the menu system, using the make_file_for_dir flag.
 void Builder::construct_dir_target( std::vector<Page*> ptrs )
 {
-    // Look for a file the parent directory can point to 
+    // Look for a file the parent directory can point to
     for( Page *p: ptrs )
     {
         if( p->is_file && !p->disabled )
@@ -473,14 +473,14 @@ void traversal( bool force_rebuild, bool check_dependencies_only )
     sync_debug( "Previous Winged Spider run on this directory", pages );
     previous_time.run( pages );
 
-    // Now do it for real    
+    // Now do it for real
     std::vector<Page> results;
     const char *plan_file = PLAN_TXT;
     bool plan_found = read_plan_file( plan_file, results );
     sync_debug( "Pages marked as F> are read from plan.txt *F*ile", results );
     if( !plan_found )
     {
-        const char *msg = 
+        const char *msg =
         "Info: File plan.txt not found. Winged Spider will use its auto generated plan\n"
         "file generated-plan.txt instead and will copy that file to plan.txt for\n"
         "next time. Please review and edit plan.txt if necessary\n";
@@ -488,7 +488,7 @@ void traversal( bool force_rebuild, bool check_dependencies_only )
     }
     else if( !previous_run_plan_found )
     {
-        const char *msg = 
+        const char *msg =
         "Info: Winged Spider could not find file generated-plan.txt from its most\n"
         "recent run. This means it cannot check for directory changes, so it will\n"
         "have to assume the directory structure has changed and generate new files\n";
@@ -496,7 +496,7 @@ void traversal( bool force_rebuild, bool check_dependencies_only )
     }
     else
     {
-        const char *msg = 
+        const char *msg =
         "Info: Creating menu structure and checking for changes from the last run\n";
         printf( "%s", msg );
     }
@@ -611,7 +611,7 @@ void traversal( bool force_rebuild, bool check_dependencies_only )
             {
                 p.disabled = true;
                 printf( "Info: Page %s has unsupported extension (not .md or .pgn or .html), disabled\n", p.path.c_str() );
-                
+
             }
             else if( previous && previous->is_file && p.target==previous->target )
             {
@@ -763,7 +763,7 @@ static void parse( Page &p )
             if( offset != std::string::npos )
                 final_folder = p.dir.substr(offset+1);
             if( util::tolower(final_folder) == util::tolower(p.base) )
-                p.target = p.dir + ".html"; // eg archives/archives.md -> archives.html not archives-archives.html   
+                p.target = p.dir + ".html"; // eg archives/archives.md -> archives.html not archives-archives.html
         }
     }
     for( char &c: p.target )
@@ -787,7 +787,7 @@ static void parse( Page &p )
             offset2 = p.path.find( '.', offset1 );
             if( offset2 != std::string::npos )
             {
-                std::string name = p.path.substr(offset1,offset2-offset1);   // eg 
+                std::string name = p.path.substr(offset1,offset2-offset1);   // eg
                 components.push_back( name );
             }
             break;

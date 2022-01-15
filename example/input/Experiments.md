@@ -40,13 +40,13 @@ from the 'template' directory). This has the advantage that other types of asset
 sit forever in the 'output' directory, under manual control. The image files in the
 example project are a good example.
 
-( For the sake of completeness there is another exception to the 'nothing but generating
+(For the sake of completeness there is another exception to the 'nothing but generating
 html files rule' above - Winged Spider supports one special type of media as an extension;
 chess files. This reflects Winged Spider's origins as a tool built to maintain a chess
 website. Winged Spider accepts .pgn [chess document] files as well as markdown files
 for generating output html files and when it does that it adds a modified form of the
 .pgn file to a predefined 'assets' subfolder of the 'output' folder. There's an example
-in the 'Details' submenu. )
+in the 'Details' submenu.)
 
 At this stage please solve the missing image file problem we've just identified in
 by deleting the new output directory and renaming the temporary one back to 'output',
@@ -69,12 +69,12 @@ This is plan.txt
 Home.md
 Getting Started.md
 Experiments.md
-Details\
-Details\Details.md
-Details\Markdown Extensions.md
-Details\Template System.md
-Details\Chess.pgn
-Details\Quirks and Rough Edges.md
+Details/
+Details/Details.md
+Details/Markdown Extensions.md
+Details/Template System.md
+Details/Chess.pgn
+Details/Quirks and Rough Edges.md
 </pre>
 
 This is generated-plan.txt
@@ -84,12 +84,12 @@ About.md
 Home.md
 Getting Started.md
 Experiments.md
-Details\
-Details\Details.md
-Details\Markdown Extensions.md
-Details\Template System.md
-Details\Chess.pgn
-Details\Quirks and Rough Edges.md
+Details/
+Details/Details.md
+Details/Markdown Extensions.md
+Details/Template System.md
+Details/Chess.pgn
+Details/Quirks and Rough Edges.md
 </pre>
 
 The problem is that Winged Spider is only a stupid computer program and it can't possibly
@@ -105,17 +105,17 @@ Home.md
 Getting Started.md
 Experiments.md
 About.md
-Details\
-Details\Details.md
-Details\Markdown Extensions.md
-Details\Template System.md
-Details\Chess.pgn
-Details\Quirks and Rough Edges.md
+Details/
+Details/Details.md
+Details/Markdown Extensions.md
+Details/Template System.md
+Details/Chess.pgn
+Details/Quirks and Rough Edges.md
 </pre>
 
 Now when you run Winged Spider again it will note that the plan and the generated plan are
-out of sync and it will use the differences to intelligently rebuild the Home, Folders,
-Getting Started and About pages. These pages need to be rebuilt because their menu has
+out of sync and it will use the differences to intelligently rebuild the Home, Getting
+Started, Experiments and About pages. These pages need to be rebuilt because their menu has
 been reordered. The Details pages are unaffected since the Details menu is unchanged, so
 they are not rebuilt.
 
@@ -124,6 +124,11 @@ generated-plan.txt on every run. If you start a project from scratch then Winged
 will not only create generated-plan.txt it will copy it to plan.txt to give you a starting
 point. As we have found, the main thing, perhaps the only thing, wrong with the auto generated
 plan.txt will be that the pages will probably not be in the best or even a sensible order.
+
+(Extra for experts - the plan.txt format uses the Unix convention of '/' rather than the
+Windows convention of '&#x5c;' even in the Windows version. This made it easier to port from the
+original Windows implementation to Unix. Windows accepts '/' as an alternative to '&#x5c;', but Unix
+[eg Linux, macOS] does not tolerate '&#x5c;' at all!) 
 
 ## Other possible experiments
 

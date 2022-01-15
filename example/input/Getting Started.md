@@ -6,7 +6,6 @@ is that the user will get to navigate around in the ultimate rendered website us
 menus defined by the names given to the content files and folders.
 
 ## The Output Folder
-
 Alongside the 'input' folder are two other folders required for every Winged Spider
 project. Perhaps you've already guessed that one of them is 'output', which is where
 Winged Spider puts the completed html (and css, and javascript) of the completed
@@ -31,13 +30,13 @@ sized production website it was created for, so I am confident it is fit for pur
 
 ## It's a Command Line Tool
 Winged Spider is a command line tool, a single executable program that
-runs with minimal command line arguments. The initial target for Winged
-Spider is Windows, and the program there is called winged-spider.exe. I
-plan to test it on Linux and Mac OS as well. If you need to
-compile it from source - the key thing to know is that it's just a matter of compiling
-and linking the C++ files (as found in the Github repository), in the
-simplest possible way, there's no need for external dependencies or special
-options. Run the Winged Spider executable in your project directory, the
+runs with minimal command line arguments. Winged Spider has been tested
+on Windows, Linux and Mac OS. If you need to compile it from source - the
+key thing to know is that it's just a matter of compiling and linking the
+C++ files (as found in the Github repository), in the simplest possible
+way, there's no need for external dependencies or special
+options (perhaps -std=c++17 if your compiler defaults to older versions
+of C++). Run the Winged Spider executable in your project directory, the
 directory with 'input', 'output' and 'template' directories. Run it
 with a '-?' argument to get a list of command line options.
 

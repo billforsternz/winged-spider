@@ -13,7 +13,7 @@
 #include "GameDocument.h"
 
 class GamesCache
-{    
+{
 public:
     std::vector< smart_ptr<ListableGame> >  gds;
     std::vector<int>           col_flags;
@@ -39,7 +39,7 @@ public:
                   const std::vector<std::pair<std::string,std::string>> &menu, int menu_idx );
     void Eco( GamesCache *gc_clipboard );
     bool IsLoaded();
-	bool TestGameInCache( const GameDocument &gd );
+    bool TestGameInCache( const GameDocument &gd );
 
 
     // Helpers

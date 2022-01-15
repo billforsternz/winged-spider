@@ -55,7 +55,7 @@ For example, the command line to build the Mac Intel executable was;
     g++ -O3 -std=c++17 -o ws-mac-x64_86 -mmacosx-version-min=10.15 -arch x64_86 src/*.cpp
     
 Note that this means the Mac version requires macOS 10.15 (Catalina) or later. This is a consequence
-of using the C++17 <filesystem> facilites to navigate the directory structure. Support for this has
+of using the C++17 \<filesystem\> facilites to navigate the directory structure. Support for this has
 only been provided for recent macOS versions. There are much older well known Unix APIs for navigating
 directories, and if necessary, with a bit of work, it would be possible to retrofit them into
 Winged Spider.
